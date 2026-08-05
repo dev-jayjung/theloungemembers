@@ -1,0 +1,18 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+dependencies {
+    implementation project(':app-lounge')
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+bootJar {
+    enabled = true
+    archiveFileName = 'app-integrated.jar'
+}
+
+jar {
+    enabled = false
+}

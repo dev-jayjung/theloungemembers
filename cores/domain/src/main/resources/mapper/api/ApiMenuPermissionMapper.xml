@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiMenuPermissionMapper">
+    <resultMap id="ApiMenuPermissionResultMap" type="com.theloungemembers.core.api.ApiMenuPermissionResult">
+        <id property="uid" column="uid"/>
+        <result property="accountId" column="account_id"/>
+        <result property="apiCode" column="api_code"/>
+        <result property="userData" column="user_data"/>
+        <result property="onService" column="on_service"/>
+<!--         <association property="group" resultMap="ApiMenuGroupResultMap"/> -->
+    </resultMap>
+
+<!--     <resultMap id="ApiMenuGroupResultMap" type="com.theloungemembers.core.api.ApiMenuGroupResult"> -->
+<!--         <id property="uid" column="g_uid"/> -->
+<!--         <result property="code" column="g_code"/> -->
+<!--         <result property="name" column="g_name"/> -->
+
+<!--         <collection property="menuList" resultMap="ApiMenuResultMap"/> -->
+<!--     </resultMap> -->
+
+<!--     <resultMap id="ApiMenuResultMap" type="com.theloungemembers.core.api.ApiMenuResult"> -->
+<!--         <id property="uid" column="m_uid"/> -->
+<!--         <result property="code" column="m_code"/> -->
+<!--         <result property="name" column="m_name"/> -->
+<!--         <result property="linkUrl" column="m_link_url"/> -->
+<!--     </resultMap> -->
+
+    <select id="existsApiMenuPermission" resultType="java.lang.Boolean">
+        SELECT 1
+          FROM API_MENU_PERMISSION
+         WHERE account_id = #{accountId}
+           AND api_code = #{apiCode}
+           AND on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+    </select>
+
+    <select id="selectListByAccountId" resultMap="ApiMenuPermissionResultMap">
+        SELECT
+               amp.uid
+             , amp.account_id
+             , amp.api_code
+             , amp.user_data
+             , amp.on_service
+
+          FROM api_menu_permission amp
+         WHERE 1 = 1
+           AND amp.account_id = #{accountId}
+    </select>
+</mapper>

@@ -1,0 +1,33 @@
+/* 1. 하단 Footer 전체 우측 정렬 속성 해제 및 중앙 정렬 */
+.tabulator .tabulator-footer {
+    text-align: center !important;
+    background-color: #ffffff;
+}
+
+/* 2. 페이징 버튼(ul.pagination) 우측 플로트 해제 및 중앙 정렬 */
+.tabulator .tabulator-footer .tabulator-paginator {
+    float: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+}
+
+/* 3. 전체 건수(paginationCounter)가 있을 경우 위치 조정 (선택 사항) */
+.tabulator .tabulator-footer .tabulator-page-counter {
+    float: left !important; /* 전체 건수는 좌측에 고정 */
+    line-height: 38px !important; /* 부트스트랩 버튼 높이에 맞춤 */
+}
+
+/* Tabulator 셀 내 말줄임표(...) 제거 및 줄바꿈/행 높이 자동 확장 */
+.tabulator .tabulator-cell {
+    white-space: normal !important;      /* 줄바꿈 허용 (nowrap 해제) */
+    text-overflow: clip !important;       /* 말줄임표(...) 강제 제거 */
+    word-break: break-all !important;     /* 긴 문자열/영문/숫자도 셀 너비 벗어나면 자동 줄바꿈 */
+    height: auto !important;              /* 데이터 길이에 맞춰 행 높이 자동 확장 */
+}
+
+/* 행(Row) 자체의 높이 제한도 해제 */
+.tabulator .tabulator-row {
+    min-height: calc(var(--tabulator-grid-spacing, 1) * 30px);
+    height: auto !important;
+}

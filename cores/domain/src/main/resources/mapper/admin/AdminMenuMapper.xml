@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.admin.mapper.AdminMenuMapper">
+    <resultMap id="AdminMenuResultMap" type="com.theloungemembers.core.admin.AdminMenuResult">
+        <id property="uid" column="uid"/>
+        <result property="menuCode" column="menu_code"/>
+        <result property="parentCode" column="parent_code"/>
+        <result property="linkUrl" column="link_url"/>
+        <result property="title" column="title"/>
+        <result property="color" column="color"/>
+        <result property="topMargin" column="top_margin"/>
+        <result property="displayOrdinal" column="display_ordinal"/>
+        <result property="bookmarkDisplayOrdinal" column="bookmark_display_ordinal"/>
+    </resultMap>
+
+    <!-- 메인 메뉴 목록 (Level 1) -->
+    <select id="selectMainMenuList" resultMap="AdminMenuResultMap">
+        <choose>
+            <when test="isAdmin">
+                SELECT uid
+                     , menu_code
+                     , link_url
+                     , title
+                     , color
+                     , top_margin
+                FROM ADMIN_MENU
+                WHERE on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                  AND level = 1
+                  AND display_in_menu = '1'
+                ORDER BY display_ordinal ASC
+            </when>
+            <otherwise>
+                SELECT uid
+                     , menu_code
+                     , linkUrl
+                     , title
+                     , color
+                     , top_margin
+                     , display_ordinal
+                FROM (
+                    SELECT AM.uid
+                         , AM.menu_code
+                         , AM.link_url
+                         , AM.title
+                         , AM.color
+                         , AM.top_margin
+                         , AM.display_ordinal
+                    FROM ADMIN_MENU AM
+                    JOIN ADMIN_MENU_PERMISSION AMP ON (
+                        (AM.auth_code &lt;&gt; '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
+                    )
+                    WHERE AM.level = 1
+                      AND AM.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                      AND AM.display_in_menu = '1'
+                      AND AMP.worker_id = #{workerId}
+                      AND AMP.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+
+                    UNION
+
+                    SELECT uid
+                         , menu_code
+                         , link_url
+                         , title
+                         , color
+                         , top_margin
+                         , display_ordinal
+                    FROM ADMIN_MENU
+                    WHERE level = 1
+                      AND on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                      AND display_in_menu = '1'
+                      AND default_permission = '1'
+                ) T
+                ORDER BY display_ordinal ASC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 서브 메뉴 목록 (Level 2) -->
+    <select id="selectSubMenuList" resultMap="AdminMenuResultMap">
+        <choose>
+            <when test="isAdmin">
+                SELECT uid
+                     , menu_code
+                     , parent_code
+                     , link_url
+                     , title
+                     , color
+                FROM ADMIN_MENU
+                WHERE on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                  AND level = 2
+                  AND display_in_menu = '1'
+                ORDER BY display_ordinal ASC
+            </when>
+            <otherwise>
+                SELECT uid
+                     , menu_code
+                     , parent_code
+                     , link_url
+                     , title
+                     , color
+                     , display_ordinal
+                FROM (
+                    SELECT AM.uid
+                         , AM.menu_code
+                         , AM.parent_code
+                         , AM.link_url
+                         , AM.title
+                         , AM.color
+                         , AM.display_ordinal
+                    FROM ADMIN_MENU AM
+                    JOIN ADMIN_MENU_PERMISSION AMP ON (
+                        (AM.auth_code &lt;&gt; '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
+                    )
+                    WHERE AM.level = 2
+                      AND AM.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                      AND AM.display_in_menu = '1'
+                      AND AMP.worker_id = #{workerId}
+                      AND AMP.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+
+                    UNION
+
+                    SELECT uid
+                         , menu_code
+                         , parent_code
+                         , link_url
+                         , title
+                         , color
+                         , display_ordinal
+                    FROM ADMIN_MENU
+                    WHERE level = 2
+                      AND on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                      AND display_in_menu = '1'
+                      AND default_permission = '1'
+                ) T
+                ORDER BY displayOrdinal ASC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 즐겨찾기 메뉴 목록 -->
+    <select id="selectBookmarkList" resultMap="AdminMenuResultMap">
+        <choose>
+            <when test="isAdmin">
+                SELECT AM.uid
+                     , AM.menu_code
+                     , AM.link_url
+                     , AM.title
+                     , AM.color
+                     , ((SELECT display_ordinal FROM ADMIN_MENU WHERE menu_code = AM.parent_code AND level = 1) * 1000 + AM.display_ordinal) AS bookmark_display_ordinal
+                FROM ADMIN_MENU_BOOKMARK AMB
+                JOIN ADMIN_MENU AM ON AM.menu_code = AMB.menu_code
+                WHERE AM.level = 2
+                  AND AM.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                  AND (AM.display_in_menu = '1' OR AM.tab_code &lt;&gt; '')
+                  AND AMB.worker_id = #{workerId}
+                  AND AMB.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                ORDER BY bookmark_display_ordinal ASC
+            </when>
+            <otherwise>
+                SELECT uid
+                     , menu_code
+                     , link_url
+                     , title
+                     , color
+                FROM (
+                    SELECT AM.uid
+                         , AM.menu_code
+                         , AM.link_url
+                         , AM.title
+                         , AM.color
+                         , ((SELECT display_ordinal FROM ADMIN_MENU WHERE menu_code = AM.parent_code AND level = 1) * 1000 + AM.display_ordinal) AS bookmark_display_ordinal
+                    FROM ADMIN_MENU_BOOKMARK AMB
+                    JOIN ADMIN_MENU AM ON AM.menu_code = AMB.menu_code
+                    LEFT JOIN ADMIN_MENU_PERMISSION AMP ON (
+                        (AM.auth_code &lt;&gt; '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
+                    )
+                    WHERE AM.level = 2 AND AM.on_service = '1' AND (AM.display_in_menu = '1' OR AM.tab_code &lt;&gt; '')
+                      AND AMB.worker_id = #{workerId}
+                      AND AMB.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                      AND (
+                              AM.tab_code &lt;&gt; ''
+                              OR (
+                                    AM.display_in_menu = '1'
+                                    AND AMP.worker_id = #{workerId}
+                                    AND AMP.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                                 )
+                          )
+
+                    UNION
+
+                    SELECT AM.uid
+                         , AM.menu_code
+                         , AM.link_url
+                         , AM.title
+                         , AM.color
+                         , ((SELECT display_ordinal FROM ADMIN_MENU WHERE menu_code = AM.parent_code AND level = 1) * 1000 + AM.display_ordinal) AS bookmark_display_ordinal
+                    FROM ADMIN_MENU_BOOKMARK AMB
+                    JOIN ADMIN_MENU AM ON AM.menu_code = AMB.menu_code
+                    WHERE AM.level = 2
+                      AND AM.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                      AND (AM.display_in_menu = '1' OR AM.tab_code &lt;&gt; '')
+                      AND AM.default_permission = '1'
+                      AND AMB.worker_id = #{workerId}
+                      AND AMB.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                ) T
+                ORDER BY bookmark_display_ordinal ASC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectMenuTitle" resultMap="AdminMenuResultMap">
+        SELECT
+               COALESCE(p.title, c.title) AS main_title
+             , c.title AS sub_title
+             , c.menu_code
+             , c.parent_code
+          FROM admin_menu c
+     LEFT JOIN admin_menu p
+            ON c.parent_code = p.menu_code
+           AND p.on_service = '1'
+         WHERE c.link_url = #{linkUrl}
+           AND c.on_service = '1'
+         LIMIT 1
+    </select>
+</mapper>

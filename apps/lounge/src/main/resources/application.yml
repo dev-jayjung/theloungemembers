@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: app-lounge
+  config:
+    import:
+      - optional:classpath:application-common.yml
+      - optional:classpath:application-domain.yml
+
+  profiles:
+    active: local
+
+  devtools:
+    restart:
+      additional-paths:
+      - ../cores/build/classes/java/main
+      enabled: true
+
+logging:
+  config: classpath:logback-spring.xml

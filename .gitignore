@@ -1,0 +1,20 @@
+# Eclipse / STS 관련 파일
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA 관련 파일
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code 관련 파일
+.vscode/
+
+# Gradle / Maven 빌드 결과물 (제외 대상)
+.gradle/
+build/
+bin/
+out/
+target/

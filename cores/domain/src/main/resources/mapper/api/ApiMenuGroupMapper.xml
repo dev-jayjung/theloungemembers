@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiMenuGroupMapper">
+    <resultMap id="ApiMenuGroupResultMap" type="com.theloungemembers.core.api.ApiMenuGroupResult">
+        <id property="uid" column="uid"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+
+        <collection property="menuList" resultMap="ApiMenuResultMap"/>
+    </resultMap>
+
+    <resultMap id="ApiMenuResultMap" type="com.theloungemembers.core.api.ApiMenuResult">
+        <id property="uid" column="m_uid"/>
+        <result property="code" column="m_code"/>
+        <result property="name" column="m_name"/>
+        <result property="linkUrl" column="m_link_url"/>
+    </resultMap>
+
+    <select id="selectList" resultMap="ApiMenuGroupResultMap">
+        SELECT
+               amg.uid
+             , amg.code
+             , amg.name
+
+             , am.uid AS m_uid
+             , am.code AS m_code
+             , am.name AS m_name
+             , am.link_url AS m_link_url
+          FROM API_MENU_GROUP amg
+     LEFT JOIN API_MENU am
+            ON amg.code = am.group_code
+           AND am.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+          <include refid="where"/>
+          <include refid="CommonMapper.sortSql"/>
+          <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT
+               COUNT(1)
+          FROM API_MENU_GROUP
+          <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <if test="onService != null">
+                AND amg.on_service = #{onService}
+            </if>
+        </where>
+    </sql>
+</mapper>

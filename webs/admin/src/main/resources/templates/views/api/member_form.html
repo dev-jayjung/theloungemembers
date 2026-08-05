@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}"> <!-- Tiles 대신 타임리프 레이아웃 적용 -->
+
+<head>
+    <title th:text="${member == null || member.uid == null} ? '사용자 등록' : '사용자 상세'">사용자 상세</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript" th:inline="javascript">
+        $(document).ready(function() {
+
+        });
+
+        // ID 중복 체크 (신규 등록일 때만 실행)
+        $(document).on("blur", "#loginId", function(e) {
+            var usrNo = $("#usrNo").val();
+            if (!usrNo && !validate.check("loginId")) {
+                var options = {
+                    url: /*[[@{/system/userIdCheck.do}]]*/ '/system/userIdCheck.do',
+                    data: $("#userForm").serializeJson(),
+                    callBack: function(result) {
+                        if (result.checkCount > 0) {
+                            idCheck = false;
+                            $('#loginId').validationEngine('showPrompt', result.message, 'error', true);
+                        } else {
+                            idCheck = true;
+                            $('#loginId').validationEngine('showPrompt', "사용가능한 로그인 아이디 입니다.", 'pass', true);
+                        }
+                    }
+                };
+                ajax.call(options);
+            }
+        });
+
+        // 등록
+        function memberInsert() {
+            if (!validate.check('memberForm')) {
+                return;
+            }
+
+            if (!confirm('등록 하시겠습니까?')) {
+                return;
+            }
+
+            const options = {
+                url: /*[[@{/api/api-members}]]*/ '/api/api-members',
+                data: $('#memberForm').serializeJson(),
+                sendType: 'json',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    const uid = result.data.uid;
+
+                    createTargetFormSubmit({
+                        id: 'apiMemberView',
+                        url: `/api-members/${uid}`
+                    });
+                }
+            };
+
+            ajax.call(options);
+        }
+
+        // 수정
+        function memberUpdate() {
+            if (!validate.check('memberForm')) {
+                return;
+            }
+            
+            if (!confirm('수정 하시겠습니까?')) {
+                return;
+            }
+
+            const uid = $('#uid').val();
+            const options = {
+                url: `/api/api-members/${uid}`,
+                data: $('#memberForm').serializeJson(),
+                sendType: 'json',
+                type: 'PUT',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    createTargetFormSubmit({
+                        id: 'apiMemberView',
+                        url: `/api-members/detail?id=${uid}`
+                    });
+                }
+            };
+            ajax.call(options);
+        }
+
+        // 삭제
+        function memberDelete() {
+            if (!confirm('삭제 하시겠습니까?')) {
+                return;
+            }
+
+            const uid = $('#uid').val();
+            const options = {
+                url: `/api/api-members/${uid}`,
+                sendType: 'json',
+                type: 'DELETE',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    openTabSelfClose(null, '/api-members');
+                }
+            };
+            ajax.call(options);
+        }
+
+        // 레이어 팝업
+        function userCompanyLayer() {
+            var data = {
+                multiselect: false,
+                /*[# th:if="${viewOK}"]*/
+                upCompNo: /*[[${targetCompNo}]]*/ '',
+                /*[/]*/
+                callBack: function(result) {
+                    $("#compNo").val(result[0].compNo);
+                    $("#compNm").val(result[0].compNm);
+                }
+            };
+            layerCompanyList.create(data);
+        }
+
+        // 팝업
+        function openMemberPop() {
+            openWindowPop({
+                url: '/api-members/new',
+                width: '800',
+                height: '600',
+                target: 'apiMemberPop',
+                scrollbars: 'no',
+                resizable: 'no',
+                location: 'no',
+                menubar: 'no',
+                data: { uid: $('#uid').val() }
+            });
+        }
+
+    </script>
+</th:block>
+
+<th:block layout:fragment="content">
+<form name="memberForm" id="memberForm" method="post" th:object="${member}">
+
+    <th:block th:if="${member != null && member.uid != null}">
+    <div class="mTitle gTitle">
+        <h2>기본정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>기본정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>코드 번호<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth200" name="uid" id="uid" title="코드 번호" th:field="*{uid}" disabled />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </th:block>
+
+    <div class="mTitle gTitle">
+        <h2>계정정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>계정정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>접속 계정<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth200 validate[required]" name="accountId" id="accountId" th:field="*{accountId}" th:disabled="${member?.uid != null}" title="접속 계정" />
+                    </td>
+                    <th>비밀번호</th>
+                    <td>
+                        <input type="text" class="wth200" name="password" id="password" th:field="*{password}" title="비밀번호" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>업체명<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth200 validate[required]" name="companyName" id="companyName" th:field="*{companyName}" title="업체명" />
+                    </td>
+                    <th>서비스 코드<strong class="red">*</strong></th>
+                    <td>
+                        <select name="serviceCode" id="serviceCode" class="wth100 validate[required]" th:field="*{serviceCode}" title="서비스 코드">
+                            <option value="">선택</option>
+                            <option value="lounge">공항 라운지</option>
+                            <option value="dining">공항 다이닝</option>
+                            <option value="airport_express">공항 직통열차</option>
+                            <option value="airport_limousine">K공항리무진</option>
+                            <option value="golf_driving_range">골프연습장</option>
+                            <option value="itcha">잇차</option>
+                            <option value="mosiler">모시러</option>
+                            <option value="airport_hotel">다락휴 호텔</option>
+                            <option value="hotel_valet">호텔 발렛</option>
+                            <option value="airport_valet">공항 발렛</option>
+                            <option value="matina_gold">마티나 골드</option>
+                            <option value="airport_coffee">공항 커피</option>
+                            <option value="usim_esim">글로벌 One SIM</option>
+                            <option value="hotel_buffet">특급호텔 뷔페</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>라운지 영문 코드</th>
+                    <td>
+                        <input type="text" class="wth200" name="loungeCode" id="loungeCode" th:field="*{loungeCode}" title="라운지 영문 코드" />
+                    </td>
+                    <th>라운지명</th>
+                    <td>
+                        <input type="text" class="wth200" name="loungeName" id="loungeName" th:field="*{loungeName}" title="라운지명" />
+                    </td>
+                    <th>라운지 코드</th>
+                    <td>
+                        <input type="text" class="wth200" name="loungeUid" id="loungeUid" th:field="*{loungeUid}" title="라운지 코드" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>IP 검사 해제</th>
+                    <td>
+                        <label class="fCheck"><input type="checkbox" name="freepassIp" id="freepassIp" value="1" th:checked="*{freepassIp == '1'}"><span>IP 검사 해제</span></label>
+                    </td>
+                    <th>LMS 통지 허용</th>
+                    <td>
+                        <label class="fCheck"><input type="checkbox" name="allowMsgNotify" id="allowMsgNotify" value="1" th:checked="*{allowMsgNotify == '1'}" ><span>LMS 통지 허용(coupon_issue에서 사용됨)</span></label>
+                    </td>
+                </tr>
+                <tr>
+                   <th>사 용<strong class="red">*</strong></th>
+                   <td>
+                       <label class="fRadio" th:each="item, stat : ${ServiceStatus}">
+                           <input type="radio" name="onService" th:id="|onService${stat.index}|" th:value="${item.code}" th:checked="${member.onService != null and member.onService == item}" >
+                           <span th:text="${item.description}"></span>
+                       </label>
+                   </td>
+                </tr>
+                <tr>
+                   <th>API 정보 목록</th>
+                   <td colspan="5">
+                       <div th:each="group, stat : ${apiMenuGroupList}">
+                           <span style='font-weight: bold;' th:text="${group.name}"></span>
+                           <div th:each="menu : ${group.menuList}">
+                                <input type="checkbox"
+                                       name="selectedMenuCodes"
+                                       th:id="|menu_${menu.code}|"
+                                       th:value="${menu.code}"
+                                       th:checked="${member.allowedMenuCodes != null and #lists.contains(member.allowedMenuCodes, group.code + ':' + menu.code)}" />
+
+                                <label th:for="|menu_${menu.code}|" 
+                                       th:text="|${menu.name}(${menu.code})|"></label>
+                            </div>
+                       </div>
+                   </td>
+                </tr>
+                <tr>
+                   <th>암호화 사용 유무<strong class="red">*</strong></th>
+                   <td>
+                       <label class="fRadio"><input type="radio" name="isEncrypted" id="isEncrypted0" value="1" th:field="*{isEncrypted}" ><span>사용 O</span></label>
+                       <label class="fRadio"><input type="radio" name="isEncrypted" id="isEncrypted1" value="0" th:field="*{isEncrypted}" ><span>사용 X</span></label>
+                   </td>
+                </tr>
+                <tr>
+                    <th>암호화 정보</th>
+                    <td>
+                        <input type="text" class="wth200" name="encInfo" id="encInfo" th:value="${encInfo}" title="암호화 정보" />
+                    </td>
+                    <th>비밀키</th>
+                    <td>
+                        <input type="text" class="wth200" name="encKey" id="encKey" th:value="${encKey}" title="암호화 정보" />
+                    </td>
+                    <th>비밀키</th>
+                    <td>
+                        <input type="text" class="wth200" name="encIv" id="encIv" th:value="${encIv}" title="암호화 정보" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mTitle gTitle">
+        <h2>담당자정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>담당자정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>담당자명</th>
+                    <td>
+                        <input type="text" class="wth200" name="userName" id="userName" th:field="*{userName}" title="담당자명" />
+                    </td>
+                    <th>핸드폰 번호</th>
+                    <td>
+                        <input type="text" class="wth200 phoneNumber" name="phoneNum" id="phoneNum" th:field="*{phoneNum}" title="핸드폰 번호" />
+                    </td>
+                    <th>이메일 주소</th>
+                    <td>
+                        <input type="text" class="wth200" name="emailAddress" id="emailAddress" th:field="*{emailAddress}" title="이메일 주소" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mTitle gTitle">
+        <h2>기타정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>기타정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>메 모</th>
+                    <td colspan="3">
+                        <div class="fTextarea gFull">
+                            <textarea name="memo" id="memo" title="메 모" rows="100" cols="200" th:field="*{memo}" ></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if= "${member != null && member.uid != null}">
+                    <th>등록일 / 수정일</th>
+                    <td colspan="3"
+                        th:text="|${#temporals.format(member.regDate, 'yyyy-MM-dd HH:mm:ss')} / ${#temporals.format(member.updateDate, 'yyyy-MM-dd HH:mm:ss')}|">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+    <!-- 하단 버튼 영역 -->
+    <div class="btn_area_center">
+        <button type="button" onclick="memberInsert()" class="btn_type2" th:if="${member == null || member.uid == null}">등록</button>
+
+        <th:block th:if="${member != null && member.uid != null}">
+            <button type="button" onclick="memberUpdate();" class="btn_type2">수정</button>
+            <button type="button" onclick="memberDelete();" class="btn_type2">삭제</button>
+            <button type="button" onclick="openMemberPop();" class="btn_type2">test</button>
+        </th:block>
+
+        <button type="button" onclick="goUrl('/api-members');" class="btn_type1">목록</button>
+    </div>
+</th:block>
+</html>

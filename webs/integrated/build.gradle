@@ -1,0 +1,18 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+dependencies {
+    implementation project(':web-admin')
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+bootJar {
+    enabled = true
+    archiveFileName = 'web-integrated.jar'
+}
+
+jar {
+    enabled = false
+}

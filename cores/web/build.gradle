@@ -1,0 +1,21 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':core-common')
+    implementation project(':core-model')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.data:spring-data-commons'
+    implementation 'com.google.guava:guava:33.2.1-jre'
+}
+
+//bootJar {
+//    enabled = false
+//}
+
+jar {
+    enabled = true
+}

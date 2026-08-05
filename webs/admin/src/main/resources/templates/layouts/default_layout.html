@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+        <!-- 기본 타이틀 설정 (각 페이지에서 overriding 하지 않으면 디폴트 출력) -->
+        <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">관리자 시스템</title>
+
+        <!-- 공통 헤더 조각 -->
+        <th:block th:replace="~{fragments/head_common :: headCommon}"></th:block>
+
+        <!-- 개별 페이지 전용 meta 영역 (Optional) -->
+        <th:block layout:fragment="meta"></th:block>
+
+        <!-- 개별 페이지 전용 script 영역 (Optional) -->
+        <th:block layout:fragment="script"></th:block>
+    </head>
+
+    <body>
+        <div id="wrap">
+            <div id="contents">
+                <div class="breadcrumb">
+                    <p th:text="|홈 > ${mainTitle ?: '메뉴'} > ${subTitle ?: '상세'}|">메뉴 경로</p>
+                </div>
+
+                <!-- 화면 제목 -->
+                <div class="mTitle" th:if="${subTitle != null}">
+                    <h1 th:text="${subTitle}">화면명</h1>
+                </div>
+
+                <!-- 본문 영역 -->
+                <th:block layout:fragment="content"></th:block>
+            </div>
+        </div>
+    </body>
+</html>

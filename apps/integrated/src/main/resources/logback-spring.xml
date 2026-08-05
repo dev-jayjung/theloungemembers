@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 변수 지정 -->
+    <property name="LOG_DIR" value="/logs" />
+    <property name="LOG_PATH_NAME" value="${LOG_DIR}/theloungemembers-app" />
+    <property name="ERROR_PATH_NAME" value="${LOG_DIR}/theloungemembers-app-error" />
+    <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] [%-5p] [%F]%M\(%L\) : %m%n"/>
+
+    <timestamp key="bySecond" datePattern="mmssSSS"/>
+
+    <!-- FILE Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH_NAME}.log</file>
+        <!-- 일자별로 로그파일 적용하기 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH_NAME}.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>60</maxHistory> <!-- 일자별 백업파일의 보관기간 -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ERROR Appender -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${ERROR_PATH_NAME}.log</file>
+        <!-- 일자별로 로그파일 적용하기 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${ERROR_PATH_NAME}.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>60</maxHistory> <!-- 일자별 백업파일의 보관기간 -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- TRACE > DEBUG > INFO > WARN > ERROR, 대소문자 구분 안함 -->
+    <!-- profile 을 읽어서 appender 을 설정할수 있다.(phase별 파일을 안만들어도 됨) -->
+    <springProfile name="local">
+        <root level="DEBUG">
+            <appender-ref ref="FILE" />
+            <appender-ref ref="ERROR" />
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+
+    <springProfile name="dev,stg">
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+            <appender-ref ref="ERROR" />
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+
+    <springProfile name="prd">
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+            <appender-ref ref="ERROR" />
+        </root>
+    </springProfile>
+
+    <!-- log4jdbc-log4j2 -->
+    <logger name="jdbc"                level="OFF" />
+    <logger name="jdbc.sqlonly"        level="OFF" />
+    <logger name="jdbc.sqltiming"      level="DEBUG" />
+    <logger name="jdbc.audit"          level="OFF" />
+    <logger name="jdbc.resultset"      level="ERROR" />
+    <logger name="jdbc.resultsettable" level="INFO" />
+    <logger name="jdbc.connection"     level="DEBUG" />
+    <logger name="org.springframework" level="INFO" />
+
+    <logger name="com.theloungemembers" level="DEBUG" />
+    
+    <logger name="io.netty.util.internal" level="INFO" />
+</configuration>

@@ -1,0 +1,18 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':core-common')
+//    implementation 'org.mapstruct:mapstruct:1.6.0'
+//    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0'
+//    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+}
+
+//bootJar {
+//    enabled = false
+//}
+
+jar {
+    enabled = true
+}

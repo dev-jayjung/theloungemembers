@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="leftMenu">
+    <script th:src="@{/js/tab.js}" type="text/javascript" charset="utf-8" ></script>
+
+    <script type="text/javascript" th:inline="javascript">
+        $(document).ready(function() {
+
+            // 메뉴 클릭 이벤트
+            $(document).on('click', 'a[id^=mainMenu], a[id^=subMenu]', function(event) {
+                const url = $(this).attr('href');
+                const menuNm = $(this).text();
+//                 if (url && url.indexOf('.do') > 0) {
+                    event.preventDefault();
+                    openTab({ url: url });
+//                 }
+            });
+
+            // 전체메뉴 / 즐겨찾기 목록 전환
+            let bookmarkMenuIng = false;
+            $(document).on('click', '[id="BookmarkToggle"]', function() {
+                if (bookmarkMenuIng == false) {
+                    bookmarkMenuIng = true;
+                    const $toggleBtn = $(this);
+                    const currentVal = $toggleBtn.val();
+
+                    $('body').css('cursor', 'progress');
+
+                    $.ajax({
+                        url: /*[[@{/main/selectBookmarkLeftMenu.do}]]*/ '/main/selectBookmarkLeftMenu.do',
+                        type: 'POST',
+                        dataType: 'html',
+                        data: { bookmark: currentVal },
+                        success: function(resHtml) {
+                            const $lnb_tree = $('#lnb_tree');
+                            $lnb_tree.children().remove();
+                            $lnb_tree.append($(resHtml));
+
+                            if (currentVal == 'BOOKMARK') {
+                                $toggleBtn.html('전체메뉴').val('ALL');
+                            } else {
+                                $toggleBtn.html('즐겨찾기').val('BOOKMARK');
+                            }
+                            bookmarkMenuIng = false;
+                            $('body').css('cursor', 'auto');
+                        },
+                        error: function() {
+                            $('body').css('cursor', 'auto');
+                            alert('메뉴조회 오류');
+                            bookmarkMenuIng = false;
+                        }
+                    });
+                }
+            });
+
+            // 즐겨찾기 On/Off 토글 버튼
+            let bookmarkIng = false;
+            $(document).on('click', '[id^=leftBookmarkBT]', function() {
+                if (bookmarkIng == false) {
+                    bookmarkIng = true;
+                    const id = $(this).attr('id');
+                    let bookmarkYn = $(this).attr('bookmarkYn');
+
+                    $.ajax({
+                        url: /*[[@{/main/updateBookmark.do}]]*/ '/main/updateBookmark.do',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            menuNo: $(this).attr('menuNo'),
+                            bookmarkYn: bookmarkYn
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                $('#' + id).attr('bookmarkYn', res.bookmarkYn);
+                                if (res.bookmarkYn == 'Y') {
+                                    $('#' + id).css('color', 'red');
+                                } else {
+                                    $('#' + id).css('color', 'white');
+                                }
+                            } else if (res.message) {
+                                alert(res.message);
+                            }
+                            bookmarkIng = false;
+                        },
+                        error: function() {
+                            alert(bookmarkYn == 'Y' ? '북마크 삭제 오류.' : '북마크 등록 오류.');
+                            bookmarkIng = false;
+                        }
+                    });
+                }
+                return false;
+            });
+        });
+
+        function resetLeftMenu() {
+            $('body').css('cursor', 'progress');
+            $.ajax({
+                url: /*[[@{/main/menuSearchFieldTp.do}]]*/ '/main/menuSearchFieldTp.do',
+                type: 'POST',
+                dataType: 'html',
+                data: { menuName: '' },
+                success: function(resHtml) {
+                    let $lnb_tree = $('#lnb_tree');
+                    $lnb_tree.children().remove();
+                    $lnb_tree.append($(resHtml));
+                    $('#BookmarkToggle').html('즐겨찾기').val('BOOKMARK');
+                    $('body').css('cursor', 'auto');
+                },
+                error: function() {
+                    $('body').css('cursor', 'auto');
+                    alert('메뉴조회 오류');
+                }
+            });
+        }
+    </script>
+
+    <!-- 1차 메뉴 Loop (${mainMenuList} 사용) -->
+    <li th:each="item, itemStat : ${mainMenuList}">
+        <!-- CASE 1: 하위 메뉴(subMenuList)가 없는 단일 1차 메뉴 -->
+        <div style="position:relative;" th:if="${item.subMenuList == null or item.subMenuList.isEmpty()}">
+            <a th:id="'mainMenu' + ${itemStat.count}"
+               th:href="${#strings.isEmpty(item.linkUrl) ? 'javascript:void(0);' : item.linkUrl}"
+               class="tree_depth"
+               th:style="${not #strings.isEmpty(item.color) ? 'color:' + item.color + ';' : null}"
+               th:text="${item.title}">
+               1차 메뉴명
+            </a>
+
+            <!-- URL이 있는 경우 즐겨찾기 별 표시 -->
+            <th:block th:if="${not #strings.isEmpty(item.linkUrl)}">
+                <font th:id="'leftBookmarkBT' + ${item.uid}"
+                      th:style="'position:absolute; top:15px; left:178px; cursor:pointer; color:' + (${item.bookmarkDisplayOrdinal != null ? 'red' : 'white'}) + ';'"
+                      th:attr="menuNo=${item.uid}, bookmarkYn=${item.bookmarkDisplayOrdinal != null ? 'Y' : 'N'}">★</font>
+            </th:block>
+        </div>
+
+        <!-- CASE 2: 하위 메뉴(subMenuList)가 존재할 때 -->
+        <th:block th:if="${item.subMenuList != null and !item.subMenuList.isEmpty()}">
+            <a th:href="${#strings.isEmpty(item.linkUrl) ? 'javascript:void(0);' : item.linkUrl}"
+               class="tree_depth1"
+               th:classappend="${item.topMargin == '1' ? 'menu-top-margin' : ''}"
+               th:style="${not #strings.isEmpty(item.color) ? 'color:' + item.color + ';' : null}"
+               th:text="${item.title}">
+               1차 메뉴명
+            </a>
+
+            <!-- 2차 서브 메뉴 Loop (${item.subMenuList} 사용) -->
+            <ul class="tree_depth2">
+                <li th:each="subItem, subItemStat : ${item.subMenuList}">
+                    <div th:class="'toggleBG' + ${itemStat.count} + ${subItemStat.count}" style="position:relative;">
+                        <a th:id="'subMenu' + ${itemStat.count} + ${subItemStat.count}"
+                           th:href="${#strings.isEmpty(subItem.linkUrl) ? '#' : subItem.linkUrl}"
+                           class="on"
+                           th:style="${not #strings.isEmpty(subItem.color) ? 'color:' + subItem.color + ';' : null}"
+                           th:text="${subItem.title}">
+                           2차 서브 메뉴명
+                        </a>
+
+                        <!-- 2차 메뉴 즐겨찾기 별 표시 -->
+                        <th:block th:if="${not #strings.isEmpty(subItem.linkUrl)}">
+                            <font th:id="'leftBookmarkBT' + ${subItem.uid}"
+                                  th:style="'position:absolute; top:3px; left:168px; cursor:pointer; color:' + (${subItem.bookmarkDisplayOrdinal != null ? 'red' : 'white'}) + ';'"
+                                  th:attr="menuNo=${subItem.uid}, bookmarkYn=${subItem.bookmarkDisplayOrdinal != null ? 'Y' : 'N'}">★</font>
+                        </th:block>
+                    </div>
+                </li>
+            </ul>
+        </th:block>
+    </li>
+
+    <!-- 메뉴 데이터가 존재하지 않을 때 처리 -->
+    <li th:if="${mainMenuList == null or mainMenuList.isEmpty()}" class="no-menu">
+        <span style="padding: 10px; color: #888; display: block;">조회된 메뉴가 없습니다.</span>
+    </li>
+
+</th:block>
+
+</html>

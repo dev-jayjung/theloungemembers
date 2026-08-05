@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <th:block th:fragment="tabList">
+        <script type="text/javascript">
+        (function() {
+
+            tabList = {
+                tabIdx: 0,
+                list: new Array(),
+                activeList: new Array(),
+                getTabId: function(url) {
+                    let openedTabId = '';
+
+                    if (this.list.length > 0) {
+                        let tab = null;
+                        for (let i = 0; i < this.list.length; i++) {
+                            tab = this.list[i];
+                            if (url == tab.url) {
+                                openedTabId = tab.tabId;
+                                break;
+                            }
+                        }
+                    }
+
+                    return openedTabId;
+                },
+
+                open: function(param) {
+                    // 최초 로그인 상태의 URL인 경우 return
+                    if (param.url == '/main') {
+                        return;
+                    }
+
+                    let openedTabId = '';
+
+                    if (this.list.length > 0) {
+                        let tab = null;
+                        for (let i = 0; i < this.list.length; i++) {
+                            tab = this.list[i];
+                            if (param.url == tab.url) {
+                                openedTabId = tab.tabId;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (openedTabId != '') {
+                        this.addActiveTab({
+                            tabId : openedTabId,
+                            url : param.realUrl
+                        });
+                    } else {
+                        const tabId = 'tabId' + this.tabIdx++;
+
+                        let isHome = false;
+                        if (param.isHome) {
+                            isHome = true;
+                        }
+
+                        this.list.push({
+                            tabId : tabId,
+                            url : param.url,
+                            isHome : isHome
+                        });
+
+                        let tab = null;
+                        if (isHome) { // 홈 닫기버튼 삭제
+                            tab = $(`<li id="${tabId}" onclick="clickTab('${tabId}')" style="float:left;" home="home">${param.name}</li>`);
+                        } else {
+                            tab = $(`<li id="${tabId}" onclick="clickTab('${tabId}')" style="float:left;">${param.name}<a href="javascript:closeTab('${tabId}')">x</a></li>`);
+                        }
+
+                        $('#tabList').append(tab);
+
+                        this.addActiveTab({
+                            tabId : tabId,
+                            url : param.realUrl
+                        });
+
+                        openedTabId = tabId;
+                    }
+
+                    // 화면 상단으로 이동
+                    $(document).scrollTop(0);
+
+                    $('#screenList').css('height', 'auto');
+                    $('#div_' + openedTabId).css('overflow-y', 'hidden');
+
+                    return openedTabId;
+                },
+
+                close: function(param) {
+
+                    if (this.list.length > 0) {
+                        const newList = new Array();
+                        let tab = null;
+                        for (let i = 0; i < this.list.length; i++) {
+                            tab = this.list[i];
+                            if (param.tabId != tab.tabId) {
+                                newList.push(tab);
+                            }
+                        }
+
+                        this.list = newList;
+                    }
+
+                    $('#' + param.tabId).remove();
+                    $('#div_' + param.tabId).remove();
+
+                    const newActiveList = new Array();
+                    for (let i = 0; i < this.activeList.length; i++) {
+                        if (param.tabId != this.activeList[i]) {
+                            newActiveList.push(this.activeList[i]);
+                        }
+                    }
+                    this.activeList = newActiveList;
+
+                    this.showActiveTab();
+                    this.openScreen();
+                },
+
+                addActiveTab: function(param) {
+                    this.activeList.push(param.tabId);
+                    this.showActiveTab(param.tabId);
+                    this.openScreen(param);
+                },
+
+                activeTab: function(param) {
+                    this.addActiveTab(param);
+                },
+
+                showActiveTab: function(tabId) {
+                    let activeTabId = '';
+                    if (tabId) {
+                        activeTabId = tabId;
+                    } else {
+                        activeTabId = this.activeList[this.activeList.length - 1];
+                    }
+
+                    if (activeTabId != '') {
+                        $('#tabList>li[id!="' + activeTabId + '"]').removeClass('on');
+                        $('#tabList>li[id="' + activeTabId + '"]').addClass('on');
+                    }
+                },
+
+                openScreen: function(param) {
+                    const defaultHeight = 1400;
+                    if (param) {
+                        const $preDiv = $('#div_' + param.tabId);
+
+                        // 신규 탭 open (size() 대신 length 사용)
+                        if ($preDiv.length <= 0) {
+                            const url = param.url;
+
+                            const $div = $(`<div id="div_${param.tabId}" style="width:100%;height:${defaultHeight}px;"/>`);
+                            const $iframe = $(`<iframe name="iframe_${param.tabId}" width="100%" height="100%" style="border:0;" />`);
+
+                            $div.append($iframe);
+                            $('#screenList').append($div);
+
+                            if (typeof waiting !== 'undefined') waiting.start();
+
+                            $iframe.attr('src', url);
+
+                            // jQuery 3.x+ 호환 (.load -> .on('load'))
+                            $iframe.on('load', function() {
+                                _resizeWindow({
+                                    tabId : param.tabId,
+                                    newWindow : true
+                                });
+                                if (typeof waiting !== 'undefined') waiting.stop();
+                            });
+
+                        } else if (param.url) {
+                            const $iframe = $preDiv.find('iframe:eq(0)');
+                            $iframe.contents().find('body').html('');
+
+                            if (typeof waiting !== 'undefined') waiting.start();
+
+                            $iframe.attr('src', param.url);
+                            $iframe.on('load', function() {
+                                _resizeWindow({
+                                    tabId : param.tabId,
+                                    newWindow : true
+                                });
+                                if (typeof waiting !== 'undefined') waiting.stop();
+                            });
+                        } else {
+                            _resizeWindow({
+                                tabId : param.tabId
+                            });
+                        }
+
+                        $('#screenList > div[id != "div_' + param.tabId + '"]').hide();
+                        $('#screenList > div[id = "div_' + param.tabId + '"]').show();
+                    } else {
+                        const activeTabId = this.activeList[this.activeList.length - 1];
+                        $('#screenList > div[id != "div_' + activeTabId + '"]').hide();
+                        $('#screenList > div[id = "div_' + activeTabId + '"]').show();
+
+                        _resizeWindow({
+                            tabId : activeTabId
+                        });
+                    }
+                }
+            };
+
+            // 전역변수
+            defaultHeight = 1400;
+            footerHeight = 287;
+
+            _resizeWindow = function(param) {
+                let iframeHeight = 0;
+                const $div = $('#screenList > div[id="div_' + param.tabId + '"]');
+                const $side = $('#side');
+                if (param.newWindow) {
+                    const iframeBody = window['iframe_' + param.tabId].document.body;
+                    iframeHeight = iframeBody ? iframeBody.scrollHeight : 0;
+
+                    if (iframeHeight > defaultHeight) {
+                        $div.height(iframeHeight);
+                        $side.height(iframeHeight + footerHeight);
+                    } else {
+                        $side.height(defaultHeight + footerHeight);
+                    }
+                } else {
+                    iframeHeight = $div.height();
+                    if (iframeHeight > defaultHeight) {
+                        $side.height(iframeHeight + footerHeight);
+                    } else {
+                        $side.height(defaultHeight + footerHeight);
+                    }
+                }
+            };
+        })(window);
+        </script>
+
+        <div class="tabWrap">
+            <ul id="tabList"></ul>
+            <a href="javascript://" onclick="closeAllTab()" class="tabAllClear">탭 전체삭제</a>
+        </div>
+    </th:block>
+</html>

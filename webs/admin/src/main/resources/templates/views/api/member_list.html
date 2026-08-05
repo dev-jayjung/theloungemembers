@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title>API 회원 관리</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let apiMemberGrid;
+        const apiMenuGroupList = /*[[${apiMenuGroupList}]]*/ [];
+
+        $(document).ready(function() {
+            // Tabulator 그리드 생성
+            createApiMemberGrid();
+
+            $('#searchForm').on('change', '#searchTarget', function () {
+                const $searchValue = $('#searchValue');
+                if (!!$(this).val()) {
+                    $searchValue.prop('disabled', false);
+                } else {
+                    $searchValue.val('');
+                    $searchValue.prop('disabled', true);
+                }
+            });
+        });
+
+        function createApiMemberGrid() {
+            apiMemberGrid = initTabulatorGrid('#apiMemberList', {
+                ajaxURL: '/api/api-members',
+
+                // 검색 폼 파라미터 지정
+                ajaxParams: function() {
+                    return $('#searchForm').serializeJson();
+                },
+
+                columns: [
+                    { title: '순서', field: 'rowNum', hozAlign: 'center', formatter: 'rowNum', download: false},
+                    { title: '코드', field: 'uid', hozAlign: 'center' },
+                    {
+                        title: '접속 계정(→)',
+                        field: 'accountId',
+                        hozAlign: 'left',
+                        cssClass: 'fontbold',
+                        formatter: function(cell){
+                            return `<span style='text-decoration:underline;'>${cell.getValue() || ''}</span>`;
+                        }
+                    },
+                    { title: '업체명', field: 'companyName', width: 130, hozAlign: 'left' },
+                    { title: '서비스 코드', field: 'serviceCode', width: 130, hozAlign: 'center' },
+
+                    {
+                        title: 'IP 검사 해제',
+                        field: 'freepassIp',
+                        hozAlign: 'center',
+                        formatter: ServiceStatusUtil.formatter,
+                    },
+                    {
+                        title: 'LMS 통지 허용',
+                        field: 'allowMsgNotify',
+                        hozAlign: 'center',
+                        headerTooltip: 'coupon_issue에서 사용됨',
+                        formatter: function(cell){
+                            return cell.getValue() === '1' ? 'O' : '<p style="color:red;">X</p>';
+                        },
+                    },
+                    { title: '라운지 영문 코드', field: 'loungeCode', hozAlign: 'center' },
+                    { title: '라운지명', field: 'loungeName', width: 130, hozAlign: 'left' },
+                    { title: '라운지 코드', field: 'loungeUid', width: 130, hozAlign: 'center' },
+
+                    { title: '담당자', field: 'userName', hozAlign: 'center' },
+                    { title: '담당자 폰번호', field: 'phoneNum', hozAlign: 'center' },
+                    { title: '담당자 메일', field: 'emailAddress', hozAlign: 'left' },
+                    {
+                        title: '사용',
+                        field: 'onService',
+                        hozAlign: 'center',
+                        formatter: function(cell){
+                            return cell.getValue() === '1' ? 'O' : '<p style="color:red;">X</p>';
+                        },
+                    },
+                    {
+                        title: 'API 정보 목록',
+                        field: 'allowedMenuCodes',
+                        width: 330,
+                        hozAlign: 'left',
+                        formatter: function(cell) {
+                            const allowedMenuCodes = cell.getValue() || [];
+                            const allowedSet = new Set(allowedMenuCodes);
+
+                            let html = '';
+
+                            // 그룹 단위 반복
+                            apiMenuGroupList.forEach((group, idx) => {
+                                if (idx > 0) {
+                                    html += '<br />';
+                                }
+
+                                // 그룹 헤더 출력
+                                html += `<span style="font-weight: bold;">${group.name}</span><br />`;
+
+                                if (!!group.menuList) {
+                                    // 그룹 하위 메뉴 단위 반복
+                                    group.menuList.forEach(menu => {
+                                        if (allowedSet.has(group.code + ':' + menu.code)) {
+                                            html += `&nbsp;<span style="color: blue;">■ ${menu.name} (${menu.code})</span><br />`;
+                                        } else {
+                                            html += `&nbsp;□ ${menu.name} (${menu.code})<br />`;
+                                        }
+                                    });
+                                }
+                            });
+
+                            return html;
+                        },
+                    },
+
+                    { title: '메모', field: 'memo', width: 250, hozAlign: 'left' },
+                    { title: '등록일', field: 'regDate', hozAlign: 'center' },
+                    { title: '수정일', field: 'updateDate', hozAlign: 'center' }
+                ]
+            });
+
+            // 접속 계정 클릭 시 수정 상세 이동
+            apiMemberGrid.on('cellClick', function(e, cell) {
+                if (cell.getField() === 'accountId'){
+                    const rowData = cell.getRow().getData();
+                    submitModifyForm(rowData.uid);
+                }
+            });
+        }
+
+        // 검색
+        function reloadGrid() {
+            const searchTarget = $('#searchTarget').val();
+            const searchValue = $('#searchValue').val();
+
+            if (!!searchTarget && !searchValue) {
+                alert('검색어를 입력해 주세요.');
+                return;
+            }
+
+            if (apiMemberGrid) {
+                apiMemberGrid.setData();
+            }
+        }
+
+        // 등록 이동
+        function submitAddForm() {
+            createTargetFormSubmit({
+                id: 'apiMemberView',
+                url: '/api-members/new'
+            });
+        }
+
+        // 수정 이동
+        function submitModifyForm(uid) {
+            createTargetFormSubmit({
+                id: 'apiMemberView',
+                url: `/api-members/detail?id=${uid}`
+            });
+        }
+
+        // 초기화
+        function resetSearchForm() {
+            resetForm('searchForm');
+        }
+
+        function downloadExcel() {
+            apiMemberGrid.download('xlsx', '사용자_목록.xlsx');
+        }
+    </script>
+</th:block>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 검색 조건 박스 -->
+        <div class="table_type1">
+            <form id="searchForm" name="searchForm" method="get">
+                <table>
+                    <colgroup>
+                        <col style="width:12%;">
+                        <col>
+                        <col style="width:12%;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">검색조건</th>
+                            <td>
+                                <select name="searchTarget" id="searchTarget" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="uid">코드</option>
+                                    <option value="account_id">접속 계정(=)</option>
+                                    <option value="account_id_like">접속 계정(Like)</option>
+                                    <option value="company_name">업체명</option>
+                                    <option value="user_name">담당자</option>
+                                </select>
+                                <input type="text" name="searchValue" id="searchValue" class="wth150" placeholder="검색어 입력" disabled>
+                            </td>
+                            <th scope="row">서비스 코드</th>
+                            <td>
+                                <select name="serviceCode" class="wth200">
+                                    <option value="">전체</option>
+                                    <option value="lounge">공항 라운지</option>
+                                    <option value="dining">공항 다이닝</option>
+                                    <option value="airport_express">공항 직통열차</option>
+                                    <option value="airport_limousine">K공항리무진</option>
+                                    <option value="golf_driving_range">골프연습장</option>
+                                    <option value="itcha">잇차</option>
+                                    <option value="mosiler">모시러</option>
+                                    <option value="airport_hotel">다락휴 호텔</option>
+                                    <option value="hotel_valet">호텔 발렛</option>
+                                    <option value="airport_valet">공항 발렛</option>
+                                    <option value="matina_gold">마티나 골드</option>
+                                    <option value="airport_coffee">공항 커피</option>
+                                    <option value="usim_esim">글로벌 One SIM</option>
+                                    <option value="hotel_buffet">특급호텔 뷔페</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">IP 검사 해제</th>
+                            <td>
+                                <select name="freepassIp" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="1">IP 검사 해제 O</option>
+                                    <option value="0">IP 검사 해제 X</option>
+                                </select>
+                            </td>
+                            <th scope="row">LMS 통지 허용</th>
+                            <td>
+                                <select name="allowMsgNotify" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="1">LMS 통지 허용 O</option>
+                                    <option value="0">LMS 통지 허용 X</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">사용 여부</th>
+                            <td>
+                                <select name="onService" class="wth100">
+                                    <option value="">전체</option>
+                                    <option th:each="item : ${ServiceStatus}"
+                                            th:value="${item.code}"
+                                            th:text="${item.description}">
+                                    </option>
+                                </select>
+                            </td>
+                            <th scope="row">API 정보 메뉴</th>
+                            <td>
+                                <select name="apiMenuCode" class="wth300">
+                                    <option value="">전체</option>
+                                    <option th:each="api : ${apiMenuList}" 
+                                            th:value="${api.code}" 
+                                            th:text="${api.name + '(' + api.code + ')'}"></option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="btn_area_center">
+            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
+            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+        </div>
+
+        <div class="mTitle gTitle">
+            <h2>API 사용자 목록</h2>
+        </div>
+        <div class="mButton typeBorad">
+            <div class="leftInner">
+                <button type="button" onclick="submitAddForm();" class="btn_h25_type1">등록하기</button>
+                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+            </div>
+        </div>
+
+        <!-- Tabulator 그리드가 위치할 영역 -->
+        <div class="mModule">
+            <div id="apiMemberList"></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+        <!-- 개별 페이지에서 title을 정의하지 않았을 때 사용할 기본값 -->
+        <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">관리자 시스템</title>
+
+        <!-- 공통 헤더 조각 -->
+        <th:block th:replace="~{fragments/head_common :: headCommon}"></th:block>
+
+        <!-- 개별 페이지 전용 meta 영역 (Optional) -->
+        <th:block layout:fragment="meta"></th:block>
+
+        <!-- 개별 페이지 전용 script 영역 (Optional) -->
+        <th:block layout:fragment="script"></th:block>
+
+        <!-- 메인 레이아웃 전용 스크립트 -->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                //$('body').height(23000);
+            });
+        </script>
+    </head>
+
+    <body class="admin">
+        <a id="skip_nav" href="#contents">본문 바로가기</a>
+
+        <div id="wrap" style="height:100%;">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}"></header>
+
+            <!-- Left Menu -->
+            <aside th:replace="~{fragments/left :: left}"></aside>
+
+            <div id="container" style="height:100%">
+                <!-- Tab List -->
+                <div th:replace="~{fragments/tab_list :: tabList}"></div>
+
+                <!-- Screen List -->
+                <div th:replace="~{fragments/screen_list :: screenList}"></div>
+
+                <!-- Footer -->
+                <div th:replace="~{fragments/footer :: footer}"></div>
+           </div>
+        </div>
+    </body>
+</html>

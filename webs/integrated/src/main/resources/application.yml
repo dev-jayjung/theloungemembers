@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: web-integrated
+  config:
+    import:
+      - optional:classpath:application-common.yml
+      - optional:classpath:application-domain.yml
+
+  profiles:
+    active: local
+
+  thymeleaf:
+    cache: false
+
+  devtools:
+    restart:
+      additional-paths:
+      - ../cores/build/classes/java/main
+      enabled: true
+
+logging:
+  config: classpath:logback-spring.xml

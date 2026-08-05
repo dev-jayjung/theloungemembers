@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiMemberMapper">
+    <resultMap id="ApiMemberResultMap" type="com.theloungemembers.core.api.ApiMemberResult">
+        <id property="uid" column="uid"/>
+        <result property="accountId" column="account_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="serviceCode" column="service_code"/>
+        <result property="password" column="password"/>
+        <result property="passwordResetDate" column="password_reset_date"/>
+        <result property="freepassIp" column="freepass_ip"/>
+        <result property="allowMsgNotify" column="allow_msg_notify"/>
+        <result property="loungeCode" column="lounge_code"/>
+        <result property="loungeName" column="lounge_name"/>
+        <result property="loungeUid" column="lounge_uid"/>
+        <result property="onService" column="on_service"/>
+        <result property="userName" column="user_name"/>
+        <result property="phoneNum" column="phone_num"/>
+        <result property="emailAddress" column="email_address"/>
+        <result property="isEncrypted" column="is_encrypted"/>
+        <result property="encData" column="enc_data"/>
+        <result property="memo" column="memo"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="allowedMenuCodes" column="allowed_menu_codes" />
+    </resultMap>
+
+    <select id="selectById" resultMap="ApiMemberResultMap">
+        SELECT
+               am.uid
+             , am.account_id
+             , am.company_name
+             , am.service_code
+             , am.password
+             , am.password_reset_date
+             , am.freepass_ip
+             , am.allow_msg_notify
+             , am.lounge_code
+             , am.lounge_name
+             , am.lounge_uid
+             , am.on_service
+             , am.user_name
+             , am.phone_num
+             , am.email_address
+             , am.is_encrypted
+             , am.enc_data
+             , am.memo
+             , am.reg_date
+             , am.update_date
+             , (
+                    SELECT ARRAY_AGG(m.group_code || ':' || amp.api_code)
+                      FROM api_menu_permission amp
+                      JOIN api_menu m
+                        ON amp.api_code = m.code
+                       AND m.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                     WHERE amp.account_id = am.account_id
+                       AND amp.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+               ) AS allowed_menu_codes
+          FROM api_member am
+         WHERE am.uid = #{uid}
+    </select>
+
+    <select id="selectList" resultMap="ApiMemberResultMap">
+        SELECT
+               am.uid
+             , am.account_id
+             , am.company_name
+             , am.service_code
+             , am.password
+             , am.password_reset_date
+             , am.freepass_ip
+             , am.allow_msg_notify
+             , am.lounge_code
+             , am.lounge_name
+             , am.lounge_uid
+             , am.on_service
+             , am.user_name
+             , am.phone_num
+             , am.email_address
+             , am.is_encrypted
+             , am.enc_data
+             , am.memo
+             , am.reg_date
+             , am.update_date
+             , (
+                    SELECT ARRAY_AGG(m.group_code || ':' || amp.api_code)
+                      FROM api_menu_permission amp
+                      JOIN api_menu m
+                        ON amp.api_code = m.code
+                       AND m.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                     WHERE amp.account_id = am.account_id
+                       AND amp.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+               ) AS allowed_menu_codes
+          FROM api_member am
+          <include refid="where"/>
+          <include refid="CommonMapper.sortSql"/>
+          <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT
+               COUNT(1)
+          FROM api_member am
+          <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <choose>
+                <when test="searchTarget == 'uid'">
+                    AND am.uid = #{searchValue}::INTEGER
+                </when>
+                <when test="searchTarget == 'account_id'">
+                    AND am.account_id = #{searchValue}
+                </when>
+                <when test="searchTarget == 'account_id_like'">
+                    AND am.account_id LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'company_name'">
+                    AND am.company_name = #{searchValue}
+                </when>
+                <when test="searchTarget == 'user_name'">
+                    AND am.user_name = #{searchValue}
+                </when>
+            </choose>
+
+            <if test="freepassIp != null and freepassIp != ''">
+                AND am.freepass_ip = #{freepassIp}
+            </if>
+            <if test="allowMsgNotify != null and allowMsgNotify != ''">
+                AND am.allow_msg_notify = #{allowMsgNotify}
+            </if>
+            <if test="onService != null">
+                AND am.on_service = #{onService}
+            </if>
+            <if test="apiMenuCode != null and apiMenuCode != ''">
+                AND EXISTS (
+                    SELECT 1
+                      FROM api_menu_permission amp
+                     WHERE amp.account_id = am.account_id
+                       AND amp.api_code = #{apiMenuCode}
+                       AND amp.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+                )
+            </if>
+        </where>
+    </sql>
+</mapper>

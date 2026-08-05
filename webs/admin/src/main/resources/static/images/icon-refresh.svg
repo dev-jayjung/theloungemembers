@@ -1,0 +1,19 @@
+<svg id="icon-refresh" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <rect id="icon-frame24" width="24" height="24" fill="none"/>
+  <g id="icon-refresh-2" data-name="icon-refresh" transform="translate(5 6)">
+    <g id="그룹_205" data-name="그룹 205">
+      <path id="패스_403" data-name="패스 403" d="M4.806,14.392a1.43,1.43,0,0,1-.023-.591,4.869,4.869,0,0,1,.971-2.867A3.609,3.609,0,0,1,7.639,9.918a13.373,13.373,0,0,1,2.189-.149h7.524" transform="translate(-4.764 -7.541)" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
+      <g id="그룹_204" data-name="그룹 204" transform="translate(10.479)">
+        <line id="선_61" data-name="선 61" x2="2.249" y2="2.249" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
+        <line id="선_62" data-name="선 62" x1="2.249" y2="2.207" transform="translate(0 2.249)" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
+      </g>
+    </g>
+    <g id="그룹_207" data-name="그룹 207" transform="translate(1.668 4.962)">
+      <path id="패스_404" data-name="패스 404" d="M19.881,13.657a1.43,1.43,0,0,1,.023.591,4.87,4.87,0,0,1-.971,2.867,3.609,3.609,0,0,1-1.884,1.015,13.373,13.373,0,0,1-2.189.149H7.336" transform="translate(-7.195 -13.657)" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
+      <g id="그룹_206" data-name="그룹 206" transform="translate(0 2.395)">
+        <line id="선_63" data-name="선 63" x1="2.249" y1="2.249" transform="translate(0 2.207)" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
+        <line id="선_64" data-name="선 64" y1="2.207" x2="2.249" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

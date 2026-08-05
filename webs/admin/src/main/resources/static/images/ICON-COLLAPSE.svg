@@ -1,0 +1,17 @@
+<svg id="ICON-COLLAPSE" xmlns="http://www.w3.org/2000/svg" width="29.99" height="30" viewBox="0 0 29.99 30">
+  <g id="ICON-COLLAPSE-LEFT">
+    <rect id="ICON-FRAME" width="29.99" height="30" fill="none"/>
+    <g id="ICON-MENU-COLLAPSE" transform="translate(9.138 9.134)">
+      <g id="그룹_22" data-name="그룹 22">
+        <g id="그룹_20" data-name="그룹 20" transform="translate(0 0.055)">
+          <line id="선_22" data-name="선 22" x1="5.872" y1="5.92" transform="translate(0 5.811)" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1.5"/>
+          <line id="선_23" data-name="선 23" y1="5.811" x2="5.872" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1.5"/>
+        </g>
+        <g id="그룹_21" data-name="그룹 21" transform="translate(6.871)">
+          <line id="선_24" data-name="선 24" x1="5.872" y1="5.92" transform="translate(0 5.811)" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1.5"/>
+          <line id="선_25" data-name="선 25" y1="5.811" x2="5.872" fill="none" stroke="#9296a8" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1.5"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':core-common')
+    implementation project(':core-domain')
+    implementation project(':core-model')
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+}
+
+//bootJar {
+//    enabled = false
+//}
+
+jar {
+    enabled = true
+}

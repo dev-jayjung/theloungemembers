@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="29.99" height="30" viewBox="0 0 29.99 30">
+  <g id="icon-extend-right" transform="translate(-19.99 -1035)">
+    <g id="icon-extend-right-2" data-name="icon-extend-right">
+      <rect id="ICON-FRAME" width="29.99" height="30" transform="translate(19.99 1035)" fill="none"/>
+      <g id="ICON-MENU-COLLAPSE" transform="translate(49.179 1063.776) rotate(180)">
+        <g id="그룹_22" data-name="그룹 22">
+          <g id="그룹_20" data-name="그룹 20">
+            <line id="선_22" data-name="선 22" x1="5.872" y1="5.92" transform="translate(7.308 13.722)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1.6"/>
+            <line id="선_23" data-name="선 23" y1="5.811" x2="5.872" transform="translate(7.308 7.911)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1.6"/>
+          </g>
+          <g id="그룹_21" data-name="그룹 21">
+            <line id="선_24" data-name="선 24" x1="5.872" y1="5.92" transform="translate(14.179 13.667)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1.6"/>
+            <line id="선_25" data-name="선 25" y1="5.811" x2="5.872" transform="translate(14.179 7.856)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="1.6"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

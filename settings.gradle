@@ -1,0 +1,18 @@
+rootProject.name = "theloungemembers"
+
+include 'app-integrated', 'app-lounge'
+include 'web-integrated', 'web-admin'
+include 'core-model', 'core-domain', 'core-lounge', 'core-common', 'core-web', 'core-admin'
+
+project(':app-integrated').projectDir = file('apps/integrated')
+project(':app-lounge').projectDir = file('apps/lounge')
+
+project(':web-integrated').projectDir = file('webs/integrated')
+project(':web-admin').projectDir = file('webs/admin')
+
+project(':core-model').projectDir = file('cores/model')
+project(':core-domain').projectDir = file('cores/domain')
+project(':core-lounge').projectDir = file('cores/lounge')
+project(':core-common').projectDir = file('cores/common')
+project(':core-web').projectDir = file('cores/web')
+project(':core-admin').projectDir = file('cores/admin')

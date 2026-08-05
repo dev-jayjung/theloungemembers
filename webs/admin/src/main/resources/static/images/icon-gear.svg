@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25">
+  <g id="icon-gear" transform="translate(-1798 -1206)">
+    <g id="ICON-GEAR-2" data-name="ICON-GEAR" transform="translate(1798 1206)">
+      <rect id="ICON-FRAME_30px_" data-name="ICON-FRAME(30px)" width="25" height="25" fill="none"/>
+      <g id="ICON-GEAR-3" data-name="ICON-GEAR" transform="translate(2.5 2.5)">
+        <g id="그룹_83" data-name="그룹 83" transform="translate(0 0)">
+          <path id="패스_45" data-name="패스 45" d="M14.137,4.962l-.281-2.573s-3.029-.4-3.812.156L9.71,5.118,6.845,6.781l-2.38-1.2S2.818,7.724,2.751,8.99l2,1.611L4.7,14.135,2.546,15.565s1.691,3.15,2.354,3.3l2.3-1.014a8.44,8.44,0,0,0,2.584,1.533l.333,2.651s3.063.317,3.736-.13l.46-2.5a11.015,11.015,0,0,0,2.969-1.481l2.3.909s2.037-3.058,1.893-3.508l-2.2-1.454s.3-2.533-.052-3.2l2.15-1.767a22.373,22.373,0,0,0-2.021-3.249L16.671,6.677" transform="translate(-2.546 -2.25)" fill="none" stroke="#fff" stroke-linecap="square" stroke-linejoin="round" stroke-width="1.5"/>
+          <ellipse id="타원_15" data-name="타원 15" cx="2.188" cy="2.222" rx="2.188" ry="2.222" transform="translate(7.283 7.726)" fill="none" stroke="#fff" stroke-linecap="square" stroke-linejoin="round" stroke-width="1.5"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

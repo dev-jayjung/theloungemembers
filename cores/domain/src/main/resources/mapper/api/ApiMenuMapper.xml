@@ -44,4 +44,68 @@
            AND on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
     </select>
 
+    <select id="selectSearchCount" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM API_MENU am
+        <include refid="whereSearch"/>
+    </select>
+
+
+    <select id="selectSearchList" resultMap="ApiMenuSearchResultMap">
+        SELECT
+               am.uid
+             , am.group_code
+             , am.code
+             , am.name
+             , am.display_ordinal
+             , am.on_service
+             , am.link_url
+             , am.memo
+             , am.reg_date
+             , am.update_date
+             , amg.name as group_name
+        FROM api_menu am
+        LEFT JOIN api_menu_group amg ON am.group_code = amg.code
+        <include refid="whereSearch"/>
+        <include refid="CommonMapper.sortSql"/>
+        <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <resultMap id="ApiMenuSearchResultMap" type="com.theloungemembers.core.api.ApiMenuSearchResult">
+        <id property="uid" column="uid"/>
+        <result property="groupCode" column="group_code"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="displayOrdinal" column="display_ordinal"/>
+        <result property="onService" column="on_service"/>
+        <result property="linkUrl" column="link_url"/>
+        <result property="memo" column="memo"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="groupName" column="group_name"/>
+    </resultMap>
+
+    <sql id="whereSearch">
+        <where>
+            <choose>
+                <when test="searchTarget == 'uid'">
+                    AND am.uid = #{searchValue}::INTEGER
+                </when>
+                <when test="searchTarget == 'code'">
+                    AND am.code = #{searchValue}
+                </when>
+                <when test="searchTarget == 'name_like'">
+                    AND am.name LIKE '%' || #{searchValue} || '%'
+                </when>
+            </choose>
+
+            <if test="groupCode != null and groupCode != ''">
+                AND am.group_code = #{groupCode}
+            </if>
+            <if test="onService != null">
+                AND am.on_service = #{onService}
+            </if>
+        </where>
+    </sql>
+
 </mapper>

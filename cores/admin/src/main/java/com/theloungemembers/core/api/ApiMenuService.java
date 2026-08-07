@@ -1,7 +1,5 @@
 package com.theloungemembers.core.api;
 
-import com.theloungemembers.core.api.entity.ApiMenuEntity;
-import com.theloungemembers.core.api.repository.ApiMenuJpaRepository;
 import com.theloungemembers.core.common.crud.AbstractBaseService;
 import com.theloungemembers.core.common.dto.PageResponse;
 import com.theloungemembers.core.common.util.PageUtil;
@@ -26,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiMenuService extends AbstractBaseService<ApiMenuCommand, ApiMenuQuery, ApiMenuResult, Integer> {
 
     private final ApiMenuRepository apiMenuRepository;
-    private final ApiMenuJpaRepository apiMenuJpaRepository;
     private final ApiMenuGroupRepository apiMenuGroupRepository;
 
     /**
@@ -55,13 +52,6 @@ public class ApiMenuService extends AbstractBaseService<ApiMenuCommand, ApiMenuQ
         if (!useableCode) {
             throw new BusinessException("API 코드가 이미 존재합니다.", ErrorCode.BAD_REQUEST);
         }
-    }
-
-    private ApiMenuEntity getMenuEntity(Integer uid) {
-        if (uid == null) {
-            return null;
-        }
-        return apiMenuJpaRepository.findById(uid).orElse(null);
     }
 
     private boolean useableCode(String code, Integer paramUid) {

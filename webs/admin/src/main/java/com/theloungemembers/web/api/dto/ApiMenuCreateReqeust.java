@@ -1,6 +1,5 @@
-package com.theloungemembers.core.api;
+package com.theloungemembers.web.api.dto;
 
-import com.theloungemembers.core.common.dto.BaseResult;
 import com.theloungemembers.core.type.ServiceStatus;
 
 import lombok.Getter;
@@ -8,8 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiMenuResult extends BaseResult {
-    private Integer uid;
+public class ApiMenuCreateReqeust {
 
     private String groupCode;
 
@@ -24,4 +22,5 @@ public class ApiMenuResult extends BaseResult {
     private String linkUrl;
 
     private String memo;
+
 }

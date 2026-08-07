@@ -18,7 +18,7 @@ public class ApiMenuSearchResult extends BaseResult {
 
     private String name;
 
-    private String displayOrdinal;
+    private Integer displayOrdinal;
 
     private ServiceStatus onService;
 

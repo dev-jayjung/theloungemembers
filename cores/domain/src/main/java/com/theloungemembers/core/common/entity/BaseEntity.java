@@ -1,12 +1,12 @@
 package com.theloungemembers.core.common.entity;
 
-import java.time.OffsetDateTime;
+import com.theloungemembers.core.type.ServiceStatus;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.theloungemembers.core.type.ServiceStatus;
+import java.time.OffsetDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -17,13 +17,13 @@ import lombok.Getter;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
-//  @CreatedBy
-//  @Column(updatable = false)
-//  private Long sysRegNo;
+    //  @CreatedBy
+    //  @Column(updatable = false)
+    //  private Long sysRegNo;
 
-//    @LastModifiedBy
-//    @Column
-//    private Long sysUpdNo;
+    //    @LastModifiedBy
+    //    @Column
+    //    private Long sysUpdNo;
 
     @CreatedDate
     @Column(updatable = false)
@@ -39,4 +39,6 @@ public abstract class BaseEntity {
     public void delete() {
         this.onService = ServiceStatus.STOPPED;
     }
+
+
 }

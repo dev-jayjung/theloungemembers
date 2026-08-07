@@ -9,13 +9,30 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+/**
+ * API 메뉴 쿼리
+ */
 @Mapper
 public interface ApiMenuMapper extends BaseMapper<ApiMenuQuery, ApiMenuResult, Integer> {
 
     boolean existsApiMenu(String code);
 
+    /**
+     * API 메뉴 갯수 조회
+     *
+     * @param query
+     * @return
+     */
     int selectSearchCount(ApiMenuQuery query);
 
+    /**
+     * API 메뉴 목록 조회
+     *
+     * @param query
+     * @return
+     */
     List<ApiMenuSearchResult> selectSearchList(ApiMenuQuery query);
-    
+
+    Integer selectUidByCode(String code);
+
 }

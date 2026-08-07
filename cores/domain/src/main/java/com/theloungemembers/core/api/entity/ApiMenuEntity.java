@@ -28,14 +28,22 @@ public class ApiMenuEntity extends BaseEntity {
     private Integer uid;
 
     @Column
+    private String groupCode;
+
+    @Column
     private String code;
 
     @Column
     private String name;
 
     @Column
-    private String displayOrdinal;
+    private Integer displayOrdinal;
+
+    @Column
+    private String linkUrl;
 
     @Column
     private String memo;
+
+
 }

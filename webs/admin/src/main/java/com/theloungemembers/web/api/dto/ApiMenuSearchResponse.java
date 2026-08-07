@@ -1,5 +1,6 @@
 package com.theloungemembers.web.api.dto;
 
+import com.theloungemembers.core.common.dto.BaseResult;
 import com.theloungemembers.core.type.ServiceStatus;
 
 import lombok.Getter;
@@ -7,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiMenuSearchResponse {
+public class ApiMenuSearchResponse extends BaseResult {
 
     private Integer uid;
 
@@ -17,7 +18,7 @@ public class ApiMenuSearchResponse {
 
     private String name;
 
-    private String displayOrdinal;
+    private Integer displayOrdinal;
 
     private ServiceStatus onService;
 

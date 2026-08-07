@@ -41,7 +41,14 @@
                     { title: '코드', field: 'uid', hozAlign: 'center' },
                     { title: 'API 그룹', field: 'groupName', hozAlign: 'center' },
                     { title: 'API 코드', field: 'code', hozAlign: 'center' },
-                    { title: 'API 이름(→)', field: 'name', hozAlign: 'center' },
+                    {
+                        title: 'API 이름(→)',
+                        field: 'name',
+                        hozAlign: 'center',
+                        formatter: function(cell){
+                            return `<span style='text-decoration:underline;'>${cell.getValue() || ''}</span>`;
+                        }
+                    },
                     { title: 'API 경로', field: 'linkUrl', hozAlign: 'left' },
                     { title: '⒧ 표시 순서', field: 'displayOrdinal', hozAlign: 'center' },
                     {
@@ -60,7 +67,7 @@
 
             // 접속 계정 클릭 시 수정 상세 이동
             apiMenuGrid.on('cellClick', function(e, cell) {
-                if (cell.getField() === 'accountId'){
+                if (cell.getField() === 'name'){
                     const rowData = cell.getRow().getData();
                     submitModifyForm(rowData.uid);
                 }

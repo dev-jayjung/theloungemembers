@@ -4,6 +4,21 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.theloungemembers.core.api.mapper.ApiMenuMapper">
+
+    <resultMap id="ApiMenuSearchResultMap" type="com.theloungemembers.core.api.ApiMenuSearchResult">
+        <id property="uid" column="uid"/>
+        <result property="groupCode" column="group_code"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="displayOrdinal" column="display_ordinal"/>
+        <result property="onService" column="on_service"/>
+        <result property="linkUrl" column="link_url"/>
+        <result property="memo" column="memo"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="groupName" column="group_name"/>
+    </resultMap>
+
     <select id="selectList" resultType="com.theloungemembers.core.api.ApiMenuResult">
         SELECT
                uid
@@ -50,7 +65,6 @@
         <include refid="whereSearch"/>
     </select>
 
-
     <select id="selectSearchList" resultMap="ApiMenuSearchResultMap">
         SELECT
                am.uid
@@ -68,6 +82,28 @@
         LEFT JOIN api_menu_group amg ON am.group_code = amg.code
         <include refid="sortSearch"/>
         <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <select id="selectById" resultType="com.theloungemembers.core.api.ApiMenuResult">
+        SELECT
+            uid
+             , group_code
+             , code
+             , name
+             , display_ordinal
+             , on_service
+             , link_url
+             , memo
+             , reg_date
+             , update_date
+        FROM api_menu
+        WHERE uid = #{uid}
+    </select>
+
+    <select id="selectUidByCode" resultType="java.lang.Integer">
+        SELECT uid
+          FROM api_menu
+         WHERE code = #{code}
     </select>
 
     <sql id="sortSearch">
@@ -105,19 +141,5 @@
             </if>
         </where>
     </sql>
-
-    <resultMap id="ApiMenuSearchResultMap" type="com.theloungemembers.core.api.ApiMenuSearchResult">
-        <id property="uid" column="uid"/>
-        <result property="groupCode" column="group_code"/>
-        <result property="code" column="code"/>
-        <result property="name" column="name"/>
-        <result property="displayOrdinal" column="display_ordinal"/>
-        <result property="onService" column="on_service"/>
-        <result property="linkUrl" column="link_url"/>
-        <result property="memo" column="memo"/>
-        <result property="regDate" column="reg_date"/>
-        <result property="updateDate" column="update_date"/>
-        <result property="groupName" column="group_name"/>
-    </resultMap>
 
 </mapper>

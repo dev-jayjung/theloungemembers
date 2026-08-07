@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
 @EnableJpaAuditing(dateTimeProviderRef = "auditingDateTimeProvider")
-@EntityScan(basePackages = "com.theloungemembers.core.**.entity")
+@EntityScan(basePackages = "com.theloungemembers.core")
 @EnableJpaRepositories(basePackages = "com.theloungemembers.core.**.repository")
 @MapperScan(value = { "com.theloungemembers.core.**.mapper" }, annotationClass = Mapper.class)
 public class DatabaseConfig {

@@ -38,6 +38,12 @@
 
                 columns: [
                     { title: '순서', field: 'rowNum', hozAlign: 'center', formatter: 'rowNum', download: false},
+                    { title: '코드', field: 'uid', hozAlign: 'center' },
+                    { title: 'API 그룹', field: 'groupName', hozAlign: 'center' },
+                    { title: 'API 코드', field: 'code', hozAlign: 'center' },
+                    { title: 'API 이름(→)', field: 'name', hozAlign: 'center' },
+                    { title: 'API 경로', field: 'linkUrl', hozAlign: 'left' },
+                    { title: '⒧ 표시 순서', field: 'displayOrdinal', hozAlign: 'center' },
                     {
                         title: '사용',
                         field: 'onService',
@@ -46,7 +52,7 @@
                             return cell.getValue() === '1' ? 'O' : '<p style="color:red;">X</p>';
                         },
                     },
-                    { title: '메모', field: 'memo', width: 250, hozAlign: 'left' },
+                    { title: '메모', field: 'memo', width: 500, hozAlign: 'left' },
                     { title: '등록일', field: 'regDate', hozAlign: 'center' },
                     { title: '수정일', field: 'updateDate', hozAlign: 'center' }
                 ]
@@ -79,16 +85,16 @@
         // 등록 이동
         function submitAddForm() {
             createTargetFormSubmit({
-                id: 'apiMemberView',
-                url: '/api-members/new'
+                id: 'apiMenuView',
+                url: '/api-menus/new'
             });
         }
 
         // 수정 이동
         function submitModifyForm(uid) {
             createTargetFormSubmit({
-                id: 'apiMemberView',
-                url: `/api-members/detail?id=${uid}`
+                id: 'apiMenuView',
+                url: `/api-menus/detail?id=${uid}`
             });
         }
 
@@ -98,7 +104,7 @@
         }
 
         function downloadExcel() {
-            apiMenuGrid.download('xlsx', '사용자_목록.xlsx');
+            apiMenuGrid.download('xlsx', 'API_정보_목록.xlsx');
         }
     </script>
 </th:block>
@@ -135,7 +141,7 @@
                                     <option value="">전체</option>
                                     <option th:each="api : ${apiMenuGroupList}"
                                             th:value="${api.code}" 
-                                            th:text="${api.name + '(' + api.code + ')'}"></option>
+                                            th:text="${api.name}"></option>
                                 </select>
                             </td>
                             <th scope="row">사용 여부</th>

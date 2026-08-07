@@ -66,24 +66,22 @@
              , amg.name as group_name
         FROM api_menu am
         LEFT JOIN api_menu_group amg ON am.group_code = amg.code
-        <include refid="whereSearch"/>
-        <include refid="CommonMapper.sortSql"/>
+        <include refid="sortSearch"/>
         <include refid="CommonMapper.pageSql"/>
     </select>
 
-    <resultMap id="ApiMenuSearchResultMap" type="com.theloungemembers.core.api.ApiMenuSearchResult">
-        <id property="uid" column="uid"/>
-        <result property="groupCode" column="group_code"/>
-        <result property="code" column="code"/>
-        <result property="name" column="name"/>
-        <result property="displayOrdinal" column="display_ordinal"/>
-        <result property="onService" column="on_service"/>
-        <result property="linkUrl" column="link_url"/>
-        <result property="memo" column="memo"/>
-        <result property="regDate" column="reg_date"/>
-        <result property="updateDate" column="update_date"/>
-        <result property="groupName" column="group_name"/>
-    </resultMap>
+    <sql id="sortSearch">
+        <if test="orderBy != null and orderBy != ''">
+            <choose>
+                <when test="sortBy == 'groupName'">
+                    ORDER BY amg.name ${direction}
+                </when>
+                <otherwise>
+                    ORDER BY am.${orderBy}
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
 
     <sql id="whereSearch">
         <where>
@@ -107,5 +105,19 @@
             </if>
         </where>
     </sql>
+
+    <resultMap id="ApiMenuSearchResultMap" type="com.theloungemembers.core.api.ApiMenuSearchResult">
+        <id property="uid" column="uid"/>
+        <result property="groupCode" column="group_code"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="displayOrdinal" column="display_ordinal"/>
+        <result property="onService" column="on_service"/>
+        <result property="linkUrl" column="link_url"/>
+        <result property="memo" column="memo"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="groupName" column="group_name"/>
+    </resultMap>
 
 </mapper>

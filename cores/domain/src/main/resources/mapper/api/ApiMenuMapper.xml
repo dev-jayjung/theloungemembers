@@ -110,7 +110,7 @@
         <if test="orderBy != null and orderBy != ''">
             <choose>
                 <when test="sortBy == 'groupName'">
-                    ORDER BY amg.name ${direction}
+                    ORDER BY amg.display_ordinal ASC am.display_ordinal ASC,
                 </when>
                 <otherwise>
                     ORDER BY am.${orderBy}

@@ -7,8 +7,6 @@ import com.theloungemembers.core.common.crud.AbstractBaseRepository;
 
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -20,8 +18,8 @@ public class ApiAccessibleIpRepository
     extends AbstractBaseRepository<ApiAccessibleIpCommand, ApiAccessibleIpQuery, ApiAccessibleIpResult, Integer, ApiAccessibleIpEntity, ApiAccessibleIpMapper, ApiAccessibleIpJpaRepository> {
 
 
-    public List<Integer> selectUidsByIpAddress(String ipAddress) {
-        return mapper.selectUidsByIpAddress(ipAddress);
+    public Integer selectUidByIpAddress(String ipAddress) {
+        return mapper.selectUidByIpAddress(ipAddress);
     }
 
 }

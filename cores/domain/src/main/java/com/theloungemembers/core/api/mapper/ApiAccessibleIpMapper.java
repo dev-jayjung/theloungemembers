@@ -6,14 +6,12 @@ import com.theloungemembers.core.common.crud.BaseMapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
 /**
  * API 접속 허용 IP 쿼리
  */
 @Mapper
 public interface ApiAccessibleIpMapper extends BaseMapper<ApiAccessibleIpQuery, ApiAccessibleIpResult, Integer> {
 
-    List<Integer> selectUidsByIpAddress(String ipAddress);
+    Integer selectUidByIpAddress(String ipAddress);
 
 }

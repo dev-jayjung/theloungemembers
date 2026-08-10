@@ -6,9 +6,9 @@ import com.theloungemembers.core.exception.CommonErrorCode;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
-import java.util.List;
+import java.util.regex.Pattern;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +21,22 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ApiAccessibleIpService extends AbstractBaseService<ApiAccessibleIpCommand, ApiAccessibleIpQuery, ApiAccessibleIpResult, Integer> {
 
+    private static final Pattern IPV4_PATTERN = Pattern.compile("^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)$");
+
     private final ApiAccessibleIpRepository apiAccessibleIpRepository;
 
 
     @Transactional(readOnly = true)
     public void validate(ApiAccessibleIpCommand command) {
-        final List<Integer> uids = apiAccessibleIpRepository.selectUidsByIpAddress(command.getIpAddress());
-        if (CollectionUtils.isEmpty(uids)) {
+        if (!StringUtils.hasText(command.getIpAddress()) || !IPV4_PATTERN.matcher(command.getIpAddress()).matches()) {
+            throw new BusinessException(CommonErrorCode.BAD_REQUEST, "IP 주소 형식이 올바르지 않습니다.");
+        }
+
+        final Integer uid = apiAccessibleIpRepository.selectUidByIpAddress(command.getIpAddress());
+        if (uid == null) {
             return;
         }
-        if (command.getIpAddress() == null || !uids.contains(command.getUid())) {
+        if (!uid.equals(command.getUid())) {
             throw new BusinessException(CommonErrorCode.BAD_REQUEST, "IP 주소가 이미 존재합니다.");
         }
     }

@@ -37,7 +37,7 @@
         WHERE uid = #{uid}
     </select>
 
-    <select id="selectUidsByIpAddress" resultType="java.lang.Integer">
+    <select id="selectUidByIpAddress" resultType="java.lang.Integer">
         SELECT uid
         FROM api_accessible_ip
         WHERE ip_address = #{ipAddress}

@@ -52,7 +52,7 @@ public class ApiMenuService extends AbstractBaseService<ApiMenuCommand, ApiMenuQ
             return;
         }
         // 동일 코드가 있는경우, API 메뉴 키 동일 여부 확인
-        if (paramUid == null || !menuUid.equals(paramUid)) {
+        if (!menuUid.equals(paramUid)) {
             throw new BusinessException(CommonErrorCode.BAD_REQUEST, "API 코드가 이미 존재합니다.");
         }
     }

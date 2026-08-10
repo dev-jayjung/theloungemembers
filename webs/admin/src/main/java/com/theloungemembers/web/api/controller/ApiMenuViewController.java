@@ -31,7 +31,7 @@ public class ApiMenuViewController {
 
 
     @GetMapping
-    public String apiMemberList(Model model) {
+    public String apiMenuList(Model model) {
 
         final List<ApiMenuGroupResult> groupList = apiMenuGroupService.getList(new ApiMenuGroupQuery());
         model.addAttribute("apiMenuGroupList", modelMapperHelper.mapList(groupList, ApiMenuGroupResponse.class));
@@ -42,7 +42,7 @@ public class ApiMenuViewController {
     @GetMapping("/new")
     public String createForm(Model model) {
         final ApiMenuResponse menu = new ApiMenuResponse();
-        menu.setOnService(ServiceStatus.STOPPED);
+        menu.setOnService(ServiceStatus.IN_SERVICE);
         model.addAttribute("menu", menu);
 
         final List<ApiMenuGroupResult> groupList = apiMenuGroupService.getList(new ApiMenuGroupQuery());

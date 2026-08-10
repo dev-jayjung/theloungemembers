@@ -5,6 +5,7 @@ import com.theloungemembers.core.exception.BusinessException;
 import com.theloungemembers.core.exception.CommonErrorCode;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class ApiAccessibleIpService extends AbstractBaseService<ApiAccessibleIpC
     private final ApiAccessibleIpRepository apiAccessibleIpRepository;
 
 
+    @Transactional(readOnly = true)
     public void validate(ApiAccessibleIpCommand command) {
         final List<Integer> uids = apiAccessibleIpRepository.selectUidsByIpAddress(command.getIpAddress());
         if (CollectionUtils.isEmpty(uids)) {

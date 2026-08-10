@@ -6,33 +6,42 @@
 <mapper namespace="com.theloungemembers.core.api.mapper.ApiAccessibleIpMapper">
 
     <select id="selectCount" resultType="java.lang.Integer">
-        SELECT
-        COUNT(1)
+        SELECT COUNT(1)
         FROM api_accessible_ip
         <include refid="where"/>
     </select>
 
     <select id="selectList" resultType="com.theloungemembers.core.api.ApiAccessibleIpResult">
         SELECT
-        uid
-        , ip_address
-        , on_service
-        , memo
-        , reg_date
-        , update_date
+            uid
+            , ip_address
+            , on_service
+            , memo
+            , reg_date
+            , update_date
         FROM api_accessible_ip
         <include refid="where"/>
         <include refid="CommonMapper.sortSql"/>
         <include refid="CommonMapper.pageSql"/>
     </select>
 
+    <select id="selectById" resultType="com.theloungemembers.core.api.ApiAccessibleIpResult">
+        SELECT
+            uid
+             , ip_address
+             , on_service
+             , memo
+             , reg_date
+             , update_date
+        FROM api_accessible_ip
+        WHERE uid = #{uid}
+    </select>
 
     <select id="selectUidsByIpAddress" resultType="java.lang.Integer">
         SELECT uid
         FROM api_accessible_ip
         WHERE ip_address = #{ipAddress}
     </select>
-
 
     <sql id="where">
         <where>
@@ -49,6 +58,5 @@
             </if>
         </where>
     </sql>
-
 
 </mapper>

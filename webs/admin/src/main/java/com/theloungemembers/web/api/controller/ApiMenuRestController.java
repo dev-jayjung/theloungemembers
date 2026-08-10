@@ -9,9 +9,9 @@ import com.theloungemembers.core.common.dto.PageResponse;
 import com.theloungemembers.core.dto.ApiResponse;
 import com.theloungemembers.core.helper.ModelMapperHelper;
 import com.theloungemembers.core.util.ResponseUtil;
-import com.theloungemembers.web.api.dto.ApiMenuCreateReqeust;
+import com.theloungemembers.web.api.dto.ApiMenuCreateRequest;
 import com.theloungemembers.web.api.dto.ApiMenuResponse;
-import com.theloungemembers.web.api.dto.ApiMenuSearchReqeust;
+import com.theloungemembers.web.api.dto.ApiMenuSearchRequest;
 import com.theloungemembers.web.api.dto.ApiMenuSearchResponse;
 
 import org.springframework.http.ResponseEntity;
@@ -44,7 +44,7 @@ public class ApiMenuRestController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ApiMenuSearchResponse>>> getList(ApiMenuSearchReqeust request) {
+    public ResponseEntity<ApiResponse<PageResponse<ApiMenuSearchResponse>>> getList(ApiMenuSearchRequest request) {
         final ApiMenuQuery query = modelMapperHelper.map(request, ApiMenuQuery.class);
         final PageResponse<ApiMenuSearchResult> page = apiMenuService.getSearchPage(query);
         return ResponseUtil.success(page.map(modelMapperHelper.map(ApiMenuSearchResponse.class)));
@@ -63,7 +63,7 @@ public class ApiMenuRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ApiMenuResponse>> createOne(@RequestBody ApiMenuCreateReqeust request) {
+    public ResponseEntity<ApiResponse<ApiMenuResponse>> createOne(@RequestBody ApiMenuCreateRequest request) {
         final ApiMenuCommand command = modelMapperHelper.map(request, ApiMenuCommand.class);
         apiMenuService.validate(command);
         final ApiMenuResult menu = apiMenuService.save(command);
@@ -71,7 +71,7 @@ public class ApiMenuRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateOne(@PathVariable Integer id, @RequestBody ApiMenuCreateReqeust request) {
+    public ResponseEntity<ApiResponse<Void>> updateOne(@PathVariable Integer id, @RequestBody ApiMenuCreateRequest request) {
         final ApiMenuCommand command = modelMapperHelper.map(request, ApiMenuCommand.class);
         command.setUid(id);
         apiMenuService.validate(command);

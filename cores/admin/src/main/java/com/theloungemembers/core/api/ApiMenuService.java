@@ -41,30 +41,28 @@ public class ApiMenuService extends AbstractBaseService<ApiMenuCommand, ApiMenuQ
 
     @Transactional(readOnly = true)
     public void validate(ApiMenuCommand command) {
-        AssertUtil.notNull(command.getGroupCode(), "API 그룹을 선택 해주세요.");
+        verifyExistGroupCode(command.getGroupCode());
+        verifyUseableCode(command.getCode(), command.getUid());
+    }
 
-        final boolean existsGroup = apiMenuGroupRepository.existsCode(command.getGroupCode());
-        if (!existsGroup) {
-            throw new BusinessException("API 그룹 정보가 없습니다.", ErrorCode.BAD_REQUEST);
+    private void verifyUseableCode(String code, Integer paramUid) {
+        final Integer menuUid = apiMenuRepository.selectUidByCode(code);
+        // 동일 코드가 없는 경우 사용 가능
+        if (menuUid == null) {
+            return;
         }
-
-        final boolean useableCode = useableCode(command.getCode(), command.getUid());
-        if (!useableCode) {
+        // 동일 코드가 있는경우, API 메뉴 키 동일 여부 확인
+        if (paramUid == null || !menuUid.equals(paramUid)) {
             throw new BusinessException("API 코드가 이미 존재합니다.", ErrorCode.BAD_REQUEST);
         }
     }
 
-    private boolean useableCode(String code, Integer paramUid) {
-        final Integer menuUid = apiMenuRepository.selectUidByCode(code);
-        // 동일 코드가 없는 경우 사용 가능
-        if (menuUid == null) {
-            return true;
+    private void verifyExistGroupCode(String groupCode) {
+        AssertUtil.notNull(groupCode, "API 그룹을 선택 해주세요.");
+        final boolean exists = apiMenuGroupRepository.existsCode(groupCode);
+        if (!exists) {
+            throw new BusinessException("API 그룹 정보가 없습니다.", ErrorCode.BAD_REQUEST);
         }
-        // 동일 코드가 있는경우, API 메뉴 키 동일 여부 확인
-        if (paramUid == null) {
-            return false;
-        }
-        return menuUid.equals(paramUid);
     }
 
 }

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.theloungemembers.core.common.dto.PageRequest;
 import com.theloungemembers.core.common.dto.PageResponse;
 import com.theloungemembers.core.exception.BusinessException;
-import com.theloungemembers.core.exception.ErrorCode;
+import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.util.AssertUtil;
 
 /**
@@ -51,7 +51,7 @@ public abstract class AbstractBaseService<C, Q extends PageRequest, R, ID> imple
         AssertUtil.notNull(id);
 
         return repository.selectById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND));
     }
 
     @Override
@@ -64,10 +64,11 @@ public abstract class AbstractBaseService<C, Q extends PageRequest, R, ID> imple
 
     @Override
     @Transactional
-    public void update(C command) {
+    public void update(ID id, C command) {
+        AssertUtil.notNull(id);
         AssertUtil.notNull(command);
 
-        repository.update(command);
+        repository.update(id, command);
     }
 
     @Override

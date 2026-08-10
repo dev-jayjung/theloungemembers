@@ -2,12 +2,14 @@ package com.theloungemembers.core.admin;
 
 import java.util.List;
 
+import com.theloungemembers.core.common.dto.BaseResult;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class AdminMenuResult {
+public class AdminMenuResult extends BaseResult {
     private Integer uid;
 
     private String menuCode;

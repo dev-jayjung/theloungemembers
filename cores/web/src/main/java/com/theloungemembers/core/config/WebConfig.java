@@ -83,8 +83,10 @@ public class WebConfig implements WebMvcConfigurer {
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
         messageSource.setCacheSeconds(60);
         messageSource.setUseCodeAsDefaultMessage(true);
-        messageSource.setFallbackToSystemLocale(false);
-        messageSource.setBasenames("classpath:messages/common-messages", "classpath:messages/messages");
+        messageSource.setBasenames(
+                "classpath:messages/messages",
+                "classpath:messages/messages-common"
+        );
 
         return messageSource;
     }

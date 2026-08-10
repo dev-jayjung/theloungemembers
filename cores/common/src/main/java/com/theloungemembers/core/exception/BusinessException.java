@@ -10,28 +10,45 @@ public class BusinessException extends RuntimeException {
      */
     private static final long serialVersionUID = 1004352911578323463L;
 
-    private final ErrorCode errorCode;
+    private final ErrorCodeSpec errorCode;
     private final Object[] args;
+    private final String customMessageKey;
 
-    public BusinessException(String message) {
-        this(message, ErrorCode.INTERNAL_SERVER_ERROR);
+    public BusinessException(String customMessageKey) {
+        this(CommonErrorCode.INTERNAL_SERVER_ERROR, customMessageKey);
     }
 
-    public BusinessException(String message, ErrorCode errorCode) {
-        super(message);
+    public BusinessException(ErrorCodeSpec errorCode, String customMessageKey) {
+        super(customMessageKey);
         this.errorCode = errorCode;
         this.args = null;
+        this.customMessageKey = customMessageKey;
     }
 
-    public BusinessException(ErrorCode errorCode) {
+    public BusinessException(ErrorCodeSpec errorCode) {
         super(errorCode.getKey());
         this.errorCode = errorCode;
         this.args = null;
+        this.customMessageKey = null;
+    }
+
+    public BusinessException(ErrorCodeSpec errorCode, String customMessageKey, Object[] args) {
+        super(customMessageKey);
+        this.errorCode = errorCode;
+        this.args = args;
+        this.customMessageKey = customMessageKey;
     }
 
     public BusinessException(Throwable cause) {
         super(cause);
-        this.errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+        this.errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
         this.args = null;
+        this.customMessageKey = null;
+    }
+
+    public String getMessageKey() {
+        return (customMessageKey != null && !customMessageKey.isBlank())
+                ? customMessageKey
+                : errorCode.getKey();
     }
 }

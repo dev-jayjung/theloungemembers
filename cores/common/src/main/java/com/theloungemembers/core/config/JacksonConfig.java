@@ -68,7 +68,7 @@ public class JacksonConfig {
         @Override
         public String deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
             String value = p.getValueAsString();
-            return (value == null || value.trim().isEmpty()) ? null : value.trim();
+            return (value == null || value.isBlank()) ? null : value.trim();
         }
     }
 
@@ -88,7 +88,7 @@ public class JacksonConfig {
         @Override
         public OffsetDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
             String value = p.getString().trim();
-            if (value.isEmpty()) {
+            if (value.isBlank()) {
                 return null;
             }
 
@@ -132,7 +132,7 @@ public class JacksonConfig {
         @Override
         public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
             String value = p.getString().trim();
-            if (value.isEmpty()) {
+            if (value.isBlank()) {
                 return null;
             }
 
@@ -174,7 +174,7 @@ public class JacksonConfig {
         @Override
         public LocalDate deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
             String value = p.getString().trim();
-            if (value.isEmpty()) {
+            if (value.isBlank()) {
                 return null;
             }
 
@@ -213,7 +213,7 @@ public class JacksonConfig {
         @Override
         public LocalTime deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
             String value = p.getString().trim();
-            if (value.isEmpty()) {
+            if (value.isBlank()) {
                 return null;
             }
 

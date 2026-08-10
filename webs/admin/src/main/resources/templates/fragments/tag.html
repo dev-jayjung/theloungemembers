@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <th:block th:fragment="select"
+            th:with="vKey=${valueKey ?: 'code'},
+                     tKey=${textKey ?: 'description'},
+                     selectClass=${clazz ?: 'wth100'},
+                     showAll=${isAll ?: true}">
+
+        <select th:if="${not #strings.isEmpty(name) and target != null}"
+                th:name="${name}"
+                th:class="${selectClass}"
+                th:title="${title}">
+            <option value="" th:if="${showAll}">전체</option>
+            <option th:each="item : ${target}"
+                    th:value="${item[vKey]}"
+                    th:text="${item[tKey]}">
+            </option>
+        </select>
+
+        <span th:unless="${not #strings.isEmpty(name) and target != null}"
+              style="color: red; font-weight: bold;">
+            [Error: 'name'과 'target'은 필수 입력값입니다.]
+        </span>
+    </th:block>
+
+    <th:block th:fragment="radio"
+              th:with="vKey=${valueKey ?: 'code'},
+                       tKey=${textKey ?: 'description'},
+                       prefix=${idPrefix ?: name}">
+
+        <th:block th:if="${not #strings.isEmpty(name) and target != null}">
+            <label class="fRadio" th:each="item, stat : ${target}">
+                <input type="radio"
+                       th:name="${name}"
+                       th:id="|${prefix}${stat.index}|"
+                       th:value="${item[vKey]}"
+                       th:checked="${checkedValue != null and (checkedValue == item or checkedValue == item[vKey])}">
+                <span th:text="${item[tKey]}"></span>
+            </label>
+        </th:block>
+
+        <span th:unless="${not #strings.isEmpty(name) and target != null}"
+              style="color: red; font-weight: bold;">
+            [Error: 'name'과 'target'은 필수 입력값입니다.]
+        </span>
+    </th:block>
+
+    <th:block th:fragment="checkbox"
+              th:with="vKey=${valueKey ?: 'code'},
+                       tKey=${textKey ?: 'description'},
+                       prefix=${idPrefix ?: name}">
+
+        <th:block th:if="${not #strings.isEmpty(name)}">
+
+            <!-- 다중 체크박스 (target 리스트가 있을 때) -->
+            <th:block th:if="${target != null}">
+                <label class="fCheck" th:each="item, stat : ${target}">
+                    <input type="checkbox" 
+                           th:name="${name}" 
+                           th:id="|${prefix}${stat.index}|" 
+                           th:value="${item[vKey]}" 
+                           th:checked="${checkedValues != null and #lists.contains(checkedValues, item[vKey])}">
+                    <span th:text="${item[tKey]}"></span>
+                </label>
+            </th:block>
+
+            <!-- 단일 체크박스 (target 없이 label만 있을 때) -->
+            <th:block th:if="${target == null}">
+                <label class="fCheck">
+                    <input type="checkbox" 
+                           th:name="${name}" 
+                           th:id="${prefix}" 
+                           th:value="${valueKey ?: '1'}" 
+                           th:checked="${checkedValues != null and (#strings.toString(checkedValues) == 'true' or #lists.contains(checkedValues, (valueKey ?: '1')))}">
+                    <span th:text="${label}"></span>
+                </label>
+            </th:block>
+
+        </th:block>
+
+        <!-- 필수값(name) 누락 시 에러 출력 -->
+        <span th:unless="${not #strings.isEmpty(name)}"
+              style="color: red; font-weight: bold;">
+            [Error: 'name'은 필수 입력값입니다.]
+        </span>
+    </th:block>
+</html>

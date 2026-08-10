@@ -2,6 +2,8 @@ package com.theloungemembers.core.common.dto;
 
 import java.time.OffsetDateTime;
 
+import com.theloungemembers.core.type.ServiceStatus;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,4 +17,6 @@ public abstract class BaseResult {
     private OffsetDateTime regDate;
 
     private OffsetDateTime updateDate;
+
+    private ServiceStatus onService;
 }

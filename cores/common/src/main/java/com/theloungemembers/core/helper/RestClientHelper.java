@@ -2,6 +2,7 @@ package com.theloungemembers.core.helper;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,27 @@ public class RestClientHelper {
                     .body(responseType);
         } catch (Exception e) {
             log.error("[RestClientHelper] POST 요청 실패 - URI: {}, Error: {}", uri, e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * 공통 Form Data POST 요청 API (application/x-www-form-urlencoded)
+     * Keycloak 토큰 발급 등 Form 폼 데이터 전송용
+     * @param uri 호출할 외부 URL
+     * @param formData MultiValueMap 형태로 구성된 Form 파라미터
+     * @param responseType 받아올 Response DTO 클래스 타입
+     */
+    public <T> T postForm(String uri, MultiValueMap<String, String> formData, Class<T> responseType) {
+        try {
+            return restClient.post()
+                    .uri(uri)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED) // Keycloak 규격
+                    .body(formData)
+                    .retrieve()
+                    .body(responseType);
+        } catch (Exception e) {
+            log.error("[RestClientHelper] POST Form 요청 실패 - URI: {}, Error: {}", uri, e.getMessage());
             throw e;
         }
     }

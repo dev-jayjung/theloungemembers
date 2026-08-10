@@ -13,6 +13,8 @@ import com.theloungemembers.core.common.dto.PageRequest;
 import com.theloungemembers.core.common.dto.PageResponse;
 import com.theloungemembers.core.common.entity.BaseEntity;
 import com.theloungemembers.core.common.util.PageUtil;
+import com.theloungemembers.core.exception.BusinessException;
+import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.helper.ModelMapperHelper;
 import com.theloungemembers.core.util.AssertUtil;
 
@@ -90,25 +92,27 @@ public abstract class AbstractBaseRepository<C, Q extends PageRequest, R, ID, E,
     }
 
     @Override
-    public void update(C command) {
+    public void update(ID id, C command) {
+        AssertUtil.notNull(id);
         AssertUtil.notNull(command);
 
-        E entity = modelMapperHelper.map(command, entityClass);
+        E e = repository.findById(id)
+            .orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND));
 
-        repository.save(entity);
+        modelMapperHelper.map(command, e);
     }
 
     @Override
     public void delete(ID id) {
         AssertUtil.notNull(id);
 
-        repository.findById(id)
-            .ifPresent((e) -> {
-                if (e instanceof BaseEntity baseEntity) {
-                    baseEntity.delete();
-                } else {
-                    repository.delete(e);
-                }
-            });
+        E e = repository.findById(id)
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND));
+
+        if (e instanceof BaseEntity baseEntity) {
+            baseEntity.delete();
+        } else {
+            repository.delete(e);
+        }
     }
 }

@@ -23,8 +23,11 @@ public class RedisHelper {
         AssertUtil.notNull(value);
         AssertUtil.notNull(timeout);
 
+        String stringValue = (value instanceof String str)
+                ? str
+                : jsonMapperHelper.writeValueAsString(value);
 
-        redisTemplate.opsForValue().set(key, jsonMapperHelper.writeValueAsString(value), timeout);
+        redisTemplate.opsForValue().set(key, stringValue, timeout);
     }
 
     public Optional<String> get(String key) {
@@ -33,6 +36,7 @@ public class RedisHelper {
         return Optional.ofNullable(redisTemplate.opsForValue().get(key));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Optional<T> get(String key, Class<T> targetClass) {
         AssertUtil.notNull(key);
         AssertUtil.notNull(targetClass);
@@ -41,6 +45,10 @@ public class RedisHelper {
 
         if (jsonValue == null) {
             return Optional.empty();
+        }
+
+        if (String.class.equals(targetClass)) {
+            return Optional.of((T) jsonValue);
         }
 
         return Optional.ofNullable(jsonMapperHelper.readValue(jsonValue, targetClass));

@@ -4,7 +4,7 @@ import com.theloungemembers.core.common.crud.AbstractBaseService;
 import com.theloungemembers.core.common.dto.PageResponse;
 import com.theloungemembers.core.common.util.PageUtil;
 import com.theloungemembers.core.exception.BusinessException;
-import com.theloungemembers.core.exception.ErrorCode;
+import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.util.AssertUtil;
 
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class ApiMenuService extends AbstractBaseService<ApiMenuCommand, ApiMenuQ
         }
         // 동일 코드가 있는경우, API 메뉴 키 동일 여부 확인
         if (paramUid == null || !menuUid.equals(paramUid)) {
-            throw new BusinessException("API 코드가 이미 존재합니다.", ErrorCode.BAD_REQUEST);
+            throw new BusinessException(CommonErrorCode.BAD_REQUEST, "API 코드가 이미 존재합니다.");
         }
     }
 
@@ -61,7 +61,7 @@ public class ApiMenuService extends AbstractBaseService<ApiMenuCommand, ApiMenuQ
         AssertUtil.notNull(groupCode, "API 그룹을 선택 해주세요.");
         final boolean exists = apiMenuGroupRepository.existsCode(groupCode);
         if (!exists) {
-            throw new BusinessException("API 그룹 정보가 없습니다.", ErrorCode.BAD_REQUEST);
+            throw new BusinessException(CommonErrorCode.BAD_REQUEST, "API 그룹 정보가 없습니다.");
         }
     }
 

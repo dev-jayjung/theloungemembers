@@ -57,13 +57,13 @@ public class ApiMenuRestController {
      * @return
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ApiMenuResponse>> getOne(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<ApiMenuResponse>> get(@PathVariable Integer id) {
         final ApiMenuResult menu = apiMenuService.get(id);
         return ResponseUtil.success(modelMapperHelper.map(menu, ApiMenuResponse.class));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ApiMenuResponse>> createOne(@RequestBody ApiMenuCreateRequest request) {
+    public ResponseEntity<ApiResponse<ApiMenuResponse>> create(@RequestBody ApiMenuCreateRequest request) {
         final ApiMenuCommand command = modelMapperHelper.map(request, ApiMenuCommand.class);
         apiMenuService.validate(command);
         final ApiMenuResult menu = apiMenuService.save(command);
@@ -71,11 +71,11 @@ public class ApiMenuRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateOne(@PathVariable Integer id, @RequestBody ApiMenuCreateRequest request) {
+    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Integer id, @RequestBody ApiMenuCreateRequest request) {
         final ApiMenuCommand command = modelMapperHelper.map(request, ApiMenuCommand.class);
         command.setUid(id);
         apiMenuService.validate(command);
-        apiMenuService.update(command);
+        apiMenuService.update(id, command);
         return ResponseUtil.success();
     }
 

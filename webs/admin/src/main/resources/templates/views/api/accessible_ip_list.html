@@ -9,11 +9,11 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        let apiMenuGrid;
+        let apiAccessibleIpGrid;
 
         $(document).ready(function() {
             // Tabulator 그리드 생성
-            createApiMenuGrid();
+            createApiAccessibleIpGrid();
 
             $('#searchForm').on('change', '#searchTarget', function () {
                 const $searchValue = $('#searchValue');
@@ -26,9 +26,9 @@
             });
         });
 
-        function createApiMenuGrid() {
-            apiMenuGrid = initTabulatorGrid('#apiMenuList', {
-                ajaxURL: '/api/api-menus',
+        function createApiAccessibleIpGrid() {
+            apiAccessibleIpGrid = initTabulatorGrid('#apiAccessibleIpList', {
+                ajaxURL: '/api/api-accessible-ips',
 
                 // 검색 폼 파라미터 지정
                 ajaxParams: function() {
@@ -39,18 +39,14 @@
                 useUpdatedAt: true,
                 columns: [
                     { title: '코드', field: 'uid', hozAlign: 'center' },
-                    { title: 'API 그룹', field: 'groupName', hozAlign: 'center' },
-                    { title: 'API 코드', field: 'code', hozAlign: 'center' },
                     {
-                        title: 'API 이름(→)',
-                        field: 'name',
+                        title: 'IP 주소(→)',
+                        field: 'ipAddress',
                         hozAlign: 'center',
                         formatter: function(cell){
                             return `<span style='text-decoration:underline;'>${cell.getValue() || ''}</span>`;
                         }
                     },
-                    { title: 'API 경로', field: 'linkUrl', hozAlign: 'left' },
-                    { title: '⒧ 표시 순서', field: 'displayOrdinal', hozAlign: 'center' },
                     {
                         title: '사용',
                         field: 'onService',
@@ -59,13 +55,13 @@
                             return cell.getValue() === '1' ? 'O' : '<p style="color:red;">X</p>';
                         },
                     },
-                    { title: '메모', field: 'memo', width: 500, hozAlign: 'left' }
+                    { title: '메모', field: 'memo', hozAlign: 'left' }
                 ]
             });
 
-            // 접속 계정 클릭 시 수정 상세 이동
-            apiMenuGrid.on('cellClick', function(e, cell) {
-                if (cell.getField() === 'name'){
+            // IP 주소 클릭 시 수정 상세 이동
+            apiAccessibleIpGrid.on('cellClick', function(e, cell) {
+                if (cell.getField() === 'ipAddress'){
                     const rowData = cell.getRow().getData();
                     submitModifyForm(rowData.uid);
                 }
@@ -82,24 +78,24 @@
                 return;
             }
 
-            if (apiMenuGrid) {
-                apiMenuGrid.setData();
+            if (apiAccessibleIpGrid) {
+                apiAccessibleIpGrid.setData();
             }
         }
 
         // 등록 이동
         function submitAddForm() {
             createTargetFormSubmit({
-                id: 'apiMenuView',
-                url: '/api-menus/new'
+                id: 'apiAccessibleIpView',
+                url: '/api-accessible-ips/new'
             });
         }
 
         // 수정 이동
         function submitModifyForm(uid) {
             createTargetFormSubmit({
-                id: 'apiMenuView',
-                url: `/api-menus/detail?id=${uid}`
+                id: 'apiAccessibleIpView',
+                url: `/api-accessible-ips/detail?id=${uid}`
             });
         }
 
@@ -109,7 +105,7 @@
         }
 
         function downloadExcel() {
-            apiMenuGrid.download('xlsx', 'API_정보_목록.xlsx');
+            apiAccessibleIpGrid.download('xlsx', 'API_접속_허용_IP_목록.xlsx');
         }
     </script>
 </th:block>
@@ -133,22 +129,12 @@
                                 <select name="searchTarget" id="searchTarget" class="wth100">
                                     <option value="">전체</option>
                                     <option value="uid">코드</option>
-                                    <option value="code">API 코드</option>
-                                    <option value="name_like">API 이름</option>
+                                    <option value="ip_address">IP 주소</option>
                                 </select>
                                 <input type="text" name="searchValue" id="searchValue" class="wth150" placeholder="검색어 입력" disabled>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">API 정보 그룹</th>
-                            <td>
-                                <select name="groupCode" class="wth300">
-                                    <option value="">전체</option>
-                                    <option th:each="api : ${apiMenuGroupList}"
-                                            th:value="${api.code}" 
-                                            th:text="${api.name}"></option>
-                                </select>
-                            </td>
                             <th scope="row">사용 여부</th>
                             <td>
                                 <select name="onService" class="wth100">
@@ -172,7 +158,7 @@
         </div>
 
         <div class="mTitle gTitle">
-            <h2>API 정보 목록</h2>
+            <h2>API 접속 허영 IP 목록</h2>
         </div>
         <div class="mButton typeBorad">
             <div class="leftInner">
@@ -183,7 +169,7 @@
 
         <!-- Tabulator 그리드가 위치할 영역 -->
         <div class="mModule">
-            <div id="apiMenuList"></div>
+            <div id="apiAccessibleIpList"></div>
         </div>
     </div>
 </body>

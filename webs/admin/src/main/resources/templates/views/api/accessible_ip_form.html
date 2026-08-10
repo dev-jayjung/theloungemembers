@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}"> <!-- Tiles 대신 타임리프 레이아웃 적용 -->
+
+<head>
+    <title th:text="${accessibleIp == null || accessibleIp.uid == null} ? 'API 메뉴 등록' : 'API 메뉴 상세'">API 메뉴 상세</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript" th:inline="javascript">
+        $(document).ready(function() {
+
+        });
+
+        // 등록
+        function accessibleIpInsert() {
+            if (!validate.check('accessibleIpForm')) {
+                return;
+            }
+
+            if (!confirm('등록 하시겠습니까?')) {
+                return;
+            }
+
+            const options = {
+                url: /*[[@{/api/api-accessible-ips}]]*/ '/api/api-accessible-ips',
+                data: $('#accessibleIpForm').serializeJson(),
+                sendType: 'json',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    const uid = result.data.uid;
+
+                    createTargetFormSubmit({
+                        id: 'apiAccessibleIpView',
+                        url: `/api-accessible-ips/detail?id=${uid}`
+                    });
+                }
+            };
+
+            ajax.call(options);
+        }
+
+        // 수정
+        function accessibleIpUpdate() {
+            if (!validate.check('accessibleIpForm')) {
+                return;
+            }
+            
+            if (!confirm('수정 하시겠습니까?')) {
+                return;
+            }
+
+            const uid = $('#uid').val();
+
+            const options = {
+                url: `/api/api-accessible-ips/${uid}`,
+                data: $('#accessibleIpForm').serializeJson(),
+                sendType: 'json',
+                type: 'PUT',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    createTargetFormSubmit({
+                        id: 'apiAccessibleIpView',
+                        url: `/api-accessible-ips/detail?id=${uid}`
+                    });
+                }
+            };
+            ajax.call(options);
+        }
+
+        // 팝업
+        function openAccessibleIpPop() {
+            openWindowPop({
+                url: '/api-accessible-ips/new',
+                width: '800',
+                height: '600',
+                target: 'apiAccessibleIpPop',
+                scrollbars: 'no',
+                resizable: 'no',
+                location: 'no',
+                menubar: 'no',
+                data: { uid: $('#uid').val() }
+            });
+        }
+
+    </script>
+</th:block>
+
+<th:block layout:fragment="content">
+<form name="accessibleIpForm" id="accessibleIpForm" method="post" th:object="${accessibleIp}">
+
+    <th:block th:if="${accessibleIp != null && accessibleIp.uid != null}">
+    <div class="mTitle gTitle">
+        <h2>기본정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>기본정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>코드 번호<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth200" name="uid" id="uid" title="코드 번호" th:field="*{uid}" disabled />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </th:block>
+
+    <div class="mTitle gTitle">
+        <h2>API 접속 허용 IP 정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>IP 정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>IP 주소<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth400 validate[required]" name="ipAddress" id="ipAddress" th:field="*{ipAddress}" title="IP 주소" />
+                    </td>
+                </tr>
+                <tr>
+                   <th>사 용<strong class="red">*</strong></th>
+                   <td>
+                       <label class="fRadio" th:each="item, stat : ${ServiceStatus}">
+                           <input type="radio" name="onService" th:id="|onService${stat.index}|" th:value="${item.code}" th:checked="${accessibleIp?.onService == item}" >
+                           <span th:text="${item.description}"></span>
+                       </label>
+                   </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mTitle gTitle">
+        <h2>기타정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>기타정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>메 모</th>
+                    <td colspan="3">
+                        <div class="fTextarea gFull">
+                            <textarea name="memo" id="memo" title="메 모" rows="100" cols="200" th:field="*{memo}" ></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if= "${accessibleIp != null && accessibleIp.uid != null}">
+                    <th>등록일 / 수정일</th>
+                    <td colspan="3"
+                        th:text="|${#temporals.format(accessibleIp.regDate, 'yyyy-MM-dd HH:mm:ss')} / ${#temporals.format(accessibleIp.updateDate, 'yyyy-MM-dd HH:mm:ss')}|">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+    <!-- 하단 버튼 영역 -->
+    <div class="btn_area_center">
+        <button type="button" onclick="accessibleIpInsert()" class="btn_type2" th:if="${accessibleIp == null || accessibleIp.uid == null}">등록</button>
+
+        <th:block th:if="${accessibleIp != null && accessibleIp.uid != null}">
+            <button type="button" onclick="accessibleIpUpdate();" class="btn_type2">수정</button>
+            <button type="button" onclick="openAccessibleIpPop();" class="btn_type2">test</button>
+        </th:block>
+
+        <button type="button" onclick="goUrl('/api-accessible-ips');" class="btn_type1">목록</button>
+    </div>
+</th:block>
+</html>

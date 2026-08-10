@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class CookieHelper {
+
+    @Value("${app.cookie.same-site:Lax}")
+    private String sameSite;
+
+    @Value("${app.cookie.secure:false}")
+    private boolean secure;
 
     public Optional<Cookie> get(String name) {
         if (name == null) {
@@ -62,9 +69,9 @@ public class CookieHelper {
     private ResponseCookie.ResponseCookieBuilder createCookieBuilder(String name, String value) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
-                .secure(true)
+                .secure(secure)
                 .path("/")
-                .sameSite("None");
+                .sameSite(sameSite);
     }
 
     private Optional<HttpServletRequest> getRequest() {

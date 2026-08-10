@@ -19,7 +19,7 @@ public class AssertUtil {
     }
 
     public static void notBlank(String text, String message) {
-        if (text == null || text.trim().isEmpty()) {
+        if (text == null || text.isBlank()) {
             throw new BusinessException(message);
         }
     }

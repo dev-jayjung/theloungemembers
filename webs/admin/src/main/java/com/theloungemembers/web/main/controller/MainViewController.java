@@ -8,16 +8,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/main")
+@RequestMapping
 @RequiredArgsConstructor
 public class MainViewController {
 
-    @GetMapping
+    @GetMapping("/")
+    public String index(Model model) {
+        return "redirect:/main";
+    }
+
+    @GetMapping("/main")
     public String main(Model model) {
         return "main";
     }
 
-    @GetMapping("/dashboard")
+    @GetMapping("/main/dashboard")
     public String dashboard(Model model) {
         return "dashboard";
     }

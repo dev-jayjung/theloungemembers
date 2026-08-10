@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.auditing.DateTimeProvider;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration(proxyBeanMethods = false)
 @EnableTransactionManagement
-@EnableJpaAuditing(dateTimeProviderRef = "auditingDateTimeProvider")
+@EnableJpaAuditing(dateTimeProviderRef = "auditingDateTimeProvider", auditorAwareRef = "auditorAware")
 @EntityScan(basePackages = "com.theloungemembers.core")
 @EnableJpaRepositories(basePackages = "com.theloungemembers.core.**.repository")
 @MapperScan(value = { "com.theloungemembers.core.**.mapper" }, annotationClass = Mapper.class)
@@ -67,18 +68,8 @@ public class DatabaseConfig {
         return sqlSessionFactoryBean.getObject();
     }
 
-//    @Bean
-//    AuditorAware<Long> auditorAware() {
-//        return new AuditorAware<Long>() {
-//
-//            @Override
-//            public Optional<Long> getCurrentAuditor() {
-//                try {
-//                    return Optional.ofNullable(SecurityUtil.getMbrNo());
-//                } catch (Exception e) {
-//                    return Optional.of(0L);
-//                }
-//            }
-//        };
-//    }
+    @Bean
+    AuditorAware<Long> auditorAware(Optional<CurrentUserProvider> currentUserProvider) {
+        return () -> AuditorContextHolder.getAuditorId().or(() -> Optional.of(0L));
+    }
 }

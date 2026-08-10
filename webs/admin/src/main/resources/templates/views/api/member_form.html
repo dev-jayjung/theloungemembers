@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/default_layout}"> <!-- Tiles 대신 타임리프 레이아웃 적용 -->
+      layout:decorate="~{layouts/default_layout}">
 
 <head>
     <title th:text="${member == null || member.uid == null} ? '사용자 등록' : '사용자 상세'">사용자 상세</title>
@@ -246,20 +246,17 @@
                 <tr>
                     <th>IP 검사 해제</th>
                     <td>
-                        <label class="fCheck"><input type="checkbox" name="freepassIp" id="freepassIp" value="1" th:checked="*{freepassIp == '1'}"><span>IP 검사 해제</span></label>
+                        <th:block th:replace="~{fragments/tag :: checkbox(name='freepassIp', label='IP 검사 해제', checkedValues=${member.freepassIp})}" />
                     </td>
                     <th>LMS 통지 허용</th>
                     <td>
-                        <label class="fCheck"><input type="checkbox" name="allowMsgNotify" id="allowMsgNotify" value="1" th:checked="*{allowMsgNotify == '1'}" ><span>LMS 통지 허용(coupon_issue에서 사용됨)</span></label>
+                        <th:block th:replace="~{fragments/tag :: checkbox(name='allowMsgNotify', label='LMS 통지 허용(coupon_issue에서 사용됨)', checkedValues=${member.allowMsgNotify})}" />
                     </td>
                 </tr>
                 <tr>
                    <th>사 용<strong class="red">*</strong></th>
                    <td>
-                       <label class="fRadio" th:each="item, stat : ${ServiceStatus}">
-                           <input type="radio" name="onService" th:id="|onService${stat.index}|" th:value="${item.code}" th:checked="${member.onService != null and member.onService == item}" >
-                           <span th:text="${item.description}"></span>
-                       </label>
+                       <th:block th:replace="~{fragments/tag :: radio(name='onService', target=${ServiceStatus}, checkedValue=${member.onService})}" />
                    </td>
                 </tr>
                 <tr>

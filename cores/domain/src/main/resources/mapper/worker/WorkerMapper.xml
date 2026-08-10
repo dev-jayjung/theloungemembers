@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.worker.mapper.WorkerMapper">
+    <resultMap id="WorkerResultMap" type="com.theloungemembers.core.worker.WorkerResult">
+        <id property="uid" column="uid"/>
+        <result property="workerId" column="worker_id"/>
+        <result property="workerName" column="worker_name"/>
+        <result property="password" column="password"/>
+        <result property="passwordResetDate" column="password_reset_date"/>
+        <result property="passwordUpload" column="password_upload"/>
+        <result property="phoneNum" column="phone_num"/>
+        <result property="emailAddress" column="email_address"/>
+        <result property="defaultMenuCode" column="default_menu_code"/>
+        <result property="menuAuth" column="menu_auth"/>
+        <result property="serviceOperator" column="service_operator"/>
+        <result property="workerMaxIssueCount" column="worker_max_issue_count"/>
+        <result property="saleChannel" column="sale_channel"/>
+        <result property="phoneNum" column="phone_num"/>
+        <result property="emailAddress" column="email_address"/>
+        <result property="autoLogin" column="auto_login"/>
+        <result property="allowOnlyOneLogin" column="allow_only_one_login"/>
+        <result property="onService" column="on_service"/>
+        <result property="memo" column="memo"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="menuAllAuth" column="menu_all_auth" />
+    </resultMap>
+
+    <select id="selectById" resultMap="WorkerResultMap">
+        SELECT
+               w.uid
+             , w.worker_id
+             , w.worker_name
+             , w.password
+             , w.password_reset_date
+             , w.password_upload
+             , w.phone_num
+             , w.email_address
+             , w.default_menu_code
+             , w.menu_auth
+             , w.service_operator
+             , w.worker_max_issue_count
+             , w.sale_channel
+             , w.auto_login
+             , w.allow_only_one_login
+             , w.on_service
+             , w.memo
+             , w.reg_date
+             , w.update_date
+             , w.menu_all_auth
+          FROM worker w
+         WHERE w.uid = #{uid}
+    </select>
+
+    <select id="selectList" resultMap="WorkerResultMap">
+        SELECT
+               w.uid
+             , w.worker_id
+             , w.worker_name
+             , w.password
+             , w.password_reset_date
+             , w.password_upload
+             , w.phone_num
+             , w.email_address
+             , w.default_menu_code
+             , w.menu_auth
+             , w.service_operator
+             , w.worker_max_issue_count
+             , w.sale_channel
+             , w.auto_login
+             , w.allow_only_one_login
+             , w.on_service
+             , w.memo
+             , w.reg_date
+             , w.update_date
+             , w.menu_all_auth
+          FROM worker w
+          <include refid="where"/>
+          <include refid="CommonMapper.sortSql"/>
+          <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT
+               COUNT(1)
+          FROM worker w
+          <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <choose>
+                <when test="searchTarget == 'uid'">
+                    AND w.uid = #{searchValue}::INTEGER
+                </when>
+                <when test="searchTarget == 'worker_id'">
+                    AND w.worker_id = #{searchValue}
+                </when>
+                <when test="searchTarget == 'worker_id_like'">
+                    AND w.worker_id LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'worker_name'">
+                    AND w.worker_name = #{searchValue}
+                </when>
+                <when test="searchTarget == 'email'">
+                    AND w.email_address = #{searchValue}
+                </when>
+                <when test="searchTarget == 'phone'">
+                    AND w.phone_num = #{searchValue}
+                </when>
+            </choose>
+
+            <if test="onService != null">
+                AND w.on_service = #{onService}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectByWorkerId" resultMap="WorkerResultMap">
+        SELECT
+               w.uid
+             , w.worker_id
+             , w.worker_name
+             , w.password
+             , w.password_reset_date
+             , w.password_upload
+             , w.phone_num
+             , w.email_address
+             , w.default_menu_code
+             , w.menu_auth
+             , w.service_operator
+             , w.worker_max_issue_count
+             , w.sale_channel
+             , w.auto_login
+             , w.allow_only_one_login
+             , w.on_service
+             , w.memo
+             , w.reg_date
+             , w.update_date
+             , w.menu_all_auth
+          FROM worker w
+         WHERE w.worker_id = #{workerId}
+    </select>
+</mapper>

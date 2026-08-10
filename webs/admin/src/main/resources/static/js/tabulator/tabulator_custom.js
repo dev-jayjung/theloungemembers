@@ -5,11 +5,16 @@ Tabulator.extendModule('format', 'formatters', {
         const size = table.getPageSize() || 15;
         const index = cell.getRow().getPosition(true) - 1;
         const total = table.totalElements || 0;
-
         const rowNum = total - (((page - 1) * size) + index);
 
         return rowNum > 0 ? rowNum : '';
     }
+});
+
+const COMMON_COLUMNS = Object.freeze({
+    ROW_NUM: { title: '순서', field: 'rowNum', hozAlign: 'center', formatter: 'rowNum', download: false, headerSort: false },
+    CREATED_AT: { title: '등록일', field: 'regDate', hozAlign: 'center' },
+    UPDATED_AT: { title: '수정일', field: 'updateDate', hozAlign: 'center' }
 });
 
 /**
@@ -19,6 +24,32 @@ Tabulator.extendModule('format', 'formatters', {
  */
 function initTabulatorGrid(elementSelector, customOptions) {
     let totalElements = 0;
+
+    const prefixColumns = [];
+    const suffixColumns = [];
+
+    // 옵션 기본값: useRowNum은 기본 true, 나머지는 필요시 화면에서 true로 켬
+    const useRowNum = customOptions?.useRowNum !== false; 
+    const useCreatedAt = customOptions?.useCreatedAt === true;
+    const useUpdatedAt = customOptions?.useUpdatedAt === true;
+
+    // 맨 앞에 붙을 공통 컬럼
+    if (useRowNum) {
+        prefixColumns.push(COMMON_COLUMNS.ROW_NUM)
+    };
+
+    // 맨 뒤에 붙을 공통 컬럼
+    if (useCreatedAt) {
+        suffixColumns.push(COMMON_COLUMNS.CREATED_AT);
+    }
+
+    if (useUpdatedAt) {
+        suffixColumns.push(COMMON_COLUMNS.UPDATED_AT);
+    }
+
+    // 컬럼 합치기
+    const userColumns = customOptions?.columns || [];
+    customOptions.columns = [...prefixColumns, ...userColumns, ...suffixColumns];
 
     // 공통 기본 옵션 정의
     const defaultOptions = {
@@ -30,6 +61,7 @@ function initTabulatorGrid(elementSelector, customOptions) {
         columnDefaults: {
             resizable: true,
             headerHozAlign: 'center',
+            headerMenu: headerMenuValue,
             accessorDownload: function(value, data, type, params, column) {
                 // 값이 없거나 null/undefined 인 경우
                 if (value === null || value === undefined) {
@@ -184,6 +216,62 @@ function initTabulatorGrid(elementSelector, customOptions) {
     e.totalElements = totalElements;
 
     return e;
+}
+
+function headerMenuValue() {
+    const menu = [];
+    const columns = this.getColumns();
+
+    for (let column of columns) {
+        let field = column.getField();
+        let def = column.getDefinition();
+
+        // 순서 컬럼 제외
+        if (def.formatter === 'rowNum') {
+            continue;
+        }
+
+        let label = document.createElement('span');
+        label.style.cursor = 'pointer';
+
+        // 특수문자(☑, ☐)로 체크 상태 표기
+        const updateLabel = (visible) => {
+            const checkIcon = visible ? '☑' : '☐';
+            const iconColor = visible ? '#0d6efd' : '#999999';
+            const titleText = def.title || field;
+
+            label.innerHTML = `<span style="color: ${iconColor}; font-weight: bold; margin-right: 6px;">${checkIcon}</span><span>${titleText}</span>`;
+        };
+
+        // 초기 상태 렌더링
+        updateLabel(column.isVisible());
+
+        menu.push({
+            label: label,
+            action: function(e) {
+                e.stopPropagation(); // 팝업 닫힘 방지
+
+                // 컬럼 보이기/숨기기 토글
+                column.toggle();
+
+                // 텍스트/체크 표시 즉시 갱신
+                updateLabel(column.isVisible());
+            }
+        });
+    }
+
+    menu.push({ separator: true });
+
+    let closeLabel = document.createElement('span');
+    closeLabel.innerHTML = '<span style="color: #dc3545; font-weight: bold; margin-right: 6px;">✕</span><b style="color: #dc3545;">닫기</b>';
+    closeLabel.style.cursor = 'pointer';
+
+    menu.push({
+        label: closeLabel,
+        action: function(e) {}
+    });
+
+    return menu;
 }
 
 const SERVICE_STATUS = Object.freeze({

@@ -21,5 +21,17 @@ spring:
       - ../cores/build/classes/java/main
       enabled: true
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${keycloak.server-url}/realms/${keycloak.realm}
+
 logging:
   config: classpath:logback-spring.xml
+
+keycloak:
+  server-url: http://localhost:8085
+  realm: theloungemembers
+  clientId: web-admin
+  clientSecret: ybgftPoDs9uocOeBfqGv6H4N9Xu1BEpQ

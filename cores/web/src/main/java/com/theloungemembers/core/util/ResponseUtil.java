@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.theloungemembers.core.dto.ApiResponse;
-import com.theloungemembers.core.exception.ErrorCode;
+import com.theloungemembers.core.exception.ErrorCodeSpec;
 
 public class ResponseUtil {
 
@@ -26,13 +26,13 @@ public class ResponseUtil {
     }
 
     // 실패 응답 (ErrorCode 기반)
-    public static ResponseEntity<ApiResponse<Void>> fail(ErrorCode errorCode) {
+    public static ResponseEntity<ApiResponse<Void>> fail(ErrorCodeSpec errorCode) {
         return ResponseEntity.status(errorCode.getStatus())
                 .body(ApiResponse.fail(errorCode.getCode(), errorCode.getKey()));
     }
 
     // 실패 응답 (메시지 커스텀)
-    public static ResponseEntity<ApiResponse<Void>> fail(ErrorCode errorCode, String customMessage) {
+    public static ResponseEntity<ApiResponse<Void>> fail(ErrorCodeSpec errorCode, String customMessage) {
         return ResponseEntity.status(errorCode.getStatus()).body(ApiResponse.fail(errorCode.getCode(), customMessage));
     }
 }

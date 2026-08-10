@@ -45,14 +45,14 @@ public class ApiMemberService extends AbstractBaseService<ApiMemberCommand, ApiM
 
     @Override
     @Transactional
-    public void update(ApiMemberCommand req) {
+    public void update(Integer uid, ApiMemberCommand req) {
         AssertUtil.notNull(req);
         AssertUtil.notNull(req.getUid());
         AssertUtil.notNull(req.getAccountId());
 
         processEncData(req);
 
-        super.update(req);
+        super.update(req.getUid(), req);
 
         updateMenuPermissions(req.getAccountId(), req.getSelectedMenuCodes());
     }

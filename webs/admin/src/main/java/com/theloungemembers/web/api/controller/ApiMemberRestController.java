@@ -52,10 +52,10 @@ public class ApiMemberRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateApiMember(@RequestBody ApiMemberUpdateReqeust request) {
+    public ResponseEntity<ApiResponse<Void>> updateApiMember(@PathVariable Integer id, @RequestBody ApiMemberUpdateReqeust request) {
         ApiMemberCommand command = modelMapperHelper.map(request, ApiMemberCommand.class);
 
-        apiMemberService.update(command);
+        apiMemberService.update(id, command);
 
         return ResponseUtil.success();
     }

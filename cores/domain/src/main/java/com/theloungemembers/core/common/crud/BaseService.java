@@ -21,7 +21,7 @@ interface BaseService<C, Q, R, ID> {
 
     R save(C c);
 
-    void update(C c);
+    void update(ID id, C c);
 
     void delete(ID id);
 }

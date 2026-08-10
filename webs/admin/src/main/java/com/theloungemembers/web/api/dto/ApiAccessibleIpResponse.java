@@ -1,4 +1,4 @@
-package com.theloungemembers.core.api;
+package com.theloungemembers.web.api.dto;
 
 import com.theloungemembers.core.common.dto.BaseResult;
 import com.theloungemembers.core.type.ServiceStatus;
@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiAccessibleIpResult extends BaseResult {
+public class ApiAccessibleIpResponse extends BaseResult {
 
     private Integer uid;
 
@@ -17,5 +17,6 @@ public class ApiAccessibleIpResult extends BaseResult {
     private ServiceStatus onService;
 
     private String memo;
+
 
 }

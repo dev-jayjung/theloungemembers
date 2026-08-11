@@ -1,4 +1,4 @@
-package com.theloungemembers.core.common.util;
+package com.theloungemembers.core.util;
 
 import java.util.Collections;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 import com.theloungemembers.core.common.dto.PageRequest;
 import com.theloungemembers.core.common.dto.PageResponse;
-import com.theloungemembers.core.util.AssertUtil;
 
 public class PageUtil {
 

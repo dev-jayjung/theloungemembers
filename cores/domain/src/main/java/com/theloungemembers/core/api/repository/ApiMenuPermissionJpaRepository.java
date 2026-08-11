@@ -5,4 +5,4 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import com.theloungemembers.core.api.entity.ApiMenuPermissionEntity;
 
-public interface ApiMenuPermissionJpaRepository extends JpaRepository<ApiMenuPermissionEntity, Integer>, JpaSpecificationExecutor<ApiMenuPermissionEntity> {}
+public interface ApiMenuPermissionJpaRepository extends JpaRepository<ApiMenuPermissionEntity, Long>, JpaSpecificationExecutor<ApiMenuPermissionEntity> {}

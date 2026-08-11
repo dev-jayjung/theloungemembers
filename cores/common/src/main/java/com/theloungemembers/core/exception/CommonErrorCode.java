@@ -8,8 +8,9 @@ public enum CommonErrorCode implements ErrorCodeSpec {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "C002", "error.common.unauthorized"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "C003", "error.common.forbidden"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "C004", "error.common.not_found"),
-    DUPLICATE(HttpStatus.CONFLICT, "C005", "error.common.duplicate"),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C006", "error.common.internal_server_error");
+    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C005", "error.common.method_not_allowed"),
+    DUPLICATE(HttpStatus.CONFLICT, "C006", "error.common.duplicate"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C007", "error.common.internal_server_error");
 
     private final HttpStatus status;
     private final String code;

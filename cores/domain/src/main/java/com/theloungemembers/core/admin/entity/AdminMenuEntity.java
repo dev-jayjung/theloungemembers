@@ -25,13 +25,40 @@ public class AdminMenuEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer uid;
+    private Long uid;
 
     @Column
-    private String code;
+    private Integer level;
+
+    @Column
+    private String parentCode;
 
     @Column
     private String menuCode;
+
+    @Column
+    private String authCode;
+
+    @Column
+    private String tabCode;
+
+    @Column
+    private String tabName;
+
+    @Column
+    private String tabTooltip;
+
+    @Column
+    private Integer displayOrdinal;
+
+    @Column
+    private String displayInMenu;
+
+    @Column
+    private String commonWorkDomain;
+
+    @Column
+    private String defaultPermission;
 
     @Column
     private String linkUrl;
@@ -40,14 +67,26 @@ public class AdminMenuEntity extends BaseEntity {
     private String title;
 
     @Column
+    private String title2;
+
+    @Column
     private String color;
 
     @Column
     private String topMargin;
 
     @Column
-    private Integer displayOrdinal;
+    private String helpDisplay;
 
     @Column
-    private Integer bookmarkDisplayOrdinal;
+    private String helpTitle;
+
+    @Column
+    private Integer helpContentType;
+
+    @Column
+    private String helpContent;
+
+    @Column
+    private String memo;
 }

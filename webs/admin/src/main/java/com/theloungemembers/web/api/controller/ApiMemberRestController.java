@@ -52,7 +52,7 @@ public class ApiMemberRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateApiMember(@PathVariable Integer id, @RequestBody ApiMemberUpdateReqeust request) {
+    public ResponseEntity<ApiResponse<Void>> updateApiMember(@PathVariable Long id, @RequestBody ApiMemberUpdateReqeust request) {
         ApiMemberCommand command = modelMapperHelper.map(request, ApiMemberCommand.class);
 
         apiMemberService.update(id, command);
@@ -61,7 +61,7 @@ public class ApiMemberRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteApiMember(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Void>> deleteApiMember(@PathVariable Long id) {
         apiMemberService.delete(id);
 
         return ResponseUtil.success();

@@ -7,6 +7,6 @@ import com.theloungemembers.core.api.ApiMenuResult;
 import com.theloungemembers.core.common.crud.BaseMapper;
 
 @Mapper
-public interface ApiMenuMapper extends BaseMapper<ApiMenuQuery, ApiMenuResult, Integer> {
+public interface ApiMenuMapper extends BaseMapper<ApiMenuQuery, ApiMenuResult, Long> {
     boolean existsApiMenu(String code);
 }

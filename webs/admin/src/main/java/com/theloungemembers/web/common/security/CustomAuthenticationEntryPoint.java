@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.theloungemembers.core.dto.ApiResponse;
 import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.helper.JsonMapperHelper;
+import com.theloungemembers.core.helper.MessageHelper;
 import com.theloungemembers.core.util.ResponseUtil;
 
 import jakarta.servlet.ServletException;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final JsonMapperHelper jsonMapperHelper;
+    private final MessageHelper messageHelper;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -39,7 +41,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            ResponseEntity<ApiResponse<Void>> res = ResponseUtil.fail(CommonErrorCode.UNAUTHORIZED, "인증이 필요합니다.");
+            ResponseEntity<ApiResponse<Void>> res = ResponseUtil.fail(CommonErrorCode.UNAUTHORIZED, messageHelper.getMessage(CommonErrorCode.UNAUTHORIZED));
             response.getWriter().write(jsonMapperHelper.writeValueAsString(res));
 
             return;

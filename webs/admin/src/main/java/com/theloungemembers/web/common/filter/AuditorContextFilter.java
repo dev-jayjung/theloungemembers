@@ -5,16 +5,20 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.theloungemembers.core.common.config.AuditorContextHolder;
+import com.theloungemembers.core.security.AuditorContextAdapter;
 import com.theloungemembers.web.common.util.SecurityUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class AuditorContextFilter extends OncePerRequestFilter {
+
+    private final AuditorContextAdapter auditorContextAdapter;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -29,7 +33,7 @@ public class AuditorContextFilter extends OncePerRequestFilter {
             String workerId = SecurityUtil.getWorkerId();
             if (workerId != null) {
                 // TODO 추후 등록자 / 수정자 컬럼 생길시 세팅
-//                AuditorContextHolder.setAuditorId(workerId);
+//                auditorContextAdapter.setAuditorId(workerId);
             }
         } catch (Exception e) {
             // 비인증 요청(로그인, 정적 파일 등) 시 예외가 발생할 수 있으므로 무시
@@ -38,7 +42,7 @@ public class AuditorContextFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } finally {
-            AuditorContextHolder.clear();
+            auditorContextAdapter.clear();
         }
     }
 }

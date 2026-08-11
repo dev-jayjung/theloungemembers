@@ -63,7 +63,7 @@ public class WebConfig implements WebMvcConfigurer {
     LocaleResolver localeResolver() {
         CookieLocaleResolver resolver = new CookieLocaleResolver("THE_LOUNGE_MEMBERS");
         resolver.setDefaultLocale(Locale.KOREA);
-        resolver.setCookieMaxAge(Duration.ofDays(365)); // 1년
+        resolver.setCookieMaxAge(Duration.ofDays(365));
         resolver.setCookiePath("/");
 
         return resolver;

@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class ApiMenuPermissionRepository extends AbstractBaseRepository<ApiMenuPermissionCommand, ApiMenuPermissionQuery, ApiMenuPermissionResult, Integer, ApiMenuPermissionEntity, ApiMenuPermissionMapper, ApiMenuPermissionJpaRepository> {
+public class ApiMenuPermissionRepository extends AbstractBaseRepository<ApiMenuPermissionCommand, ApiMenuPermissionQuery, ApiMenuPermissionResult, Long, ApiMenuPermissionEntity, ApiMenuPermissionMapper, ApiMenuPermissionJpaRepository> {
 
     public List<ApiMenuPermissionResult> selectApiMenuPermissionList(String accountId) {
         AssertUtil.notNull(accountId);

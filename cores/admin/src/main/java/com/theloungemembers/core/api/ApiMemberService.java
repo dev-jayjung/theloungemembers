@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ApiMemberService extends AbstractBaseService<ApiMemberCommand, ApiMemberQuery, ApiMemberResult, Integer> {
+public class ApiMemberService extends AbstractBaseService<ApiMemberCommand, ApiMemberQuery, ApiMemberResult, Long> {
 
     private final ApiMenuPermissionRepository apiMenuPermissionRepository;
     private final JsonMapperHelper jsonMapperHelper;
@@ -45,7 +45,7 @@ public class ApiMemberService extends AbstractBaseService<ApiMemberCommand, ApiM
 
     @Override
     @Transactional
-    public void update(Integer uid, ApiMemberCommand req) {
+    public void update(Long uid, ApiMemberCommand req) {
         AssertUtil.notNull(req);
         AssertUtil.notNull(req.getUid());
         AssertUtil.notNull(req.getAccountId());

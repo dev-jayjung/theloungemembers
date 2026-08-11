@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminMenuResult extends BaseResult {
-    private Integer uid;
+    private Long uid;
 
     private String menuCode;
 

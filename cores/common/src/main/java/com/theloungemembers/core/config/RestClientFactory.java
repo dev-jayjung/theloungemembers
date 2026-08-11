@@ -6,15 +6,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestClient;
 
+import lombok.RequiredArgsConstructor;
+import tools.jackson.databind.json.JsonMapper;
+
 @Configuration
+@RequiredArgsConstructor
 public class RestClientFactory {
+
+    private final JsonMapper jsonMapper;
 
     @Bean
     RestClient restClient() {
         return RestClient.builder()
                 .requestFactory(clientHttpRequestFactory())
+                .configureMessageConverters(e -> {
+                    e.withJsonConverter(new JacksonJsonHttpMessageConverter(jsonMapper));
+                })
                 // .defaultHeader("Authorization", "Bearer token_value") // 필요시 공통 헤더
                 .build();
     }

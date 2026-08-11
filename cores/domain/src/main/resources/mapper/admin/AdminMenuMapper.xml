@@ -35,7 +35,7 @@
             <otherwise>
                 SELECT uid
                      , menu_code
-                     , linkUrl
+                     , link_url
                      , title
                      , color
                      , top_margin
@@ -50,7 +50,7 @@
                          , AM.display_ordinal
                     FROM ADMIN_MENU AM
                     JOIN ADMIN_MENU_PERMISSION AMP ON (
-                        (AM.auth_code &lt;&gt; '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
+                        (AM.auth_code <![CDATA[ <> ]]> '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
                     )
                     WHERE AM.level = 1
                       AND AM.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
@@ -112,7 +112,7 @@
                          , AM.display_ordinal
                     FROM ADMIN_MENU AM
                     JOIN ADMIN_MENU_PERMISSION AMP ON (
-                        (AM.auth_code &lt;&gt; '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
+                        (AM.auth_code <![CDATA[ <> ]]> '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
                     )
                     WHERE AM.level = 2
                       AND AM.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
@@ -135,7 +135,7 @@
                       AND display_in_menu = '1'
                       AND default_permission = '1'
                 ) T
-                ORDER BY displayOrdinal ASC
+                ORDER BY display_ordinal ASC
             </otherwise>
         </choose>
     </select>
@@ -154,7 +154,7 @@
                 JOIN ADMIN_MENU AM ON AM.menu_code = AMB.menu_code
                 WHERE AM.level = 2
                   AND AM.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
-                  AND (AM.display_in_menu = '1' OR AM.tab_code &lt;&gt; '')
+                  AND (AM.display_in_menu = '1' OR AM.tab_code <![CDATA[ <> ]]> '')
                   AND AMB.worker_id = #{workerId}
                   AND AMB.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
                 ORDER BY bookmark_display_ordinal ASC
@@ -175,13 +175,13 @@
                     FROM ADMIN_MENU_BOOKMARK AMB
                     JOIN ADMIN_MENU AM ON AM.menu_code = AMB.menu_code
                     LEFT JOIN ADMIN_MENU_PERMISSION AMP ON (
-                        (AM.auth_code &lt;&gt; '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
+                        (AM.auth_code <![CDATA[ <> ]]> '' AND AM.auth_code = AMP.menu_code) OR (AM.menu_code = AMP.menu_code)
                     )
-                    WHERE AM.level = 2 AND AM.on_service = '1' AND (AM.display_in_menu = '1' OR AM.tab_code &lt;&gt; '')
+                    WHERE AM.level = 2 AND AM.on_service = '1' AND (AM.display_in_menu = '1' OR AM.tab_code <![CDATA[ <> ]]> '')
                       AND AMB.worker_id = #{workerId}
                       AND AMB.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
                       AND (
-                              AM.tab_code &lt;&gt; ''
+                              AM.tab_code <![CDATA[ <> ]]> ''
                               OR (
                                     AM.display_in_menu = '1'
                                     AND AMP.worker_id = #{workerId}
@@ -201,7 +201,7 @@
                     JOIN ADMIN_MENU AM ON AM.menu_code = AMB.menu_code
                     WHERE AM.level = 2
                       AND AM.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
-                      AND (AM.display_in_menu = '1' OR AM.tab_code &lt;&gt; '')
+                      AND (AM.display_in_menu = '1' OR AM.tab_code <![CDATA[ <> ]]> '')
                       AND AM.default_permission = '1'
                       AND AMB.worker_id = #{workerId}
                       AND AMB.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
@@ -220,9 +220,9 @@
           FROM admin_menu c
      LEFT JOIN admin_menu p
             ON c.parent_code = p.menu_code
-           AND p.on_service = '1'
+           AND p.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
          WHERE c.link_url = #{linkUrl}
-           AND c.on_service = '1'
+           AND c.on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
          LIMIT 1
     </select>
 </mapper>

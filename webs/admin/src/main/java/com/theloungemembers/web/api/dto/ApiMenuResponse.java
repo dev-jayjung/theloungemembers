@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiMenuResponse {
-    private Integer uid;
+    private Long uid;
 
     private String groupCode;
 

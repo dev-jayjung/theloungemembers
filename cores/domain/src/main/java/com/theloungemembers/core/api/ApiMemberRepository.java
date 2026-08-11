@@ -12,6 +12,6 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class ApiMemberRepository extends AbstractBaseRepository<ApiMemberCommand, ApiMemberQuery, ApiMemberResult, Integer, ApiMemberEntity, ApiMemberMapper, ApiMemberJpaRepository> {
+public class ApiMemberRepository extends AbstractBaseRepository<ApiMemberCommand, ApiMemberQuery, ApiMemberResult, Long, ApiMemberEntity, ApiMemberMapper, ApiMemberJpaRepository> {
 
 }

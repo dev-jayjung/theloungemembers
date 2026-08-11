@@ -68,7 +68,7 @@ public class ApiMemberViewController {
     }
 
     @GetMapping("/detail")
-    public String detailForm(@RequestParam Integer id, Model model) {
+    public String detailForm(@RequestParam Long id, Model model) {
         ApiMemberResult member = apiMemberService.get(id);
 
         if (member != null) {

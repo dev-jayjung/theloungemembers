@@ -12,11 +12,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.theloungemembers.core.common.dto.PageRequest;
 import com.theloungemembers.core.common.dto.PageResponse;
 import com.theloungemembers.core.common.entity.BaseEntity;
-import com.theloungemembers.core.common.util.PageUtil;
 import com.theloungemembers.core.exception.BusinessException;
 import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.helper.ModelMapperHelper;
 import com.theloungemembers.core.util.AssertUtil;
+import com.theloungemembers.core.util.PageUtil;
 
 /**
  * 기본 CRUD 공통 로직을 제공하는 추상 레포지토리
@@ -78,6 +78,13 @@ public abstract class AbstractBaseRepository<C, Q extends PageRequest, R, ID, E,
         AssertUtil.notNull(q);
 
         return PageUtil.getPage(q, () -> this.selectList(q), () -> this.selectCount(q));
+    }
+
+    public Optional<R> findById(ID id) {
+        AssertUtil.notNull(id);
+
+        return repository.findById(id)
+                .map(e -> modelMapperHelper.map(e, resultClass));
     }
 
     @Override

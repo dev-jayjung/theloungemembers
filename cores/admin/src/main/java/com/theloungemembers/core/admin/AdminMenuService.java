@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.theloungemembers.core.api.ApiMenuCommand;
 import com.theloungemembers.core.common.crud.AbstractBaseService;
+import com.theloungemembers.core.util.AssertUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AdminMenuService extends AbstractBaseService<ApiMenuCommand, AdminMenuQuery, AdminMenuResult, Integer> {
+public class AdminMenuService extends AbstractBaseService<ApiMenuCommand, AdminMenuQuery, AdminMenuResult, Long> {
     private final AdminMenuRepository adminMenuRepository;
 
-    @Cacheable(value = "adminMenuListCache", key = "'all'")
+    @Cacheable(value = "adminMenuListCache", key = "#query?.workerId")
     public List<AdminMenuResult> getMenuList(AdminMenuQuery query) {
+        AssertUtil.notNull(query);
+
         List<AdminMenuResult> mainMenuList = adminMenuRepository.selectMainMenuList(query);
         List<AdminMenuResult> subMenuList = adminMenuRepository.selectSubMenuList(query);
 
@@ -38,14 +41,18 @@ public class AdminMenuService extends AbstractBaseService<ApiMenuCommand, AdminM
     }
 
 // TODO 로그인 기능 완료되면 추후 로그인 아이디 기준으로 캐시 적용
-//    @Cacheable(value = "adminBookmarkCache", key = "#query.workerId")
-    @Cacheable(value = "adminBookmarkCache", key = "'all'")
+//    @Cacheable(value = "adminBookmarkCache", key = "'all'")
+    @Cacheable(value = "adminBookmarkCache", key = "#query?.workerId")
     public List<AdminMenuResult> getBookmarkList(AdminMenuQuery query) {
+        AssertUtil.notNull(query);
+
         return adminMenuRepository.selectBookmarkList(query);
     }
 
-    @Cacheable(value = "menuTitleCache", key = "#root.args[0]", unless = "#result == null")
+    @Cacheable(value = "menuTitleCache", key = "#linkUrl", unless = "#result == null")
     public AdminMenuResult getMenuTitle(String linkUrl) {
+        AssertUtil.notNull(linkUrl);
+
         return adminMenuRepository.selectMenuTitle(linkUrl);
     }
 

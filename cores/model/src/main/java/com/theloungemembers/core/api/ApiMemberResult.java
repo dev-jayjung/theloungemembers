@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiMemberResult extends BaseResult {
-    private Integer uid;
+    private Long uid;
 
     private String accountId;
 

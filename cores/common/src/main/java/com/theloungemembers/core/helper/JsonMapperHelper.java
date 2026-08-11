@@ -88,4 +88,28 @@ public class JsonMapperHelper {
             throw new BusinessException(e);
         }
     }
+
+    public <T> List<T> readListValue(String str, Class<T> clazz) {
+        if (str == null || str.isBlank()) {
+            return List.of();
+        }
+
+        try {
+            return jsonMapper.readValue(str, jsonMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+        } catch (Exception e) {
+            throw new BusinessException(e);
+        }
+    }
+
+    public <T> Map<String, T> readMapValue(String str, Class<T> clazz) {
+        if (str == null || str.isBlank()) {
+            return Map.of();
+        }
+
+        try {
+            return jsonMapper.readValue(str, jsonMapper.getTypeFactory().constructMapType(Map.class, String.class, clazz));
+        } catch (Exception e) {
+            throw new BusinessException(e);
+        }
+    }
 }

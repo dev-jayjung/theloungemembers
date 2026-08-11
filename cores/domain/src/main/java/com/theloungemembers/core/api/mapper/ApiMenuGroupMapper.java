@@ -7,5 +7,5 @@ import com.theloungemembers.core.api.ApiMenuGroupResult;
 import com.theloungemembers.core.common.crud.BaseMapper;
 
 @Mapper
-public interface ApiMenuGroupMapper extends BaseMapper<ApiMenuGroupQuery, ApiMenuGroupResult, Integer> {
+public interface ApiMenuGroupMapper extends BaseMapper<ApiMenuGroupQuery, ApiMenuGroupResult, Long> {
 }

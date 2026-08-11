@@ -52,7 +52,7 @@ public class ApiMenuViewController {
     }
 
     @GetMapping("/detail")
-    public String detailForm(@RequestParam Integer id, Model model) {
+    public String detailForm(@RequestParam Long id, Model model) {
 
         final ApiMenuResult menu = apiMenuService.get(id);
         model.addAttribute("menu", modelMapperHelper.map(menu, ApiMenuResponse.class));

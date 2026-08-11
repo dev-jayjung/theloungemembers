@@ -2,10 +2,10 @@ package com.theloungemembers.core.api;
 
 import com.theloungemembers.core.common.crud.AbstractBaseService;
 import com.theloungemembers.core.common.dto.PageResponse;
-import com.theloungemembers.core.common.util.PageUtil;
 import com.theloungemembers.core.exception.BusinessException;
 import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.util.AssertUtil;
+import com.theloungemembers.core.util.PageUtil;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +45,8 @@ public class ApiMenuService extends AbstractBaseService<ApiMenuCommand, ApiMenuQ
         verifyUseableCode(command.getCode(), command.getUid());
     }
 
-    private void verifyUseableCode(String code, Integer paramUid) {
-        final Integer menuUid = apiMenuRepository.selectUidByCode(code);
+    private void verifyUseableCode(String code, Long paramUid) {
+        final Long menuUid = apiMenuRepository.selectUidByCode(code);
         // 동일 코드가 없는 경우 사용 가능
         if (menuUid == null) {
             return;

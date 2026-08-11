@@ -50,18 +50,6 @@ public class ApiMenuRestController {
         return ResponseUtil.success(page.map(modelMapperHelper.map(ApiMenuSearchResponse.class)));
     }
 
-    /**
-     * API 메뉴 정보 조회
-     *
-     * @param id
-     * @return
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ApiMenuResponse>> get(@PathVariable Integer id) {
-        final ApiMenuResult menu = apiMenuService.get(id);
-        return ResponseUtil.success(modelMapperHelper.map(menu, ApiMenuResponse.class));
-    }
-
     @PostMapping
     public ResponseEntity<ApiResponse<ApiMenuResponse>> create(@RequestBody ApiMenuCreateRequest request) {
         final ApiMenuCommand command = modelMapperHelper.map(request, ApiMenuCommand.class);
@@ -71,7 +59,7 @@ public class ApiMenuRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Integer id, @RequestBody ApiMenuCreateRequest request) {
+    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id, @RequestBody ApiMenuCreateRequest request) {
         final ApiMenuCommand command = modelMapperHelper.map(request, ApiMenuCommand.class);
         command.setUid(id);
         apiMenuService.validate(command);

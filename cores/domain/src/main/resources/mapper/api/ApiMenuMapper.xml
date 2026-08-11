@@ -84,23 +84,7 @@
         <include refid="CommonMapper.pageSql"/>
     </select>
 
-    <select id="selectById" resultType="com.theloungemembers.core.api.ApiMenuResult">
-        SELECT
-               uid
-             , group_code
-             , code
-             , name
-             , display_ordinal
-             , on_service
-             , link_url
-             , memo
-             , reg_date
-             , update_date
-        FROM api_menu
-        WHERE uid = #{uid}
-    </select>
-
-    <select id="selectUidByCode" resultType="java.lang.Integer">
+    <select id="selectUidByCode" resultType="java.lang.Long">
         SELECT uid
           FROM api_menu
          WHERE code = #{code}

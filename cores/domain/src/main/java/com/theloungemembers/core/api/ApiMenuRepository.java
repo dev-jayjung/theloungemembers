@@ -24,7 +24,7 @@ public class ApiMenuRepository extends AbstractBaseRepository<ApiMenuCommand, Ap
      * @param code
      * @return
      */
-    public Integer selectUidByCode(String code) {
+    public Long selectUidByCode(String code) {
         return mapper.selectUidByCode(code);
     }
 

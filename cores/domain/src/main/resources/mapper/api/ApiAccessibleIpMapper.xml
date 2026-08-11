@@ -25,18 +25,6 @@
         <include refid="CommonMapper.pageSql"/>
     </select>
 
-    <select id="selectById" resultType="com.theloungemembers.core.api.ApiAccessibleIpResult">
-        SELECT
-            uid
-             , ip_address
-             , on_service
-             , memo
-             , reg_date
-             , update_date
-        FROM api_accessible_ip
-        WHERE uid = #{uid}
-    </select>
-
     <select id="selectUidByIpAddress" resultType="java.lang.Integer">
         SELECT uid
         FROM api_accessible_ip

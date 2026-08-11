@@ -29,6 +29,6 @@ public interface ApiMenuMapper extends BaseMapper<ApiMenuQuery, ApiMenuResult, L
      */
     List<ApiMenuSearchResult> selectSearchList(ApiMenuQuery query);
 
-    Integer selectUidByCode(String code);
+    Long selectUidByCode(String code);
 
 }

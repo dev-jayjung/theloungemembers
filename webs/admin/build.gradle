@@ -15,14 +15,10 @@ dependencies {
     // 시큐리티 사용 시 로그인 사용자 정보/권한 태그 처리용
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
-    implementation 'org.apache.commons:commons-lang3'
-
     implementation project(':core-common')
     implementation project(':core-model')
     implementation project(':core-web')
     implementation project(':core-admin')
-
-    implementation project(':core-domain')
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }

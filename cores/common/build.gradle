@@ -3,14 +3,14 @@ plugins {
 }
 
 dependencies {
+    implementation project(':core-model')
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-json'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework:spring-web'
     implementation 'org.modelmapper:modelmapper:3.2.4'
-    implementation 'com.google.guava:guava:33.2.1-jre'
-    implementation 'org.apache.commons:commons-lang3'
     implementation 'com.github.codemonstur:embedded-redis:1.4.3'
+    api 'org.apache.commons:commons-lang3'
 }
 
 //bootJar {

@@ -11,8 +11,6 @@ dependencies {
     implementation project(':core-web')
     implementation project(':core-lounge')
 
-    implementation project(':core-domain')
-
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 

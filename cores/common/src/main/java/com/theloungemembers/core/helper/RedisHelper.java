@@ -1,6 +1,7 @@
 package com.theloungemembers.core.helper;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Component;
 import com.theloungemembers.core.util.AssertUtil;
 
 import lombok.RequiredArgsConstructor;
-import tools.jackson.core.type.TypeReference;
 
 @Component
 @RequiredArgsConstructor
@@ -54,18 +54,21 @@ public class RedisHelper {
         return Optional.ofNullable(jsonMapperHelper.readValue(jsonValue, targetClass));
     }
 
-    public <T> Optional<T> get(String key, TypeReference<T> typeReference) {
+    public <T> List<T> getList(String key, Class<T> targetClass) {
         AssertUtil.notNull(key);
-        AssertUtil.notNull(typeReference);
+        AssertUtil.notNull(targetClass);
 
         String jsonValue = redisTemplate.opsForValue().get(key);
 
-        if (jsonValue == null) {
-            return Optional.empty();
+        if (jsonValue == null || jsonValue.isBlank()) {
+            return List.of();
         }
 
-        return Optional.ofNullable(jsonMapperHelper.readValue(jsonValue, typeReference));
+        List<T> list = jsonMapperHelper.readListValue(jsonValue, targetClass);
+
+        return list != null ? list : List.of();
     }
+
     public boolean delete(String key) {
         AssertUtil.notNull(key);
 

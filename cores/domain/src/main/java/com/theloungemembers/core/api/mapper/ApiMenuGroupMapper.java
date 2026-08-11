@@ -7,7 +7,7 @@ import com.theloungemembers.core.common.crud.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface ApiMenuGroupMapper extends BaseMapper<ApiMenuGroupQuery, ApiMenuGroupResult, Integer> {
+public interface ApiMenuGroupMapper extends BaseMapper<ApiMenuGroupQuery, ApiMenuGroupResult, Long> {
 
     boolean existsCode(String code);
 

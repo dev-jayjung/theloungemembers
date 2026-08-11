@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiMenuResult extends BaseResult {
-    private Integer uid;
+    private Long uid;
 
     private String groupCode;
 

@@ -10,6 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ApiMenuGroupService extends AbstractBaseService<ApiMenuGroupCommand, ApiMenuGroupQuery, ApiMenuGroupResult, Integer> {
+public class ApiMenuGroupService extends AbstractBaseService<ApiMenuGroupCommand, ApiMenuGroupQuery, ApiMenuGroupResult, Long> {
 
 }

@@ -44,8 +44,13 @@ public class PageRequest {
             return null;
         }
 
+        String cleanSortBy = sortBy.replaceAll("[^a-zA-Z0-9]", "");
+        if (cleanSortBy.isBlank()) {
+            return null;
+        }
+
         String dir = (direction != null && "ASC".equalsIgnoreCase(direction.trim())) ? "ASC" : "DESC";
 
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, sortBy) + " " + dir;
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, cleanSortBy) + " " + dir;
     }
 }

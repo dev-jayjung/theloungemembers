@@ -9,7 +9,7 @@ import com.theloungemembers.core.api.ApiMenuPermissionResult;
 import com.theloungemembers.core.common.crud.BaseMapper;
 
 @Mapper
-public interface ApiMenuPermissionMapper extends BaseMapper<ApiMenuPermissionQuery, ApiMenuPermissionResult, Integer> {
+public interface ApiMenuPermissionMapper extends BaseMapper<ApiMenuPermissionQuery, ApiMenuPermissionResult, Long> {
     boolean existsApiMenuPermission(String accountId, String apiCode);
 
     List<ApiMenuPermissionResult> selectListByAccountId(String accountId);

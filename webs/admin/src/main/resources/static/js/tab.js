@@ -60,6 +60,7 @@
         openTab({
             url: '/main/dashboard',
             isHome: true,
+            // TODO 추후 홈 메뉴 이름도 DB 관리
             tabName: '홈'
         });
     };
@@ -70,26 +71,25 @@
         if (url.indexOf('.do?') > 0) {
             url = url.substr(0, url.indexOf('.do?')) + '.do';
         }
-        
+
         if (!tabName) {
-            tabName = url;
+            $.ajax({
+                url:`/api/v1/admin-menus/by-url?url=${url}`,
+                type: 'GET',
+                dataType: 'json',
+                async: false,
+                success:function(res) {
+                    if (res.success && res.data) {
+                        tabName = res.data.subTitle;
+                    } else {
+                        tabName = url;
+                    }
+                },
+                error:function() {
+                    tabName = url;
+                }
+            });
         }
-//        
-//        $.ajax({
-//            url:'/main/getScreenName.do',
-//            type : 'POST',
-//            dataType:'json',
-//            async:false,
-//            data:{
-//                uri:url
-//            },
-//            success:function(res) {
-//                tabName = res.screenName;
-//            },
-//            error:function() {
-//                tabName = '';
-//            }
-//        });
 
         return top.tabList.open({
                     url: url,

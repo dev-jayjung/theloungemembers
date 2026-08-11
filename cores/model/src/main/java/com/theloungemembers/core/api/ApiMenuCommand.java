@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class ApiMenuCommand {
 
-    private Integer uid;
+    private Long uid;
 
     private String groupCode;
 

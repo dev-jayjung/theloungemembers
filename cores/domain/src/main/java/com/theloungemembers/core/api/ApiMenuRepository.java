@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Repository
 @RequiredArgsConstructor
-public class ApiMenuRepository extends AbstractBaseRepository<ApiMenuCommand, ApiMenuQuery, ApiMenuResult, Integer, ApiMenuEntity, ApiMenuMapper, ApiMenuJpaRepository> {
+public class ApiMenuRepository extends AbstractBaseRepository<ApiMenuCommand, ApiMenuQuery, ApiMenuResult, Long, ApiMenuEntity, ApiMenuMapper, ApiMenuJpaRepository> {
 
     /**
      * 코드로 API 메뉴 키 조회

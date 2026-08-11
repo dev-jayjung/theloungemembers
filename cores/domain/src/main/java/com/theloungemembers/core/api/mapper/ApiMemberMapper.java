@@ -7,5 +7,5 @@ import com.theloungemembers.core.api.ApiMemberResult;
 import com.theloungemembers.core.common.crud.BaseMapper;
 
 @Mapper
-public interface ApiMemberMapper extends BaseMapper<ApiMemberQuery, ApiMemberResult, Integer> {
+public interface ApiMemberMapper extends BaseMapper<ApiMemberQuery, ApiMemberResult, Long> {
 }

@@ -22,10 +22,10 @@ import com.theloungemembers.core.util.AssertUtil;
  */
 public abstract class AbstractBaseService<C, Q extends PageRequest, R, ID> implements BaseService<C, Q, R, ID> {
 
-    protected AbstractBaseRepository<C, Q, R, ID, ?, ?, ?> repository;
+    protected BaseRepository<C, Q, R, ID> repository;
 
     @Autowired
-    public void setRepository(@Lazy AbstractBaseRepository<C, Q, R, ID, ?, ?, ?> repository) {
+    public void setRepository(@Lazy BaseRepository<C, Q, R, ID> repository) {
         this.repository = repository;
     }
 
@@ -50,7 +50,7 @@ public abstract class AbstractBaseService<C, Q extends PageRequest, R, ID> imple
     public R get(ID id) {
         AssertUtil.notNull(id);
 
-        return repository.selectById(id)
+        return repository.findById(id)
                 .orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND));
     }
 

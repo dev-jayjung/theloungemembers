@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiMenuGroupResult extends BaseResult {
-    private Integer uid;
+    private Long uid;
 
     private String code;
 

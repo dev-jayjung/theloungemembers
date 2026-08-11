@@ -9,9 +9,6 @@ import com.theloungemembers.core.exception.BusinessException;
 import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.web.common.security.WorkerPrincipal;
 
-/**
- * Spring SecurityContext 기반 현재 로그인한 작업자(Worker) 정보 조회 정적 유틸리티
- */
 public class SecurityUtil {
 
     private SecurityUtil() {}
@@ -39,7 +36,7 @@ public class SecurityUtil {
     public static String getWorkerId() {
         return getCurrentWorker()
                 .map(WorkerPrincipal::getWorkerId)
-                .orElseThrow(() -> new BusinessException(CommonErrorCode.UNAUTHORIZED, "인증 정보가 존재하지 않거나 만료되었습니다."));
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.UNAUTHORIZED));
     }
 
     /**
@@ -48,7 +45,7 @@ public class SecurityUtil {
     public static String getWorkerName() {
         return getCurrentWorker()
                 .map(WorkerPrincipal::getWorkerName)
-                .orElseThrow(() -> new BusinessException(CommonErrorCode.UNAUTHORIZED, "인증 정보가 존재하지 않거나 만료되었습니다."));
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.UNAUTHORIZED));
     }
 
     /**

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiMemberCommand {
-    private Integer uid;
+    private Long uid;
 
     private String accountId;
 
@@ -31,7 +31,7 @@ public class ApiMemberCommand {
 
     private String loungeName;
 
-    private Integer loungeUid;
+    private Long loungeUid;
 
     private ServiceStatus onService;
 

@@ -30,15 +30,15 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ApiResponse<Void>> handleBusinessException(final BusinessException e, Locale locale) {
         logException(e, e.getErrorCode().toString(), false);
 
-        String message = messageHelper.getMessage(e.getMessageKey(), e.getArgs());
-        return ResponseUtil.fail(e.getErrorCode(), message);
+        return ResponseUtil.fail(e.getErrorCode(), messageHelper.getMessage(e.getMessageKey(), e.getArgs()));
     }
 
     /**
      * @Valid, @Validated 파라미터 검증 예외 (MethodArgumentNotValidException)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+    protected ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(
+            final MethodArgumentNotValidException e) {
         logException(e, CommonErrorCode.BAD_REQUEST.toString(), false);
 
         // 첫 번째 검증 실패 필드의 에러 메시지 추출
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
                 .stream()
                 .findFirst()
                 .map(fieldError -> String.format("[%s] %s", fieldError.getField(), fieldError.getDefaultMessage()))
-                .orElse("잘못된 요청 파라미터입니다.");
+                .orElse(messageHelper.getMessage(CommonErrorCode.BAD_REQUEST));
 
         return ResponseUtil.fail(CommonErrorCode.BAD_REQUEST, errorMessage);
     }
@@ -56,17 +56,20 @@ public class GlobalExceptionHandler {
      * 지원하지 않는 HTTP Method 호출 예외 (예: POST endpoint에 GET 요청)
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e) {
-        logException(e, CommonErrorCode.FORBIDDEN.toString(), false);
+    protected ResponseEntity<ApiResponse<Void>> handleHttpRequestMethodNotSupportedException(
+            final HttpRequestMethodNotSupportedException e) {
+        logException(e, CommonErrorCode.METHOD_NOT_ALLOWED.toString(), false);
 
-        return ResponseUtil.fail(CommonErrorCode.FORBIDDEN, "지원하지 않는 HTTP Method 요청입니다.");
+        return ResponseUtil.fail(CommonErrorCode.METHOD_NOT_ALLOWED,
+                messageHelper.getMessage(CommonErrorCode.METHOD_NOT_ALLOWED));
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
     protected ResponseEntity<ApiResponse<Void>> handleNoResourceFoundException(final NoResourceFoundException e) {
         logException(e, CommonErrorCode.NOT_FOUND.toString(), false);
 
-        return ResponseUtil.fail(CommonErrorCode.NOT_FOUND, "요청하신 리소스를 찾을 수 없습니다.");
+        return ResponseUtil.fail(CommonErrorCode.NOT_FOUND,
+                messageHelper.getMessage(CommonErrorCode.NOT_FOUND));
     }
 
     /**
@@ -76,7 +79,8 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ApiResponse<Void>> handleException(final Exception e) {
         logException(e, CommonErrorCode.INTERNAL_SERVER_ERROR.toString(), true);
 
-        return ResponseUtil.fail(CommonErrorCode.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
+        return ResponseUtil.fail(CommonErrorCode.INTERNAL_SERVER_ERROR,
+                messageHelper.getMessage(CommonErrorCode.INTERNAL_SERVER_ERROR));
     }
 
     /**
@@ -87,11 +91,12 @@ public class GlobalExceptionHandler {
         StackTraceElement element = (stackTrace != null && stackTrace.length > 0) ? stackTrace[0] : null;
 
         String location = (element != null)
-                ? String.format("%s.%s(%s:%d)", element.getClassName(), element.getMethodName(), element.getFileName(), element.getLineNumber())
-                : "Unknown Location";
+                ? String.format("%s.%s(%s:%d)", element.getClassName(), element.getMethodName(),
+                        element.getFileName(), element.getLineNumber()) : "Unknown Location";
 
         if (isError) {
-            log.error("Exception occurred: [{}] {} - {}", code, location, ex.getMessage(), ex); // ex를 마지막에 넣으면 전체 스택트레이스도 출력됨
+            // ex를 마지막에 넣으면 전체 스택트레이스도 출력됨
+            log.error("Exception occurred: [{}] {} - {}", code, location, ex.getMessage(), ex);
         } else {
             log.warn("Exception occurred: [{}] {} - {}", code, location, ex.getMessage());
         }

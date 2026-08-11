@@ -25,7 +25,7 @@ public class ApiMenuPermissionEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer uid;
+    private Long uid;
 
     @Column
     private String accountId;

@@ -25,8 +25,6 @@ public class AuthService {
     private final KeycloakClientService keycloakClientService;
     private final WorkerSessionService workerSessionService;
 
-    private static final String SESSION_KEY_PREFIX = "AUTH:SESSION:";
-
     @Transactional(readOnly = true)
     public LoginResult login(String workerId, String password) {
         AssertUtil.notNull(workerId, "workerId is not null");

@@ -9,12 +9,8 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-/**
- * API 메뉴 쿼리
- */
 @Mapper
-public interface ApiMenuMapper extends BaseMapper<ApiMenuQuery, ApiMenuResult, Integer> {
-
+public interface ApiMenuMapper extends BaseMapper<ApiMenuQuery, ApiMenuResult, Long> {
     boolean existsApiMenu(String code);
 
     /**

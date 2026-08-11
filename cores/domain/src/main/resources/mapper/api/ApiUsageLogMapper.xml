@@ -38,6 +38,19 @@
                 <when test="searchTarget == 'api_code'">
                     AND api_code = #{searchValue}
                 </when>
+                <when test="searchTarget == 'transaction_id'">
+                    AND transaction_id = #{searchValue}
+                </when>
+
+                <when test="searchTarget == 'argument_like'">
+                    AND argument LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'response_like'">
+                    AND response LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'ip_address'">
+                    AND ip_address = #{searchValue}
+                </when>
             </choose>
             <if test="accountId != null and accountId != ''">
                 AND account_id = #{accountId}
@@ -48,6 +61,17 @@
             <if test="result != null and result != ''">
                 AND result = #{result}
             </if>
+            <choose>
+                <when test="startDtm != null and endDtm != null">
+                    AND reg_date BETWEEN #{startDtm} AND #{endDtm}
+                </when>
+                <when test="startDtm != null">
+                    AND reg_date >= #{startDtm}
+                </when>
+                <when test="endDtm != null">
+                    AND reg_date <= #{endDtm}
+                </when>
+            </choose>
         </where>
     </sql>
 

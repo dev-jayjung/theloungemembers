@@ -1,7 +1,6 @@
 package com.theloungemembers.web.api.dto;
 
 import com.theloungemembers.core.common.dto.BaseResult;
-import com.theloungemembers.core.type.ServiceStatus;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +18,6 @@ public class ApiMenuSearchResponse extends BaseResult {
     private String name;
 
     private Integer displayOrdinal;
-
-    private ServiceStatus onService;
 
     private String linkUrl;
 

@@ -69,8 +69,10 @@
                     AND reg_date >= #{startDtm}
                 </when>
                 <when test="endDtm != null">
-                    AND reg_date <= #{endDtm}
-                </when>
+                    <![CDATA[
+                        AND reg_date  <= #{endDtm}
+                    ]]>
+               </when>
             </choose>
         </where>
     </sql>

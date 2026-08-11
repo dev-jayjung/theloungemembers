@@ -86,7 +86,7 @@
 
     <select id="selectById" resultType="com.theloungemembers.core.api.ApiMenuResult">
         SELECT
-            uid
+               uid
              , group_code
              , code
              , name

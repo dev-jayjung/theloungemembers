@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiUsageLogMapper">
+
+    <select id="selectList" resultType="com.theloungemembers.core.api.ApiUsageLogResult">
+        SELECT
+               uid
+             , account_id
+             , api_code
+             , transaction_id
+             , result
+             , argument
+             , response
+             , ip_address
+             , reg_date
+        FROM api_usage_log
+        <include refid="where"/>
+        <include refid="CommonMapper.sortSql"/>
+        <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT
+               COUNT(1)
+          FROM api_usage_log
+          <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <choose>
+                <when test="searchTarget == 'uid'">
+                    AND uid = #{searchValue}::INTEGER
+                </when>
+                <when test="searchTarget == 'api_code'">
+                    AND api_code = #{searchValue}
+                </when>
+            </choose>
+            <if test="accountId != null and accountId != ''">
+                AND account_id = #{accountId}
+            </if>
+            <if test="apiCode != null and apiCode != ''">
+                AND api_code = #{apiCode}
+            </if>
+            <if test="result != null and result != ''">
+                AND result = #{result}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

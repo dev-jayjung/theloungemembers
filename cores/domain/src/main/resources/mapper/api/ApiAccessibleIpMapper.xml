@@ -25,7 +25,7 @@
         <include refid="CommonMapper.pageSql"/>
     </select>
 
-    <select id="selectUidByIpAddress" resultType="java.lang.Integer">
+    <select id="selectUidByIpAddress" resultType="java.lang.Long">
         SELECT uid
         FROM api_accessible_ip
         WHERE ip_address = #{ipAddress}

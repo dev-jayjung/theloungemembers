@@ -28,7 +28,7 @@ public class ApiUsageLogEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "uid", nullable = false)
-    private Integer uid;
+    private Long uid;
 
     @Column(name = "account_id")
     private String accountId;

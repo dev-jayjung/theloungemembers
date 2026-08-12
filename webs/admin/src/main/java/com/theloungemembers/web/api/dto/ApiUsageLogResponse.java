@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class ApiUsageLogResponse {
 
-    private Integer uid;
+    private Long uid;
 
     private String accountId;
 

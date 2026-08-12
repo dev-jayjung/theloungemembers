@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ApiAccessibleIpService extends AbstractBaseService<ApiAccessibleIpCommand, ApiAccessibleIpQuery, ApiAccessibleIpResult, Integer> {
+public class ApiAccessibleIpService extends AbstractBaseService<ApiAccessibleIpCommand, ApiAccessibleIpQuery, ApiAccessibleIpResult, Long> {
 
     private static final Pattern IPV4_PATTERN = Pattern.compile("^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)$");
 
@@ -32,7 +32,7 @@ public class ApiAccessibleIpService extends AbstractBaseService<ApiAccessibleIpC
             throw new BusinessException(CommonErrorCode.BAD_REQUEST, "IP 주소 형식이 올바르지 않습니다.");
         }
 
-        final Integer uid = apiAccessibleIpRepository.selectUidByIpAddress(command.getIpAddress());
+        final Long uid = apiAccessibleIpRepository.selectUidByIpAddress(command.getIpAddress());
         if (uid == null) {
             return;
         }

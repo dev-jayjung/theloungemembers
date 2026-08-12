@@ -58,7 +58,7 @@ public class ApiAccessibleIpRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Integer id, @RequestBody ApiAccessibleIpCreateRequest request) {
+    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id, @RequestBody ApiAccessibleIpCreateRequest request) {
         final ApiAccessibleIpCommand command = modelMapperHelper.map(request, ApiAccessibleIpCommand.class);
         command.setUid(id);
         apiAccessibleIpService.validate(command);

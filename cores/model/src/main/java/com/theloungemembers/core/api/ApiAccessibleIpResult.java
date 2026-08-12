@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class ApiAccessibleIpResult extends BaseResult {
 
-    private Integer uid;
+    private Long uid;
 
     private String ipAddress;
 

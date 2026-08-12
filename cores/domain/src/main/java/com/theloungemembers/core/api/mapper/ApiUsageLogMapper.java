@@ -10,6 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
  * API 이용 로그 쿼리
  */
 @Mapper
-public interface ApiUsageLogMapper extends BaseMapper<ApiUsageLogQuery, ApiUsageLogResult, Integer> {
+public interface ApiUsageLogMapper extends BaseMapper<ApiUsageLogQuery, ApiUsageLogResult, Long> {
 
 }

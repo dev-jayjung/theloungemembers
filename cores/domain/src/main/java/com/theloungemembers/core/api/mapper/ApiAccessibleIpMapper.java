@@ -10,8 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
  * API 접속 허용 IP 쿼리
  */
 @Mapper
-public interface ApiAccessibleIpMapper extends BaseMapper<ApiAccessibleIpQuery, ApiAccessibleIpResult, Integer> {
+public interface ApiAccessibleIpMapper extends BaseMapper<ApiAccessibleIpQuery, ApiAccessibleIpResult, Long> {
 
-    Integer selectUidByIpAddress(String ipAddress);
+    Long selectUidByIpAddress(String ipAddress);
 
 }

@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class ApiUsageLogCommand {
 
-    private Integer uid;
+    private Long uid;
 
 }

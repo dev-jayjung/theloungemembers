@@ -14,6 +14,6 @@ import lombok.RequiredArgsConstructor;
  */
 @Repository
 @RequiredArgsConstructor
-public class ApiUsageLogRepository extends AbstractBaseRepository<ApiUsageLogCommand, ApiUsageLogQuery, ApiUsageLogResult, Integer, ApiUsageLogEntity, ApiUsageLogMapper, ApiUsageLogJpaRepository> {
+public class ApiUsageLogRepository extends AbstractBaseRepository<ApiUsageLogCommand, ApiUsageLogQuery, ApiUsageLogResult, Long, ApiUsageLogEntity, ApiUsageLogMapper, ApiUsageLogJpaRepository> {
 
 }

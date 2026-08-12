@@ -10,6 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ApiUsageLogService extends AbstractBaseService<ApiUsageLogCommand, ApiUsageLogQuery, ApiUsageLogResult, Integer> {
+public class ApiUsageLogService extends AbstractBaseService<ApiUsageLogCommand, ApiUsageLogQuery, ApiUsageLogResult, Long> {
 
 }

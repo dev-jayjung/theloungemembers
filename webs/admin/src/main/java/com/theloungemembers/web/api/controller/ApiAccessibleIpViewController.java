@@ -38,7 +38,7 @@ public class ApiAccessibleIpViewController {
     }
 
     @GetMapping("/detail")
-    public String detailForm(@RequestParam Integer id, Model model) {
+    public String detailForm(@RequestParam Long id, Model model) {
 
         final ApiAccessibleIpResult menu = apiAccessibleIpService.get(id);
         model.addAttribute("accessibleIp", modelMapperHelper.map(menu, ApiAccessibleIpResponse.class));

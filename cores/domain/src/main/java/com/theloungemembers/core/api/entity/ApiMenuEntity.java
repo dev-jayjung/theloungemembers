@@ -45,5 +45,4 @@ public class ApiMenuEntity extends BaseEntity {
     @Column
     private String memo;
 
-
 }

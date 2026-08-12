@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 public class ApiAccessibleIpRepository
     extends AbstractBaseRepository<ApiAccessibleIpCommand, ApiAccessibleIpQuery, ApiAccessibleIpResult, Integer, ApiAccessibleIpEntity, ApiAccessibleIpMapper, ApiAccessibleIpJpaRepository> {
 
-
     public Integer selectUidByIpAddress(String ipAddress) {
         return mapper.selectUidByIpAddress(ipAddress);
     }

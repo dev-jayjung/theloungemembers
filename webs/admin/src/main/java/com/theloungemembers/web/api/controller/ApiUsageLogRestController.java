@@ -42,5 +42,4 @@ public class ApiUsageLogRestController {
         return ResponseUtil.success(page.map(modelMapperHelper.map(ApiUsageLogResponse.class)));
     }
 
-
 }

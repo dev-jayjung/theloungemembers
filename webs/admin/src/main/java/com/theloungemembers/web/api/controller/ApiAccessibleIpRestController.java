@@ -66,5 +66,4 @@ public class ApiAccessibleIpRestController {
         return ResponseUtil.success();
     }
 
-
 }

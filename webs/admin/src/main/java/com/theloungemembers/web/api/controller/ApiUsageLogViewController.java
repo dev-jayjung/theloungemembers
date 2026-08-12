@@ -46,5 +46,4 @@ public class ApiUsageLogViewController {
         return "api/usage_log_list";
     }
 
-
 }

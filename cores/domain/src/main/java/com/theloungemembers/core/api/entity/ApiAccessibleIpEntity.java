@@ -33,5 +33,4 @@ public class ApiAccessibleIpEntity extends BaseEntity {
     @Column
     private String memo;
 
-
 }

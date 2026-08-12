@@ -21,7 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminMenuService extends AbstractBaseService<ApiMenuCommand, AdminMenuQuery, AdminMenuResult, Long> {
     private final AdminMenuRepository adminMenuRepository;
 
-    @Cacheable(value = "adminMenuListCache", key = "#query?.workerId")
+    @Cacheable(value = "adminMenuListCache", key = "'all'")
+    // @Cacheable(value = "adminMenuListCache", key = "'#query?.workerId'")
     public List<AdminMenuResult> getMenuList(AdminMenuQuery query) {
         AssertUtil.notNull(query);
 
@@ -41,8 +42,8 @@ public class AdminMenuService extends AbstractBaseService<ApiMenuCommand, AdminM
     }
 
 // TODO 로그인 기능 완료되면 추후 로그인 아이디 기준으로 캐시 적용
-//    @Cacheable(value = "adminBookmarkCache", key = "'all'")
-    @Cacheable(value = "adminBookmarkCache", key = "#query?.workerId")
+    @Cacheable(value = "adminBookmarkCache", key = "'all'")
+    // @Cacheable(value = "adminBookmarkCache", key = "#query?.workerId")
     public List<AdminMenuResult> getBookmarkList(AdminMenuQuery query) {
         AssertUtil.notNull(query);
 

@@ -11,12 +11,10 @@ import org.springframework.util.StringUtils;
 import java.util.regex.Pattern;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * API 접속 허용 IP 관리 서비스
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApiAccessibleIpService extends AbstractBaseService<ApiAccessibleIpCommand, ApiAccessibleIpQuery, ApiAccessibleIpResult, Long> {

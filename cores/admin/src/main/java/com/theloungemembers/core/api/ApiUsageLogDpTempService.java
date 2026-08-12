@@ -8,6 +8,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ApiUsageLogService extends AbstractBaseService<ApiUsageLogCommand, ApiUsageLogQuery, ApiUsageLogResult, Long> {
+public class ApiUsageLogDpTempService extends AbstractBaseService<ApiUsageLogDpTempCommand, ApiUsageLogDpTempQuery, ApiUsageLogDpTempResult, Long> {
 
 }

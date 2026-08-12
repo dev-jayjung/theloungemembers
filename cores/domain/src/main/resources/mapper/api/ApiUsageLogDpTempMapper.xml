@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiUsageLogDpTempMapper">
+
+    <select id="selectList" resultType="com.theloungemembers.core.api.ApiUsageLogDpTempResult">
+        SELECT
+               uid
+             , coupon_num
+             , coupon_type
+             , lounge_code
+             , api_code
+             , account_id
+             , transaction_id
+             , action_failure_code
+             , action_failure_reason
+             , ip_address
+             , log_reg_date
+        FROM api_usage_log_dp_temp
+          <include refid="where"/>
+          <include refid="CommonMapper.sortSql"/>
+          <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT
+               COUNT(1)
+          FROM api_usage_log_dp_temp
+          <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <if test="uid != null and uid != ''">
+                AND uid = #{uid}
+            </if>
+            <if test="couponNum != null and couponNum != ''">
+                AND coupon_num = #{couponNum}
+            </if>
+            <if test="loungeCode != null and loungeCode != ''">
+                AND lounge_code = #{loungeCode}
+            </if>
+            <if test="apiCode != null and apiCode != ''">
+                AND api_code = #{apiCode}
+            </if>
+            <if test="transactionId != null and transactionId != ''">
+                AND transaction_id = #{transactionId}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

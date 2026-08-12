@@ -13,12 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * API 메뉴 관리 서비스
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApiMenuService extends AbstractBaseService<ApiMenuCommand, ApiMenuQuery, ApiMenuResult, Long> {

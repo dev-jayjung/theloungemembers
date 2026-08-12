@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title>DP API 이용 로그 조회</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let apiUsageLogDpTempGrid;
+
+        $(document).ready(function() {
+            // Tabulator 그리드 생성
+            createApiUsageLogDpTempGrid();
+        });
+
+        function createApiUsageLogDpTempGrid() {
+            apiUsageLogDpTempGrid = initTabulatorGrid('#apiUsageLogDpTempList', {
+                ajaxURL: '/api/api-usage-log-dp-temps',
+
+                // 검색 폼 파라미터 지정
+                ajaxParams: function() {
+                    return $('#searchForm').serializeJson();
+                },
+
+                columns: [
+                    { title: '코드', field: 'uid', hozAlign: 'center' },
+                    { title: '쿠폰번호', field: 'couponNum', hozAlign: 'center' },
+                    { title: '쿠폰유형', field: 'couponType', hozAlign: 'center' },
+                    { title: '라운지코드', field: 'loungeCode', hozAlign: 'center' },
+                    { title: 'API 코드', field: 'apiCode', hozAlign: 'center' },
+                    { title: '접속 계정', field: 'accountId', hozAlign: 'center' },
+                    { title: '트랜잭션 ID', field: 'transactionId', hozAlign: 'left' },
+                    { title: 'IP 주소', field: 'ipAddress', hozAlign: 'center' },
+                    { title: '로그 등록일시', field: 'logRegDate', hozAlign: 'center' },
+                    { title: '실패 코드', field: 'actionFailureCode', hozAlign: 'center' },
+                    { title: '실패 사유', field: 'actionFailureReason', width: 350, hozAlign: 'left' }
+                ]
+            });
+        }
+
+        // 검색
+        function reloadGrid() {
+            if (apiUsageLogDpTempGrid) {
+                apiUsageLogDpTempGrid.setData();
+            }
+        }
+
+        // 초기화
+        function resetSearchForm() {
+            resetForm('searchForm');
+        }
+
+        function downloadExcel() {
+            apiUsageLogDpTempGrid.download('xlsx', 'DP_API_이용_로그_목록.xlsx');
+        }
+    </script>
+</th:block>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 검색 조건 박스 -->
+        <div class="table_type1">
+            <form id="searchForm" name="searchForm" method="get">
+                <table>
+                    <colgroup>
+                        <col style="width:12%;">
+                        <col>
+                        <col style="width:12%;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">코드</th>
+                            <td>
+                                <input type="text" name="uid" class="wth150" placeholder="코드 입력">
+                            </td>
+                            <th scope="row">API 코드</th>
+                            <td>
+                                <input type="text" name="apiCode" class="wth150" placeholder="API 코드 입력">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">쿠폰번호</th>
+                            <td>
+                                <input type="text" name="couponNum" class="wth150" placeholder="쿠폰번호 입력">
+                            </td>
+                            <th scope="row">라운지코드</th>
+                            <td>
+                                <input type="text" name="loungeCode" class="wth150" placeholder="라운지코드 입력">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">트랜잭션 ID</th>
+                            <td colspan="3">
+                                <input type="text" name="transactionId" class="wth150" placeholder="트랜잭션 ID 입력">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="btn_area_center">
+            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
+            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+        </div>
+
+        <div class="mTitle gTitle">
+            <h2>DP API 이용 로그 목록</h2>
+        </div>
+        <div class="mButton typeBorad">
+            <div class="leftInner">
+                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+            </div>
+        </div>
+
+        <!-- Tabulator 그리드가 위치할 영역 -->
+        <div class="mModule">
+            <div id="apiUsageLogDpTempList"></div>
+        </div>
+    </div>
+</body>
+</html>

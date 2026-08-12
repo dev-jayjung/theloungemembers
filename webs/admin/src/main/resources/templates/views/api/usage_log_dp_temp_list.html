@@ -56,6 +56,27 @@
         function downloadExcel() {
             apiUsageLogDpTempGrid.download('xlsx', 'DP_API_이용_로그_목록.xlsx');
         }
+
+        // 동기화 진행
+        function syncData() {
+            if (!confirm('동기화 작업을 진행하시겠습니까?')) {
+                return;
+            }
+
+            const options = {
+                url: /*[[@{/api/api-usage-log-dp-temps/sync}]]*/ '/api/api-usage-log-dp-temps/sync',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    alert('동기화 작업이 완료되었습니다. (' + result.data + '건)');
+                    reloadGrid();
+                }
+            };
+
+            ajax.call(options);
+        }
     </script>
 </th:block>
 
@@ -114,6 +135,7 @@
         </div>
         <div class="mButton typeBorad">
             <div class="leftInner">
+                <button type="button" onclick="syncData();" class="btn_type1">동기화 진행</button>
                 <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
             </div>
         </div>

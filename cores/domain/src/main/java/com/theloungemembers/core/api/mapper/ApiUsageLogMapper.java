@@ -6,10 +6,14 @@ import com.theloungemembers.core.common.crud.BaseMapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * API 이용 로그 쿼리
  */
 @Mapper
 public interface ApiUsageLogMapper extends BaseMapper<ApiUsageLogQuery, ApiUsageLogResult, Long> {
+
+    List<ApiUsageLogResult> selectDragonpassFailList(Long uid);
 
 }

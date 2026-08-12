@@ -7,6 +7,8 @@ import com.theloungemembers.core.common.crud.AbstractBaseRepository;
 
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -16,4 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApiUsageLogRepository extends AbstractBaseRepository<ApiUsageLogCommand, ApiUsageLogQuery, ApiUsageLogResult, Long, ApiUsageLogEntity, ApiUsageLogMapper, ApiUsageLogJpaRepository> {
 
+    public List<ApiUsageLogResult> selectDragonpassFailList(Long uid) {
+        return mapper.selectDragonpassFailList(uid);
+    }
 }

@@ -31,6 +31,11 @@
           <include refid="where"/>
     </select>
 
+    <select id="selectLatestUid" resultType="java.lang.Long">
+        SELECT MAX(uid)
+        FROM api_usage_log_dp_temp
+    </select>
+
     <sql id="where">
         <where>
             <if test="uid != null and uid != ''">

@@ -29,6 +29,25 @@
           <include refid="where"/>
     </select>
 
+    <select id="selectDragonpassFailList" resultType="com.theloungemembers.core.api.ApiUsageLogResult">
+        SELECT
+               uid
+             , account_id
+             , api_code
+             , transaction_id
+             , result
+             , argument
+             , response
+             , ip_address
+             , reg_date
+         FROM api_usage_log
+        WHERE uid > #{uid}
+          AND account_id = 'dragonpass'
+          AND result = 'F'
+        ORDER BY uid ASC
+        LIMIT 2000
+    </select>
+
     <sql id="where">
         <where>
             <choose>

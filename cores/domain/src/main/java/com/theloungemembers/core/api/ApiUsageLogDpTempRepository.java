@@ -13,4 +13,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApiUsageLogDpTempRepository
     extends AbstractBaseRepository<ApiUsageLogDpTempCommand, ApiUsageLogDpTempQuery, ApiUsageLogDpTempResult, Long, ApiUsageLogDpTempEntity, ApiUsageLogDpTempMapper, ApiUsageLogDpTempJpaRepository> {
+
+    public Long selectLatestUid() {
+        return mapper.selectLatestUid();
+    }
 }

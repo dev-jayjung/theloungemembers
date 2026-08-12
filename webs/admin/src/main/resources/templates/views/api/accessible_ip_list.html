@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title>API 정보 관리</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let apiAccessibleIpGrid;
+
+        $(document).ready(function() {
+            // Tabulator 그리드 생성
+            createApiAccessibleIpGrid();
+
+            $('#searchForm').on('change', '#searchTarget', function () {
+                const $searchValue = $('#searchValue');
+                if (!!$(this).val()) {
+                    $searchValue.prop('disabled', false);
+                } else {
+                    $searchValue.val('');
+                    $searchValue.prop('disabled', true);
+                }
+            });
+        });
+
+        function createApiAccessibleIpGrid() {
+            apiAccessibleIpGrid = initTabulatorGrid('#apiAccessibleIpList', {
+                ajaxURL: '/api/api-accessible-ips',
+
+                // 검색 폼 파라미터 지정
+                ajaxParams: function() {
+                    return $('#searchForm').serializeJson();
+                },
+
+                useCreatedAt: true,
+                useUpdatedAt: true,
+                columns: [
+                    { title: '코드', field: 'uid', hozAlign: 'center' },
+                    {
+                        title: 'IP 주소(→)',
+                        field: 'ipAddress',
+                        hozAlign: 'center',
+                        formatter: function(cell){
+                            return `<span style='text-decoration:underline;'>${cell.getValue() || ''}</span>`;
+                        }
+                    },
+                    {
+                        title: '사용',
+                        field: 'onService',
+                        hozAlign: 'center',
+                        formatter: function(cell){
+                            return cell.getValue() === '1' ? 'O' : '<p style="color:red;">X</p>';
+                        },
+                    },
+                    { title: '메모', field: 'memo', hozAlign: 'left' }
+                ]
+            });
+
+            // IP 주소 클릭 시 수정 상세 이동
+            apiAccessibleIpGrid.on('cellClick', function(e, cell) {
+                if (cell.getField() === 'ipAddress'){
+                    const rowData = cell.getRow().getData();
+                    submitModifyForm(rowData.uid);
+                }
+            });
+        }
+
+        // 검색
+        function reloadGrid() {
+            const searchTarget = $('#searchTarget').val();
+            const searchValue = $('#searchValue').val();
+
+            if (!!searchTarget && !searchValue) {
+                alert('검색어를 입력해 주세요.');
+                return;
+            }
+
+            if (apiAccessibleIpGrid) {
+                apiAccessibleIpGrid.setData();
+            }
+        }
+
+        // 등록 이동
+        function submitAddForm() {
+            createTargetFormSubmit({
+                id: 'apiAccessibleIpView',
+                url: '/api-accessible-ips/new'
+            });
+        }
+
+        // 수정 이동
+        function submitModifyForm(uid) {
+            createTargetFormSubmit({
+                id: 'apiAccessibleIpView',
+                url: `/api-accessible-ips/detail?id=${uid}`
+            });
+        }
+
+        // 초기화
+        function resetSearchForm() {
+            resetForm('searchForm');
+        }
+
+        function downloadExcel() {
+            apiAccessibleIpGrid.download('xlsx', 'API_접속_허용_IP_목록.xlsx');
+        }
+    </script>
+</th:block>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 검색 조건 박스 -->
+        <div class="table_type1">
+            <form id="searchForm" name="searchForm" method="get">
+                <table>
+                    <colgroup>
+                        <col style="width:12%;">
+                        <col>
+                        <col style="width:12%;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">검색조건</th>
+                            <td>
+                                <select name="searchTarget" id="searchTarget" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="uid">코드</option>
+                                    <option value="ip_address">IP 주소</option>
+                                </select>
+                                <input type="text" name="searchValue" id="searchValue" class="wth150" placeholder="검색어 입력" disabled>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">사용 여부</th>
+                            <td>
+                                <select name="onService" class="wth100">
+                                    <option value="">전체</option>
+                                    <option th:each="item : ${ServiceStatus}"
+                                            th:value="${item.code}"
+                                            th:text="${item.description}">
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="btn_area_center">
+            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
+            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+        </div>
+
+        <div class="mTitle gTitle">
+            <h2>API 접속 허영 IP 목록</h2>
+        </div>
+        <div class="mButton typeBorad">
+            <div class="leftInner">
+                <button type="button" onclick="submitAddForm();" class="btn_h25_type1">등록하기</button>
+                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+            </div>
+        </div>
+
+        <!-- Tabulator 그리드가 위치할 영역 -->
+        <div class="mModule">
+            <div id="apiAccessibleIpList"></div>
+        </div>
+    </div>
+</body>
+</html>

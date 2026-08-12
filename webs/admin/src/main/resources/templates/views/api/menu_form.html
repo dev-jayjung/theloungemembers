@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}"> <!-- Tiles 대신 타임리프 레이아웃 적용 -->
+
+<head>
+    <title th:text="${menu == null || menu.uid == null} ? 'API 메뉴 등록' : 'API 메뉴 상세'">API 메뉴 상세</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript" th:inline="javascript">
+        $(document).ready(function() {
+
+        });
+
+        // 등록
+        function menuInsert() {
+            if (!validate.check('menuForm')) {
+                return;
+            }
+
+            if (!confirm('등록 하시겠습니까?')) {
+                return;
+            }
+
+            const options = {
+                url: /*[[@{/api/api-menus}]]*/ '/api/api-menus',
+                data: $('#menuForm').serializeJson(),
+                sendType: 'json',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    const uid = result.data.uid;
+
+                    createTargetFormSubmit({
+                        id: 'apiMenuView',
+                        url: `/api-menus/detail?id=${uid}`
+                    });
+                }
+            };
+
+            ajax.call(options);
+        }
+
+        // 수정
+        function menuUpdate() {
+            if (!validate.check('menuForm')) {
+                return;
+            }
+            
+            if (!confirm('수정 하시겠습니까?')) {
+                return;
+            }
+
+            const uid = $('#uid').val();
+
+            const options = {
+                url: `/api/api-menus/${uid}`,
+                data: $('#menuForm').serializeJson(),
+                sendType: 'json',
+                type: 'PUT',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    createTargetFormSubmit({
+                        id: 'apiMenuView',
+                        url: `/api-menus/detail?id=${uid}`
+                    });
+                }
+            };
+            ajax.call(options);
+        }
+
+        // 팝업
+        function openMenuPop() {
+            openWindowPop({
+                url: '/api-menus/new',
+                width: '800',
+                height: '600',
+                target: 'apiMenuPop',
+                scrollbars: 'no',
+                resizable: 'no',
+                location: 'no',
+                menubar: 'no',
+                data: { uid: $('#uid').val() }
+            });
+        }
+
+    </script>
+</th:block>
+
+<th:block layout:fragment="content">
+<form name="menuForm" id="menuForm" method="post" th:object="${menu}">
+
+    <th:block th:if="${menu != null && menu.uid != null}">
+    <div class="mTitle gTitle">
+        <h2>기본정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>기본정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>코드 번호<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth200" name="uid" id="uid" title="코드 번호" th:field="*{uid}" disabled />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </th:block>
+
+    <div class="mTitle gTitle">
+        <h2>API 메뉴 정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>API 메뉴 정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>API 그룹<strong class="red">*</strong></th>
+                    <td>
+                        <select name="groupCode" class="wth300 validate[required]">
+                            <option value="">전체</option>
+                            <option th:each="api : ${apiMenuGroupList}"
+                                    th:value="${api.code}"
+                                    th:text="${api.name}"
+                                    th:selected="${menu?.groupCode == api.code}"></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>API 코드<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth400 validate[required]" name="code" id="code" th:field="*{code}" title="API 코드" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>API 이름<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth400 validate[required]" name="name" id="name" th:field="*{name}" title="API 이름" />
+                    </td>
+                </tr>
+                <tr>
+                   <th>사 용<strong class="red">*</strong></th>
+                   <td>
+                       <label class="fRadio" th:each="item, stat : ${ServiceStatus}">
+                           <input type="radio" name="onService" th:id="|onService${stat.index}|" th:value="${item.code}" th:checked="${menu?.onService == item}" >
+                           <span th:text="${item.description}"></span>
+                       </label>
+                   </td>
+                </tr>
+                <tr>
+                    <th>API 경로<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth400 validate[required]" name="linkUrl" id="linkUrl" th:field="*{linkUrl}" title="API 경로" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>표시 순서<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth400 validate[required]" name="displayOrdinal" id="displayOrdinal" th:field="*{displayOrdinal}" title="표시 순서" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mTitle gTitle">
+        <h2>기타정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>기타정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>메 모</th>
+                    <td colspan="3">
+                        <div class="fTextarea gFull">
+                            <textarea name="memo" id="memo" title="메 모" rows="100" cols="200" th:field="*{memo}" ></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if= "${menu != null && menu.uid != null}">
+                    <th>등록일 / 수정일</th>
+                    <td colspan="3"
+                        th:text="|${#temporals.format(menu.regDate, 'yyyy-MM-dd HH:mm:ss')} / ${#temporals.format(menu.updateDate, 'yyyy-MM-dd HH:mm:ss')}|">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+    <!-- 하단 버튼 영역 -->
+    <div class="btn_area_center">
+        <button type="button" onclick="menuInsert()" class="btn_type2" th:if="${menu == null || menu.uid == null}">등록</button>
+
+        <th:block th:if="${menu != null && menu.uid != null}">
+            <button type="button" onclick="menuUpdate();" class="btn_type2">수정</button>
+            <button type="button" onclick="openMenuPop();" class="btn_type2">test</button>
+        </th:block>
+
+        <button type="button" onclick="goUrl('/api-menus');" class="btn_type1">목록</button>
+    </div>
+</th:block>
+</html>

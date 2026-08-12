@@ -14,33 +14,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "api_menu")
-public class ApiMenuEntity extends BaseEntity {
+@Table(name = "api_accessible_ip")
+public class ApiAccessibleIpEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uid;
+    private Integer uid;
 
     @Column
-    private String groupCode;
-
-    @Column
-    private String code;
-
-    @Column
-    private String name;
-
-    @Column
-    private Integer displayOrdinal;
-
-    @Column
-    private String linkUrl;
+    private String ipAddress;
 
     @Column
     private String memo;

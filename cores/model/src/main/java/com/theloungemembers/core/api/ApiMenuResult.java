@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiMenuResult extends BaseResult {
+
     private Long uid;
 
     private String groupCode;
@@ -17,11 +18,12 @@ public class ApiMenuResult extends BaseResult {
 
     private String name;
 
-    private String displayOrdinal;
+    private Integer displayOrdinal;
 
     private ServiceStatus onService;
 
     private String linkUrl;
 
     private String memo;
+
 }

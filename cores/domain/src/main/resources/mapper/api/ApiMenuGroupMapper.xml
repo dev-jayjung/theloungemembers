@@ -45,6 +45,16 @@
           <include refid="where"/>
     </select>
 
+
+    <select id="existsCode" resultType="java.lang.Boolean">
+        SELECT 1
+          FROM api_menu_group
+         WHERE code = #{code}
+           AND on_service = '${@com.theloungemembers.core.type.ServiceStatus@IN_SERVICE.code}'
+         LIMIT 1
+    </select>
+
+
     <sql id="where">
         <where>
             <if test="onService != null">

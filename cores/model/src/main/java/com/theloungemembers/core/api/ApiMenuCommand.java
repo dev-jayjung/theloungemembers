@@ -8,15 +8,21 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiMenuCommand {
+
     private Long uid;
+
+    private String groupCode;
 
     private String code;
 
     private String name;
 
-    private String displayOrdinal;
+    private Integer displayOrdinal;
 
     private ServiceStatus onService;
 
+    private String linkUrl;
+
     private String memo;
+
 }

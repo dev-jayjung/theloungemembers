@@ -1,4 +1,4 @@
-package com.theloungemembers.core.api;
+package com.theloungemembers.web.api.dto;
 
 import com.theloungemembers.core.common.dto.PageRequest;
 import com.theloungemembers.core.type.ServiceStatus;
@@ -8,13 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiMenuQuery extends PageRequest {
-
-    private String groupCode;
-
-    private String code;
-
-    private String name;
+public class ApiAccessibleIpSearchRequest extends PageRequest {
 
     private ServiceStatus onService;
 

@@ -8,13 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiMenuQuery extends PageRequest {
-
-    private String groupCode;
-
-    private String code;
-
-    private String name;
+public class ApiAccessibleIpQuery extends PageRequest {
 
     private ServiceStatus onService;
 

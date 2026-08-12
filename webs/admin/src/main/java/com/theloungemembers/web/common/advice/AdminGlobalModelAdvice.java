@@ -60,10 +60,10 @@ public class AdminGlobalModelAdvice {
 //            boolean isAdmin = authentication.getAuthorities().stream()
 //                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-             String workerId = SecurityUtil.getWorkerId();
+            //  String workerId = SecurityUtil.getWorkerId();
              AdminMenuQuery query = new AdminMenuQuery();
-             query.setWorkerId(workerId);
-//            query.setAdmin(true);
+            //  query.setWorkerId(workerId);
+            query.setAdmin(true);
 
              // 모든 어드민 요청 시 LNB/즐겨찾기 메뉴 자동 주입
              List<AdminMenuResult> mainMenuList = adminMenuService.getMenuList(query);

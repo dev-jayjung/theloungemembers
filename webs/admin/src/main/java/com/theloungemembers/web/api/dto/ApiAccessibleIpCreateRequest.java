@@ -15,5 +15,4 @@ public class ApiAccessibleIpCreateRequest {
 
     private String memo;
 
-
 }

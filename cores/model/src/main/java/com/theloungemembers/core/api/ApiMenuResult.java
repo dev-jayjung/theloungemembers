@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ApiMenuResult extends BaseResult {
+
     private Long uid;
 
     private String groupCode;
@@ -24,4 +25,5 @@ public class ApiMenuResult extends BaseResult {
     private String linkUrl;
 
     private String memo;
+
 }

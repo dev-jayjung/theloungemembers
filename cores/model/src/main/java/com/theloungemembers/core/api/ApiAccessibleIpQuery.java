@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 public class ApiAccessibleIpQuery extends PageRequest {
 
-    
     private ServiceStatus onService;
 
 }

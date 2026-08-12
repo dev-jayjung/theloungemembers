@@ -15,5 +15,4 @@ public class ApiAccessibleIpResponse extends BaseResult {
 
     private String memo;
 
-
 }

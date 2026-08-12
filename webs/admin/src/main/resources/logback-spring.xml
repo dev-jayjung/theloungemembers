@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- 변수 지정 -->
-    <property name="LOG_DIR" value="/logs" />
+    <property name="LOG_DIR" value="./logs" />
     <property name="LOG_PATH_NAME" value="${LOG_DIR}/theloungemembers-admin" />
     <property name="ERROR_PATH_NAME" value="${LOG_DIR}/theloungemembers-admin-error" />
     <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] [%-5p] [%F]%M\(%L\) : %m%n"/>

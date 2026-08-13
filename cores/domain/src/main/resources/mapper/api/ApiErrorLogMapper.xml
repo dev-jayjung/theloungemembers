@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiErrorLogMapper">
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM api_error_log
+        <include refid="where"/>
+    </select>
+
+    <select id="selectList" resultType="com.theloungemembers.core.api.ApiErrorLogResult">
+        SELECT
+               uid
+             , account_id
+             , api_code
+             , transaction_id
+             , error_code
+             , error_msg
+             , error_sub_code
+             , error_sub_msg
+             , response
+             , argument_get
+             , argument_post
+             , argument_user_agent
+             , ip_address
+             , reg_date
+        FROM api_error_log
+        <include refid="where"/>
+        <include refid="CommonMapper.sortSql"/>
+        <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <choose>
+                <when test="searchTarget == 'uid'">
+                    AND uid = #{searchValue}::INTEGER
+                </when>
+                <when test="searchTarget == 'transaction_id'">
+                    AND transaction_id = #{searchValue}
+                </when>
+                <when test="searchTarget == 'error_code'">
+                    AND error_code = #{searchValue}
+                </when>
+                <when test="searchTarget == 'response_like'">
+                    AND response LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'argument_get_like'">
+                    AND argument_get LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'argument_post_like'">
+                    AND argument_post LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'ip_address'">
+                    AND ip_address = #{searchValue}
+                </when>
+            </choose>
+            <if test="accountId != null and accountId != ''">
+                AND account_id = #{accountId}
+            </if>
+            <if test="apiCode != null and apiCode != ''">
+                AND api_code = #{apiCode}
+            </if>
+            <choose>
+                <when test="startDtm != null and endDtm != null">
+                    AND reg_date BETWEEN #{startDtm} AND #{endDtm}
+                </when>
+                <when test="startDtm != null">
+                    AND reg_date >= #{startDtm}
+                </when>
+                <when test="endDtm != null">
+                    <![CDATA[
+                        AND reg_date  <= #{endDtm}
+                    ]]>
+                </when>
+            </choose>
+        </where>
+    </sql>
+
+</mapper>

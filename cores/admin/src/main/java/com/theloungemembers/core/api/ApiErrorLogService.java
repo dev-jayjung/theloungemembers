@@ -10,14 +10,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ApiErrorCodeService {
+public class ApiErrorLogService {
 
-    private final ApiErrorCodeRepository apiErrorCodeRepository;
+    private final ApiErrorLogRepository apiErrorLogRepository;
 
     @Transactional(readOnly = true)
-    public PageResponse<ApiErrorCodeResult> getPage(ApiErrorCodeQuery query) {
+    public PageResponse<ApiErrorLogResult> getPage(ApiErrorLogQuery query) {
         AssertUtil.notNull(query);
-        return apiErrorCodeRepository.selectPage(query);
+        return apiErrorLogRepository.selectPage(query);
     }
 
 }

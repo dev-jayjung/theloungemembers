@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title>API 에러 서브 코드 관리</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let apiErrorSubCodeGrid;
+
+        $(document).ready(function() {
+            // Tabulator 그리드 생성
+            createApiErrorSubCodeGrid();
+
+            $('#searchForm').on('change', '#searchTarget', function () {
+                const $searchValue = $('#searchValue');
+                if (!!$(this).val()) {
+                    $searchValue.prop('disabled', false);
+                } else {
+                    $searchValue.val('');
+                    $searchValue.prop('disabled', true);
+                }
+            });
+        });
+
+        function createApiErrorSubCodeGrid() {
+            apiErrorSubCodeGrid = initTabulatorGrid('#apiErrorSubCodeList', {
+                ajaxURL: '/api/api-error-sub-codes',
+
+                // 검색 폼 파라미터 지정
+                ajaxParams: function() {
+                    return $('#searchForm').serializeJson();
+                },
+
+                useCreatedAt: true,
+                columns: [
+                    { title: '코드', field: 'uid', hozAlign: 'center' },
+                    { title: '에러 코드', field: 'errorSubCode', hozAlign: 'center' },
+                    { title: '에러 내용(en)', field: 'errorSubMeaning', hozAlign: 'left' },
+                    { title: '에러 내용(ko)', field: 'errorSubMeaningKo', hozAlign: 'left' },
+                    { title: '메모', field: 'memo', hozAlign: 'left' }
+                ]
+            });
+        }
+
+        // 검색
+        function reloadGrid() {
+            const searchTarget = $('#searchTarget').val();
+            const searchValue = $('#searchValue').val();
+
+            if (!!searchTarget && !searchValue) {
+                alert('검색어를 입력해 주세요.');
+                return;
+            }
+
+            if (apiErrorSubCodeGrid) {
+                apiErrorSubCodeGrid.setData();
+            }
+        }
+
+        // 초기화
+        function resetSearchForm() {
+            resetForm('searchForm');
+        }
+
+        function downloadExcel() {
+            apiErrorSubCodeGrid.download('xlsx', 'API_에러_서브_코드_목록.xlsx');
+        }
+    </script>
+</th:block>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 검색 조건 박스 -->
+        <div class="table_type1">
+            <form id="searchForm" name="searchForm" method="get">
+                <table>
+                    <colgroup>
+                        <col style="width:12%;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">검색조건</th>
+                            <td>
+                                <select name="searchTarget" id="searchTarget" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="uid">코드</option>
+                                    <option value="error_sub_code">에러 코드</option>
+                                    <option value="error_sub_meaning_like">에러 내용</option>
+                                    <option value="error_sub_meaning_ko_like">한글 에러 내용</option>
+                                </select>
+                                <input type="text" name="searchValue" id="searchValue" class="wth150" placeholder="검색어 입력" disabled>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="btn_area_center">
+            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
+            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+        </div>
+
+        <div class="mTitle gTitle">
+            <h2>API 에러 서브 코드 목록</h2>
+        </div>
+        <div class="mButton typeBorad">
+            <div class="leftInner">
+                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+            </div>
+        </div>
+
+        <!-- Tabulator 그리드가 위치할 영역 -->
+        <div class="mModule">
+            <div id="apiErrorSubCodeList"></div>
+        </div>
+    </div>
+</body>
+</html>

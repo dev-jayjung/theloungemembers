@@ -29,7 +29,7 @@
           <include refid="where"/>
     </select>
 
-    <select id="selectDragonpassFailList" resultType="com.theloungemembers.core.api.ApiUsageLogResult">
+    <select id="selectDpFailList" resultType="com.theloungemembers.core.api.ApiUsageLogResult">
         SELECT
                uid
              , account_id

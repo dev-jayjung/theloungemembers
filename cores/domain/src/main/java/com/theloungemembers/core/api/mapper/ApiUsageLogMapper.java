@@ -14,6 +14,6 @@ import java.util.List;
 @Mapper
 public interface ApiUsageLogMapper extends BaseMapper<ApiUsageLogQuery, ApiUsageLogResult, Long> {
 
-    List<ApiUsageLogResult> selectDragonpassFailList(Long uid);
+    List<ApiUsageLogResult> selectDpFailList(Long uid);
 
 }

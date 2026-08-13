@@ -34,7 +34,7 @@ public class ApiUsageLogDpTempService extends AbstractBaseService<ApiUsageLogDpT
         // 마지막 로그 키 조회
         final Long latestUid = getLatestUid();
         // 동기화 대상 목록 조회
-        final List<ApiUsageLogResult> logList = apiUsageLogRepository.selectDragonpassFailList(latestUid);
+        final List<ApiUsageLogResult> logList = apiUsageLogRepository.selectDpFailList(latestUid);
 
         int syncedCount = 0;
 

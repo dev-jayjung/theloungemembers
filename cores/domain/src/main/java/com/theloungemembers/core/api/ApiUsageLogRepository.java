@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Repository
 @RequiredArgsConstructor
-public class ApiUsageLogRepository extends AbstractBaseRepository<ApiUsageLogCommand, ApiUsageLogQuery, ApiUsageLogResult, Long, ApiUsageLogEntity, ApiUsageLogMapper, ApiUsageLogJpaRepository> {
+public class ApiUsageLogRepository extends AbstractBaseRepository<Void, ApiUsageLogQuery, ApiUsageLogResult, Long, ApiUsageLogEntity, ApiUsageLogMapper, ApiUsageLogJpaRepository> {
 
     public List<ApiUsageLogResult> selectDpFailList(Long uid) {
         return mapper.selectDpFailList(uid);

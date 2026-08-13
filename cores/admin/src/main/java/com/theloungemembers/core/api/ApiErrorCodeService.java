@@ -8,6 +8,5 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ApiUsageLogService extends AbstractBaseService<Void, ApiUsageLogQuery, ApiUsageLogResult, Long> {
-
+public class ApiErrorCodeService extends AbstractBaseService<Void, ApiErrorCodeQuery, ApiErrorCodeResult, Long> {
 }

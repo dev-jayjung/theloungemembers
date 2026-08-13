@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class ApiErrorCodeResponse {
 
-    private Long id;
+    private Long uid;
 
     private String errorCode;
 

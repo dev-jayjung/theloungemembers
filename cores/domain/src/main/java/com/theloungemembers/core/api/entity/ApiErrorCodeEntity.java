@@ -28,7 +28,7 @@ public class ApiErrorCodeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "uid", nullable = false)
-    private Long id;
+    private Long uid;
 
     @Column(name = "error_code", nullable = false)
     private String errorCode;

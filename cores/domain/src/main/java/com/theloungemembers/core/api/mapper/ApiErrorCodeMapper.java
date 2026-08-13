@@ -8,6 +8,4 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface ApiErrorCodeMapper extends BaseMapper<ApiErrorCodeQuery, ApiErrorCodeResult, Long> {
-
-
 }

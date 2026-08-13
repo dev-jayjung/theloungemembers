@@ -20,4 +20,5 @@ public class ApiErrorSubCodeService {
 
         return apiErrorSubCodeRepository.selectPage(query);
     }
+
 }

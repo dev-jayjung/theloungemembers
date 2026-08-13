@@ -7,8 +7,8 @@ import com.theloungemembers.core.common.dto.PageResponse;
 import com.theloungemembers.core.dto.ApiResponse;
 import com.theloungemembers.core.helper.ModelMapperHelper;
 import com.theloungemembers.core.util.ResponseUtil;
-import com.theloungemembers.web.api.dto.ApiErrorCodeSearchRequest;
 import com.theloungemembers.web.api.dto.ApiErrorSubCodeResponse;
+import com.theloungemembers.web.api.dto.ApiErrorSubCodeSearchRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ public class ApiErrorSubCodeRestController {
 
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ApiErrorSubCodeResponse>>> getList(ApiErrorCodeSearchRequest request) {
+    public ResponseEntity<ApiResponse<PageResponse<ApiErrorSubCodeResponse>>> getList(ApiErrorSubCodeSearchRequest request) {
         final ApiErrorSubCodeQuery query = modelMapperHelper.map(request, ApiErrorSubCodeQuery.class);
         final PageResponse<ApiErrorSubCodeResult> page = apiErrorSubCodeService.getPage(query);
         return ResponseUtil.success(page.map(modelMapperHelper.map(ApiErrorSubCodeResponse.class)));

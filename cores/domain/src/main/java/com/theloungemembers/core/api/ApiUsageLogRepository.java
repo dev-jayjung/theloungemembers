@@ -1,9 +1,9 @@
 package com.theloungemembers.core.api;
 
-import com.theloungemembers.core.api.entity.ApiUsageLogEntity;
 import com.theloungemembers.core.api.mapper.ApiUsageLogMapper;
-import com.theloungemembers.core.api.repository.ApiUsageLogJpaRepository;
-import com.theloungemembers.core.common.crud.AbstractBaseRepository;
+import com.theloungemembers.core.common.dto.PageResponse;
+import com.theloungemembers.core.util.AssertUtil;
+import com.theloungemembers.core.util.PageUtil;
 
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +16,14 @@ import lombok.RequiredArgsConstructor;
  */
 @Repository
 @RequiredArgsConstructor
-public class ApiUsageLogRepository extends AbstractBaseRepository<Void, ApiUsageLogQuery, ApiUsageLogResult, Long, ApiUsageLogEntity, ApiUsageLogMapper, ApiUsageLogJpaRepository> {
+public class ApiUsageLogRepository {
+
+    private final ApiUsageLogMapper mapper;
+
+    public PageResponse<ApiUsageLogResult> selectPage(ApiUsageLogQuery query) {
+        AssertUtil.notNull(query);
+        return PageUtil.getPage(query, () -> mapper.selectList(query), () -> mapper.selectCount(query));
+    }
 
     public List<ApiUsageLogResult> selectDpFailList(Long uid) {
         return mapper.selectDpFailList(uid);

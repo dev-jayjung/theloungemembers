@@ -7,6 +7,7 @@ import com.theloungemembers.core.util.PageUtil;
 
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -28,4 +29,9 @@ public class ApiUsageLogRepository {
     public List<ApiUsageLogResult> selectDpFailList(Long uid) {
         return mapper.selectDpFailList(uid);
     }
+
+    public OffsetDateTime selectDpLatestRegDate(List<String> apiCodes) {
+        return mapper.selectDpLatestRegDate(apiCodes);
+    }
+    
 }

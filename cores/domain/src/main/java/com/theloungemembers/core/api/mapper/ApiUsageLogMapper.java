@@ -5,7 +5,9 @@ import com.theloungemembers.core.api.ApiUsageLogResult;
 import com.theloungemembers.core.common.crud.BaseMapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -15,5 +17,7 @@ import java.util.List;
 public interface ApiUsageLogMapper extends BaseMapper<ApiUsageLogQuery, ApiUsageLogResult, Long> {
 
     List<ApiUsageLogResult> selectDpFailList(Long uid);
+
+    OffsetDateTime selectDpLatestRegDate(@Param("apiCodes") List<String> apiCodes);
 
 }

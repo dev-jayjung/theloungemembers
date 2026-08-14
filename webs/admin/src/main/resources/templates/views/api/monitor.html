@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title>API 모니터링</title>
+</head>
+
+<th:block layout:fragment="script">
+    <style>
+        .storage { width: 550px; padding: 10px 20px; margin-bottom: 10px; background: none; border: 1px solid #006cbd; border-radius: 20px; color: #006cbd; font-size: 13pt; font-weight: normal; }
+    </style>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div class="mTitle gTitle">
+        <h2>API 모니터링</h2>
+    </div>
+    <div class="mModule">
+        <p class="storage">
+            <strong>드래곤패스 API 통신 기록 모니터링 알림</strong><br/>
+            드래곤패스의 마지막 이용권 사용 기록: <span th:text="${lastUsageRegDate != null ? #temporals.format(lastUsageRegDate, 'yyyy-MM-dd HH:mm:ss') : '기록 없음'}"></span><br/>
+            60분 초과 시 수신 대상자:<br/>
+            <th:block th:each="receiver : ${apiReceiverList}">
+                &nbsp;&nbsp;- <span th:text="${receiver.userName}"></span>: <span th:text="${receiver.phoneNum}"></span><br/>
+            </th:block>
+        </p>
+        <p class="storage">
+            <strong>API 통신 오류 시 문자 발송</strong> <br/>(시스템관리(메시지) &gt; SMS 수신관리 확인 가능) <br/>
+            API 실패 모니터링 추가 작업 (20분 마다 체크)<br/>30분 동안 API 계정 별 API 통신 실패가 10건 이상이면 메시지 발송<br/>
+            발송 대상자 : <br/>
+            <th:block th:each="receiver : ${apiFailReceiverList}">
+                &nbsp;&nbsp;- <span th:text="${receiver.userName}"></span>: <span th:text="${receiver.phoneNum}"></span><br/>
+            </th:block>
+        </p>
+    </div>
+</th:block>
+</html>

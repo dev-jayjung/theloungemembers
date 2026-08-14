@@ -48,6 +48,18 @@
         LIMIT 2000
     </select>
 
+    <select id="selectDpLatestRegDate" resultType="java.time.OffsetDateTime">
+        SELECT reg_date
+         FROM api_usage_log
+        WHERE account_id = 'dragonpass'
+          AND api_code IN
+        <foreach collection="apiCodes" item="apiCode" open="(" separator="," close=")">
+            #{apiCode}
+        </foreach>
+        ORDER BY uid DESC
+        LIMIT 1
+    </select>
+
     <sql id="where">
         <where>
             <choose>

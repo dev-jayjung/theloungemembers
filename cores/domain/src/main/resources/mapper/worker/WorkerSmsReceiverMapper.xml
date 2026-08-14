@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.worker.mapper.WorkerSmsReceiverMapper">
+
+    <select id="selectListByConcernPageCode" resultType="com.theloungemembers.core.worker.WorkerSmsReceiverResult">
+        SELECT
+               wsr.uid
+             , wsr.account_id
+             , wsr.user_name
+             , wsr.phone_num
+             , wsr.email_address
+             , wsr.role
+          FROM worker_sms_receiver wsr
+          JOIN worker_sms_concern_page_receiver wscpr ON wsr.account_id = wscpr.receiver_id
+          JOIN worker_sms_concern_page wscp ON wscpr.concern_page_code = wscp.code
+         WHERE wscpr.concern_page_code = #{concernPageCode}
+           AND wscpr.on_service = '1'
+           AND wscp.on_service = '1'
+           AND wsr.on_service = '1'
+    </select>
+
+</mapper>

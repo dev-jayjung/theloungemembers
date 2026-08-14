@@ -6,6 +6,9 @@ import com.theloungemembers.core.util.AssertUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,5 +22,12 @@ public class ApiUsageLogService {
         AssertUtil.notNull(query);
 
         return apiUsageLogRepository.selectPage(query);
+    }
+
+    @Transactional(readOnly = true)
+    public OffsetDateTime getDpLatestRegDate(List<String> apiCodes) {
+        AssertUtil.notNull(apiCodes);
+
+        return apiUsageLogRepository.selectDpLatestRegDate(apiCodes);
     }
 }

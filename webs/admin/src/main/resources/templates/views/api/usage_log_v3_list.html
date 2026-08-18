@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title>V3 API 이용 로그 조회</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let apiUsageLogV3Grid;
+
+        $(document).ready(function() {
+            // Tabulator 그리드 생성
+            createApiUsageLogV3Grid();
+
+            $('#searchForm').on('change', '#searchTarget', function () {
+                const $searchValue = $('#searchValue');
+                if (!!$(this).val()) {
+                    $searchValue.prop('disabled', false);
+                } else {
+                    $searchValue.val('');
+                    $searchValue.prop('disabled', true);
+                }
+            });
+        });
+
+        function createApiUsageLogV3Grid() {
+            apiUsageLogV3Grid = initTabulatorGrid('#apiUsageLogV3List', {
+                ajaxURL: '/api/api-usage-logs-v3',
+
+                // 검색 폼 파라미터 지정
+                ajaxParams: function() {
+                    const params = $('#searchForm').serializeJson();
+
+                    const startDate = $('#searchStartDate').val();
+                    const endDate = $('#searchEndDate').val();
+
+                    if (startDate) {
+                        params.startDtm = startDate + 'T00:00:00';
+                    }
+                    if (endDate) {
+                        params.endDtm = endDate + 'T23:59:59';
+                    }
+
+                    return params;
+                },
+
+                useCreatedAt: true,
+                columns: [
+                    { title: '코드', field: 'uid', hozAlign: 'center' },
+                    { title: '대분류', field: 'categoryMajor', hozAlign: 'center' },
+                    { title: '중분류', field: 'categoryMiddle', hozAlign: 'center' },
+                    {
+                        title: '전송결과',
+                        field: 'result',
+                        hozAlign: 'center',
+                        formatter: function(cell) {
+                            return cell.getValue() === 'success' ? '성공' : '<p style="color:red;">실패</p>';
+                        },
+                    },
+                    { title: '회원 UID', field: 'memberUid', hozAlign: 'center' },
+                    { title: '트랜잭션 ID', field: 'transactionId', hozAlign: 'left' },
+                    { title: '참조 키', field: 'referenceKey', hozAlign: 'center' },
+                    { title: '참조 값', field: 'referenceValue', hozAlign: 'center' },
+                    { title: '전달값', field: 'argument', width: 350, hozAlign: 'left' },
+                    { title: '응답값', field: 'response', width: 350, hozAlign: 'left' },
+                    { title: '에러코드', field: 'errorCode', hozAlign: 'center' }
+                ]
+            });
+        }
+
+        // 검색
+        function reloadGrid() {
+            const searchTarget = $('#searchTarget').val();
+            const searchValue = $('#searchValue').val();
+
+            if (!!searchTarget && !searchValue) {
+                alert('검색어를 입력해 주세요.');
+                return;
+            }
+
+            if (apiUsageLogV3Grid) {
+                apiUsageLogV3Grid.setData();
+            }
+        }
+
+        // 초기화
+        function resetSearchForm() {
+            resetForm('searchForm');
+        }
+
+        function downloadExcel() {
+            apiUsageLogV3Grid.download('xlsx', 'V3_API_이용_로그_목록.xlsx');
+        }
+    </script>
+</th:block>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 검색 조건 박스 -->
+        <div class="table_type1">
+            <form id="searchForm" name="searchForm" method="get">
+                <table>
+                    <colgroup>
+                        <col style="width:12%;">
+                        <col>
+                        <col style="width:12%;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">검색조건</th>
+                            <td>
+                                <select name="searchTarget" id="searchTarget" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="member_uid">회원번호</option>
+                                    <option value="reference_value">참조 값</option>
+                                    <option value="transaction_id">트랜잭션 ID</option>
+                                    <option value="argument_like">전달인자</option>
+                                    <option value="response_like">응답전문</option>
+                                    <option value="error_code">에러코드</option>
+                                </select>
+                                <input type="text" name="searchValue" id="searchValue" class="wth150" placeholder="검색어 입력" disabled>
+                            </td>
+                            <th scope="row">등록 기간</th>
+                            <td>
+                                <input type="date" id="searchStartDate" class="wth150">
+                                ~
+                                <input type="date" id="searchEndDate" class="wth150">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">참조 키</th>
+                            <td>
+                                <select name="referenceKey" class="wth150">
+                                    <option value="">전체</option>
+                                    <option value="voucher">바우처</option>
+                                    <option value="coupon">쿠폰</option>
+                                </select>
+                            </td>
+                            <th scope="row">대분류</th>
+                            <td>
+                                <select name="categoryMajor" class="wth150">
+                                    <option value="">전체</option>
+                                    <option value="baycon">베이콘</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">중분류</th>
+                            <td>
+                                <select name="categoryMiddle" class="wth150">
+                                    <option value="">전체</option>
+                                    <option value="issue_one_sim">심 충전</option>
+                                    <option value="check_device">디바이스 체크</option>
+                                </select>
+                            </td>
+                            <th scope="row">성공 실패</th>
+                            <td>
+                                <select name="result" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="success">성공</option>
+                                    <option value="failure">실패</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="btn_area_center">
+            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
+            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+        </div>
+
+        <div class="mTitle gTitle">
+            <h2>V3 API 이용 로그 목록</h2>
+        </div>
+        <div class="mButton typeBorad">
+            <div class="leftInner">
+                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+            </div>
+        </div>
+
+        <!-- Tabulator 그리드가 위치할 영역 -->
+        <div class="mModule">
+            <div id="apiUsageLogV3List"></div>
+        </div>
+    </div>
+</body>
+</html>

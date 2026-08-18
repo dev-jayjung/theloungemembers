@@ -1,4 +1,4 @@
-package com.theloungemembers.core.api;
+package com.theloungemembers.web.api.dto;
 
 import java.time.OffsetDateTime;
 
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiUsageLogV3WebhookResult {
+public class ApiUsageLogV3WebhookResponse {
 
     private Long uid;
 
@@ -17,9 +17,9 @@ public class ApiUsageLogV3WebhookResult {
 
     private String transactionId;
 
-    private String response;
-
     private String request;
+
+    private String response;
 
     private OffsetDateTime regDate;
 

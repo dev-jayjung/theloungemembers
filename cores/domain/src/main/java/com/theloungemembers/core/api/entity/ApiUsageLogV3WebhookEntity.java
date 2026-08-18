@@ -29,7 +29,7 @@ public class ApiUsageLogV3WebhookEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "uid", nullable = false)
-    private Long id;
+    private Long uid;
 
     /**
      * 카테고리 대분류

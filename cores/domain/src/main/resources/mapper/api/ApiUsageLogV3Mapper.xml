@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiUsageLogV3Mapper">
+
+    <select id="selectList" resultType="com.theloungemembers.core.api.ApiUsageLogV3Result">
+        SELECT
+               uid
+             , category_major
+             , category_middle
+             , result
+             , member_uid
+             , transaction_id
+             , reference_key
+             , reference_value
+             , argument
+             , response
+             , error_code
+             , reg_date
+        FROM api_usage_log_v3
+        <include refid="where"/>
+        <include refid="CommonMapper.sortSql"/>
+        <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT
+               COUNT(1)
+          FROM api_usage_log_v3
+          <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <choose>
+                <when test="searchTarget == 'member_uid'">
+                    AND member_uid = #{searchValue}::INTEGER
+                </when>
+                <when test="searchTarget == 'reference_value'">
+                    AND reference_value = #{searchValue}
+                </when>
+                <when test="searchTarget == 'transaction_id'">
+                    AND transaction_id = #{searchValue}
+                </when>
+
+                <when test="searchTarget == 'argument_like'">
+                    AND argument LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'response_like'">
+                    AND response LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'error_code'">
+                    AND error_code = #{searchValue}
+                </when>
+            </choose>
+            <if test="referenceKey != null and referenceKey != ''">
+                AND reference_key = #{referenceKey}
+            </if>
+
+            <if test="categoryMajor != null and categoryMajor != ''">
+                AND category_major = #{categoryMajor}
+            </if>
+
+            <if test="categoryMiddle != null and categoryMiddle != ''">
+                AND category_middle = #{categoryMiddle}
+            </if>
+            <if test="result != null and result != ''">
+                AND result = #{result}
+            </if>
+            <choose>
+                <when test="startDtm != null and endDtm != null">
+                    AND reg_date BETWEEN #{startDtm} AND #{endDtm}
+                </when>
+                <when test="startDtm != null">
+                    AND reg_date >= #{startDtm}
+                </when>
+                <when test="endDtm != null">
+                    <![CDATA[
+                        AND reg_date  <= #{endDtm}
+                    ]]>
+               </when>
+            </choose>
+        </where>
+    </sql>
+
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiUsageLogV3WebhookMapper">
+
+    <select id="selectList" resultType="com.theloungemembers.core.api.ApiUsageLogV3WebhookResult">
+        SELECT
+               uid
+             , category_major
+             , category_middle
+             , transaction_id
+             , response
+             , request
+             , reg_date
+        FROM api_usage_log_v3_webhook
+        <include refid="where"/>
+        <include refid="CommonMapper.sortSql"/>
+        <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT
+               COUNT(1)
+          FROM api_usage_log_v3_webhook
+          <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <choose>
+                <when test="searchTarget == 'transaction_id'">
+                    AND transaction_id = #{searchValue}
+                </when>
+            </choose>
+            <choose>
+                <when test="startDtm != null and endDtm != null">
+                    AND reg_date BETWEEN #{startDtm} AND #{endDtm}
+                </when>
+                <when test="startDtm != null">
+                    AND reg_date >= #{startDtm}
+                </when>
+                <when test="endDtm != null">
+                    <![CDATA[
+                        AND reg_date  <= #{endDtm}
+                    ]]>
+               </when>
+            </choose>
+        </where>
+    </sql>
+
+</mapper>

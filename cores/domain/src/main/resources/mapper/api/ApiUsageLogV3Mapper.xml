@@ -44,7 +44,6 @@
                 <when test="searchTarget == 'transaction_id'">
                     AND transaction_id = #{searchValue}
                 </when>
-
                 <when test="searchTarget == 'argument_like'">
                     AND argument LIKE '%' || #{searchValue} || '%'
                 </when>
@@ -58,11 +57,9 @@
             <if test="referenceKey != null and referenceKey != ''">
                 AND reference_key = #{referenceKey}
             </if>
-
             <if test="categoryMajor != null and categoryMajor != ''">
                 AND category_major = #{categoryMajor}
             </if>
-
             <if test="categoryMiddle != null and categoryMiddle != ''">
                 AND category_middle = #{categoryMiddle}
             </if>

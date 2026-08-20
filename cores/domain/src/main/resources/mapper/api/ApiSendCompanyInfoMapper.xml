@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.theloungemembers.core.api.mapper.ApiSendCompanyInfoMapper">
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM api_send_company_info
+        <include refid="where"/>
+    </select>
+
+    <select id="selectList" resultType="com.theloungemembers.core.api.ApiSendCompanyInfoResult">
+        SELECT
+               uid
+             , api_account_id
+             , company_name
+             , type
+             , lounge_coupon_issue_history_uid
+             , use_send_url
+             , cancel_send_url
+             , method
+             , cancel_use
+             , on_service
+             , memo
+             , reg_date
+             , update_date
+        FROM api_send_company_info
+        <include refid="where"/>
+        <include refid="CommonMapper.sortSql"/>
+        <include refid="CommonMapper.pageSql"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <choose>
+                <when test="searchTarget == 'uid'">
+                    AND uid = #{searchValue}::INTEGER
+                </when>
+                <when test="searchTarget == 'api_account_id'">
+                    AND api_account_id = #{searchValue}
+                </when>
+                <when test="searchTarget == 'api_account_id_like'">
+                    AND api_account_id LIKE '%' || #{searchValue} || '%'
+                </when>
+                <when test="searchTarget == 'company_name_like'">
+                    AND company_name LIKE '%' || #{searchValue} || '%'
+                </when>
+            </choose>
+            <if test="type != null and type != ''">
+                AND "type" = #{type}
+            </if>
+            <if test="onService != null">
+                AND on_service = #{onService}
+            </if>
+        </where>
+    </sql>
+
+
+</mapper>

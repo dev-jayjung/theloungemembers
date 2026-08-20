@@ -1,8 +1,8 @@
 package com.theloungemembers.core.api;
 
 import com.theloungemembers.core.api.entity.ApiSendCompanyInfoEntity;
-import com.theloungemembers.core.api.entity.ApiSendCompanyInfoJpaRepository;
 import com.theloungemembers.core.api.mapper.ApiSendCompanyInfoMapper;
+import com.theloungemembers.core.api.repository.ApiSendCompanyInfoJpaRepository;
 import com.theloungemembers.core.common.crud.AbstractBaseRepository;
 
 import org.springframework.stereotype.Repository;

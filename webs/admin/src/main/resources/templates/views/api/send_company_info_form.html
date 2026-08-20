@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title th:text="${sendCompanyInfo == null || sendCompanyInfo.uid == null} ? 'API 사용 통보업체 등록' : 'API 사용 통보업체 상세'">API 사용 통보업체 상세</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript" th:inline="javascript">
+        $(document).ready(function() {
+            $('#apiAccountId').on('change', function() {
+                $('#companyName').val($(this).find(':selected').data('company-name') || '');
+            });
+        });
+
+        // 등록
+        function sendCompanyInfoInsert() {
+            if (!validate.check('sendCompanyInfoForm')) {
+                return;
+            }
+
+            if (!confirm('등록 하시겠습니까?')) {
+                return;
+            }
+
+            const options = {
+                url: /*[[@{/api/api-send-company-infos}]]*/ '/api/api-send-company-infos',
+                data: $('#sendCompanyInfoForm').serializeJson(),
+                sendType: 'json',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    const uid = result.data.uid;
+
+                    createTargetFormSubmit({
+                        id: 'apiSendCompanyInfoView',
+                        url: `/api-send-company-infos/detail?id=${uid}`
+                    });
+                }
+            };
+
+            ajax.call(options);
+        }
+
+        // 수정
+        function sendCompanyInfoUpdate() {
+            if (!validate.check('sendCompanyInfoForm')) {
+                return;
+            }
+
+            if (!confirm('수정 하시겠습니까?')) {
+                return;
+            }
+
+            const uid = $('#uid').val();
+
+            const options = {
+                url: `/api/api-send-company-infos/${uid}`,
+                data: $('#sendCompanyInfoForm').serializeJson(),
+                sendType: 'json',
+                type: 'PUT',
+                callBack: function(result) {
+                    if (!result.success) {
+                        return;
+                    }
+
+                    createTargetFormSubmit({
+                        id: 'apiSendCompanyInfoView',
+                        url: `/api-send-company-infos/detail?id=${uid}`
+                    });
+                }
+            };
+            ajax.call(options);
+        }
+    </script>
+</th:block>
+
+<th:block layout:fragment="content">
+<form name="sendCompanyInfoForm" id="sendCompanyInfoForm" method="post" th:object="${sendCompanyInfo}">
+
+    <th:block th:if="${sendCompanyInfo != null && sendCompanyInfo.uid != null}">
+    <div class="mTitle gTitle">
+        <h2>기본정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>기본정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>코드 번호<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth200" name="uid" id="uid" title="코드 번호" th:field="*{uid}" disabled />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </th:block>
+
+    <div class="mTitle gTitle">
+        <h2>업체정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>업체정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>api 계정<strong class="red">*</strong></th>
+                    <td>
+                        <select name="apiAccountId" id="apiAccountId" class="wth300 validate[required]" title="api 계정">
+                            <option value="">선택</option>
+                            <option th:each="member : ${apiMemberList}"
+                                    th:value="${member.accountId}"
+                                    th:data-company-name="${member.companyName}"
+                                    th:selected="${sendCompanyInfo?.apiAccountId == member.accountId}"
+                                    th:text="|${member.companyName}(${member.accountId})|"></option>
+                        </select>
+                    </td>
+                    <th>업체명</th>
+                    <td>
+                        <input type="text" class="wth300" name="companyName" id="companyName" title="업체명" th:field="*{companyName}" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <th>서비스 코드<strong class="red">*</strong></th>
+                    <td>
+                        <select name="type" id="type" class="wth300 validate[required]" title="서비스 코드" th:field="*{type}">
+                            <option value="">선택</option>
+                            <option value="lounge">공항 라운지</option>
+                            <option value="dining">공항 다이닝</option>
+                            <option value="airport_express">공항 직통열차</option>
+                            <option value="airport_limousine">K공항리무진</option>
+                            <option value="golf_driving_range">골프연습장</option>
+                            <option value="itcha">잇차</option>
+                            <option value="mosiler">모시러</option>
+                            <option value="airport_hotel">다락휴 호텔</option>
+                            <option value="hotel_valet">호텔 발렛</option>
+                            <option value="airport_valet">공항 발렛</option>
+                            <option value="matina_gold">마티나 골드</option>
+                            <option value="airport_coffee">공항 커피</option>
+                            <option value="usim_esim">글로벌 One SIM</option>
+                            <option value="hotel_buffet">특급호텔 뷔페</option>
+                        </select>
+                    </td>
+                    <th>선택 쿠폰<strong class="red">*</strong></th>
+                    <td>
+                        <input type="text" class="wth300 validate[required]" name="loungeCouponIssueHistoryUid" id="loungeCouponIssueHistoryUid" title="선택 쿠폰" th:field="*{loungeCouponIssueHistoryUid}" placeholder="쿠폰발행내역 uid 직접 입력" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>사용처리URL<strong class="red">*</strong></th>
+                    <td colspan="3">
+                        <input type="text" class="wth600 validate[required]" name="useSendUrl" id="useSendUrl" title="사용처리URL" th:field="*{useSendUrl}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>환불처리URL<strong class="red">*</strong></th>
+                    <td colspan="3">
+                        <input type="text" class="wth600 validate[required]" name="cancelSendUrl" id="cancelSendUrl" title="환불처리URL" th:field="*{cancelSendUrl}" />
+                    </td>
+                </tr>
+                <tr>
+                   <th>통보사용<strong class="red">*</strong></th>
+                   <td colspan="3">
+                       <label class="fRadio" th:each="item, stat : ${ServiceStatus}">
+                           <input type="radio" name="onService" th:id="|onService${stat.index}|" th:value="${item.code}" th:checked="${sendCompanyInfo?.onService == item}" >
+                           <span th:text="${item.description}"></span>
+                       </label>
+                   </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mTitle gTitle">
+        <h2>기타정보</h2>
+    </div>
+    <div class="mModule type2Grid">
+        <table class="table_type1 mg5">
+            <caption>기타정보</caption>
+            <colgroup>
+                <col style="width:200px;" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>메 모</th>
+                    <td>
+                        <div class="fTextarea gFull">
+                            <textarea name="memo" id="memo" title="메 모" rows="100" cols="200" th:field="*{memo}" ></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if= "${sendCompanyInfo != null && sendCompanyInfo.uid != null}">
+                    <th>등록일 / 수정일</th>
+                    <td
+                        th:text="|${#temporals.format(sendCompanyInfo.regDate, 'yyyy-MM-dd HH:mm:ss')} / ${#temporals.format(sendCompanyInfo.updateDate, 'yyyy-MM-dd HH:mm:ss')}|">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+    <!-- 하단 버튼 영역 -->
+    <div class="btn_area_center">
+        <button type="button" onclick="sendCompanyInfoInsert()" class="btn_type2" th:if="${sendCompanyInfo == null || sendCompanyInfo.uid == null}">등록</button>
+
+        <button type="button" onclick="sendCompanyInfoUpdate();" class="btn_type2" th:if="${sendCompanyInfo != null && sendCompanyInfo.uid != null}">수정</button>
+
+        <button type="button" onclick="goUrl('/api-send-company-infos');" class="btn_type1">목록</button>
+    </div>
+</th:block>
+</html>

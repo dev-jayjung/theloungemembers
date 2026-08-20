@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title>API 사용 통보업체 조회</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let apiSendCompanyInfoGrid;
+
+        const SERVICE_TYPE_LABELS = {
+            lounge: '공항 라운지',
+            dining: '공항 다이닝',
+            airport_express: '공항 직통열차',
+            airport_limousine: 'K공항리무진',
+            golf_driving_range: '골프연습장',
+            itcha: '잇차',
+            mosiler: '모시러',
+            airport_hotel: '다락휴 호텔',
+            hotel_valet: '호텔 발렛',
+            airport_valet: '공항 발렛',
+            matina_gold: '마티나 골드',
+            airport_coffee: '공항 커피',
+            usim_esim: '글로벌 One SIM',
+            hotel_buffet: '특급호텔 뷔페'
+        };
+
+        $(document).ready(function() {
+            // Tabulator 그리드 생성
+            createApiSendCompanyInfoGrid();
+
+            $('#searchForm').on('change', '#searchTarget', function () {
+                const $searchValue = $('#searchValue');
+                if (!!$(this).val()) {
+                    $searchValue.prop('disabled', false);
+                } else {
+                    $searchValue.val('');
+                    $searchValue.prop('disabled', true);
+                }
+            });
+        });
+
+        function createApiSendCompanyInfoGrid() {
+            apiSendCompanyInfoGrid = initTabulatorGrid('#apiSendCompanyInfoList', {
+                ajaxURL: '/api/api-send-company-infos',
+
+                // 검색 폼 파라미터 지정
+                ajaxParams: function() {
+                    return $('#searchForm').serializeJson();
+                },
+
+                useCreatedAt: true,
+                useUpdatedAt: true,
+                columns: [
+                    { title: '코드', field: 'uid', hozAlign: 'center' },
+                    {
+                        title: '접속 계정(→)',
+                        field: 'apiAccountId',
+                        hozAlign: 'center',
+                        formatter: function(cell){
+                            return `<span style='text-decoration:underline;'>${cell.getValue() || ''}</span>`;
+                        }
+                    },
+                    { title: '업체명', field: 'companyName', hozAlign: 'left' },
+                    {
+                        title: '서비스 코드',
+                        field: 'type',
+                        hozAlign: 'center',
+                        formatter: function(cell) {
+                            return SERVICE_TYPE_LABELS[cell.getValue()] || cell.getValue() || '';
+                        }
+                    },
+                    { title: '쿠폰발행코드', field: 'loungeCouponIssueHistoryUid', hozAlign: 'center' },
+                    { title: '사용 URL', field: 'useSendUrl', width: 250, hozAlign: 'left' },
+                    { title: '사용취소 URL', field: 'cancelSendUrl', width: 250, hozAlign: 'left' },
+                    {
+                        title: '사용',
+                        field: 'onService',
+                        hozAlign: 'center',
+                        formatter: function(cell){
+                            return cell.getValue() === '1' ? 'O' : '<p style="color:red;">X</p>';
+                        },
+                    },
+                    { title: '메모', field: 'memo', hozAlign: 'left' }
+                ]
+            });
+
+            // 접속 계정 클릭 시 수정 상세 이동
+            apiSendCompanyInfoGrid.on('cellClick', function(e, cell) {
+                if (cell.getField() === 'apiAccountId'){
+                    const rowData = cell.getRow().getData();
+                    submitModifyForm(rowData.uid);
+                }
+            });
+        }
+
+        // 검색
+        function reloadGrid() {
+            const searchTarget = $('#searchTarget').val();
+            const searchValue = $('#searchValue').val();
+
+            if (!!searchTarget && !searchValue) {
+                alert('검색어를 입력해 주세요.');
+                return;
+            }
+
+            if (apiSendCompanyInfoGrid) {
+                apiSendCompanyInfoGrid.setData();
+            }
+        }
+
+        // 등록 이동
+        function submitAddForm() {
+            createTargetFormSubmit({
+                id: 'apiSendCompanyInfoView',
+                url: '/api-send-company-infos/new'
+            });
+        }
+
+        // 수정 이동
+        function submitModifyForm(uid) {
+            createTargetFormSubmit({
+                id: 'apiSendCompanyInfoView',
+                url: `/api-send-company-infos/detail?id=${uid}`
+            });
+        }
+
+        // 초기화
+        function resetSearchForm() {
+            resetForm('searchForm');
+        }
+
+        function downloadExcel() {
+            apiSendCompanyInfoGrid.download('xlsx', 'API_사용_통보업체_목록.xlsx');
+        }
+    </script>
+</th:block>
+
+<body>
+    <div layout:fragment="content">
+        <!-- 검색 조건 박스 -->
+        <div class="table_type1">
+            <form id="searchForm" name="searchForm" method="get">
+                <table>
+                    <colgroup>
+                        <col style="width:12%;">
+                        <col>
+                        <col style="width:12%;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">검색조건</th>
+                            <td>
+                                <select name="searchTarget" id="searchTarget" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="uid">코드</option>
+                                    <option value="api_account_id">접속 계정</option>
+                                    <option value="api_account_id_like">접속 계정(포함)</option>
+                                    <option value="company_name_like">업체명</option>
+                                </select>
+                                <input type="text" name="searchValue" id="searchValue" class="wth150" placeholder="검색어 입력" disabled>
+                            </td>
+                            <th scope="row">서비스 코드</th>
+                            <td>
+                                <select name="type" class="wth150">
+                                    <option value="">전체</option>
+                                    <option value="lounge">공항 라운지</option>
+                                    <option value="dining">공항 다이닝</option>
+                                    <option value="airport_express">공항 직통열차</option>
+                                    <option value="airport_limousine">K공항리무진</option>
+                                    <option value="golf_driving_range">골프연습장</option>
+                                    <option value="itcha">잇차</option>
+                                    <option value="mosiler">모시러</option>
+                                    <option value="airport_hotel">다락휴 호텔</option>
+                                    <option value="hotel_valet">호텔 발렛</option>
+                                    <option value="airport_valet">공항 발렛</option>
+                                    <option value="matina_gold">마티나 골드</option>
+                                    <option value="airport_coffee">공항 커피</option>
+                                    <option value="usim_esim">글로벌 One SIM</option>
+                                    <option value="hotel_buffet">특급호텔 뷔페</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">사용 여부</th>
+                            <td>
+                                <select name="onService" class="wth100">
+                                    <option value="">전체</option>
+                                    <option th:each="item : ${ServiceStatus}"
+                                            th:value="${item.code}"
+                                            th:text="${item.description}">
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="btn_area_center">
+            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
+            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+        </div>
+
+        <div class="mTitle gTitle">
+            <h2>API 사용 통보업체 목록</h2>
+        </div>
+        <div class="mButton typeBorad">
+            <div class="leftInner">
+                <button type="button" onclick="submitAddForm();" class="btn_h25_type1">등록하기</button>
+                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+            </div>
+        </div>
+
+        <!-- Tabulator 그리드가 위치할 영역 -->
+        <div class="mModule">
+            <div id="apiSendCompanyInfoList"></div>
+        </div>
+    </div>
+</body>
+</html>

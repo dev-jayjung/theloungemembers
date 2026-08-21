@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.theloungemembers.core.exception.BusinessException;
-import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.security.PasswordValidator;
 import com.theloungemembers.core.util.AssertUtil;
 import com.theloungemembers.core.worker.WorkerResult;
@@ -35,18 +34,18 @@ public class AuthService {
 
         if (!passwordValidator.matches(password, worker.getPassword())) {
             log.warn("비밀번호 불일치 - ID: {}", workerId);
-            throw new BusinessException(CommonErrorCode.UNAUTHORIZED);
+            throw new BusinessException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
 
         // TODO 추후 패스워드 암호화 방식 변경시 아래 로직 개방
         if (passwordValidator.isLegacyPassword(worker.getPassword())) {
-//            String newBcryptPassword = passwordValidator.encode(password);
-//            WorkerCommand command = new WorkerCommand();
-//            command.setUid(worker.getUid());
-//            command.setPassword(newBcryptPassword);
-//
-//            workerRepository.update(command);
-//            log.info("비밀번호 BCrypt 마이그레이션 완료 - ID: {}", workerId);
+            // String newBcryptPassword = passwordValidator.encode(password);
+            // WorkerCommand command = new WorkerCommand();
+            // command.setUid(worker.getUid());
+            // command.setPassword(newBcryptPassword);
+            //
+            // workerRepository.update(command);
+            // log.info("비밀번호 BCrypt 마이그레이션 완료 - ID: {}", workerId);
         }
 
         // TODO 자체 OTP 2차 검증 로직 필요하다 함. 추후 필요
@@ -55,7 +54,8 @@ public class AuthService {
         // TODO Keycloak 토큰 발급 - 현재는 그냥 JWT 발급 용도로만 사용. 추후 어떻게 할지에 따라 변경 필요
         TokenResult keycloakToken = keycloakClientService.getServiceAccountToken();
 
-        String sessionId = workerSessionService.createSession(workerId, Duration.ofSeconds(keycloakToken.getExpiresIn()));
+        String sessionId = workerSessionService.createSession(workerId,
+                Duration.ofSeconds(keycloakToken.getExpiresIn()));
 
         log.info("로그인 성공 - User: {}, Role: {}", worker.getWorkerId(), worker.getWorkerName());
 

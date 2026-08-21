@@ -9,7 +9,7 @@ import com.theloungemembers.core.admin.AdminMenuResult;
 import com.theloungemembers.core.common.crud.BaseMapper;
 
 @Mapper
-public interface AdminMenuMapper extends BaseMapper<AdminMenuQuery, AdminMenuResult, Integer> {
+public interface AdminMenuMapper extends BaseMapper<AdminMenuQuery, AdminMenuResult, Long> {
     public List<AdminMenuResult> selectMainMenuList(AdminMenuQuery query);
 
     public List<AdminMenuResult> selectSubMenuList(AdminMenuQuery query);

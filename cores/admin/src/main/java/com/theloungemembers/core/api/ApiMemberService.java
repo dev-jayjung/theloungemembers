@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.theloungemembers.core.annotation.ProcessS3File;
 import com.theloungemembers.core.common.crud.AbstractBaseService;
 import com.theloungemembers.core.helper.JsonMapperHelper;
 import com.theloungemembers.core.type.ServiceStatus;
@@ -39,6 +40,7 @@ public class ApiMemberService extends AbstractBaseService<ApiMemberCommand, ApiM
 
     @Override
     @Transactional
+    @ProcessS3File
     public ApiMemberResult save(ApiMemberCommand req) {
         AssertUtil.notNull(req);
         AssertUtil.notNull(req.getAccountId());
@@ -55,13 +57,13 @@ public class ApiMemberService extends AbstractBaseService<ApiMemberCommand, ApiM
     @Override
     @Transactional
     public void update(Long uid, ApiMemberCommand req) {
+        AssertUtil.notNull(uid);
         AssertUtil.notNull(req);
-        AssertUtil.notNull(req.getUid());
         AssertUtil.notNull(req.getAccountId());
 
         processEncData(req);
 
-        super.update(req.getUid(), req);
+        super.update(uid, req);
 
         updateMenuPermissions(req.getAccountId(), req.getSelectedMenuCodes());
     }
@@ -89,23 +91,23 @@ public class ApiMemberService extends AbstractBaseService<ApiMemberCommand, ApiM
         List<ApiMenuPermissionResult> existingList = apiMenuPermissionRepository.selectApiMenuPermissionList(accountId);
 
         Map<String, ApiMenuPermissionResult> existingMap = existingList.stream()
-            .collect(Collectors.toMap(ApiMenuPermissionResult::getApiCode, e -> e));
+                .collect(Collectors.toMap(ApiMenuPermissionResult::getApiCode, e -> e));
 
         Set<String> newSelectedCodes = selectedCodes != null ? new HashSet<>(selectedCodes) : Collections.emptySet();
 
         // 기존 권한들 중 선택 해제된 것은 onService="0", 재선택된 것은 onService="1"로 변경
         for (ApiMenuPermissionResult result : existingList) {
             String apiCode = result.getApiCode();
-            ServiceStatus onService = newSelectedCodes.contains(apiCode) ? ServiceStatus.IN_SERVICE : ServiceStatus.STOPPED;
+            ServiceStatus onService = newSelectedCodes.contains(apiCode) ? ServiceStatus.IN_SERVICE
+                    : ServiceStatus.STOPPED;
 
             if (!onService.equals(result.getOnService())) {
                 ApiMenuPermissionCommand cmd = new ApiMenuPermissionCommand();
-                cmd.setUid(result.getUid());
                 cmd.setAccountId(accountId);
                 cmd.setApiCode(apiCode);
                 cmd.setOnService(onService);
 
-                apiMenuPermissionRepository.save(cmd);
+                apiMenuPermissionRepository.update(result.getUid(), cmd);
             }
         }
 

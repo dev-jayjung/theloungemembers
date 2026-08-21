@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>S3 파일 및 이미지 업로드 가이드</title>
+  <link rel="stylesheet" th:href="@{/css/guide.css}" />
+</head>
+
+<th:block layout:fragment="script">
+  <script type="text/javascript" th:inline="javascript">
+    (() => {
+      $(() => {
+        // 폼 제출 시 선택된 S3 Key 및 파일명 제출값 확인 테스트
+        $('#btnCheckFormValues').on('click', () => {
+          const formData = {
+            defaultFile: {
+              s3Key: $('#s3Key').val(),
+              originalFileName: $('#originalFileName').val()
+            },
+            customFile: {
+              s3Key: $('#custom_docKey').val(),
+              originalFileName: $('#custom_docName').val()
+            },
+            defaultImg: {
+              s3Key: $('#imageKey').val(),
+              originalFileName: $('#imageName').val()
+            },
+            customImgWithFileName: {
+              s3Key: $('#customImgKey').val(),
+              originalFileName: $('#customImgName').val()
+            }
+          };
+
+          console.log('=== [폼 제출 데이터 테스트] ===', formData);
+          alert('콘솔(F12)에 바인딩된 hidden input 제출값이 출력되었습니다.\n\n' + JSON.stringify(formData, null, 2));
+        });
+      });
+    })();
+  </script>
+</th:block>
+
+<th:block layout:fragment="content">
+  <h1 class="b_title">S3 파일 및 이미지 업로드 컴포넌트 가이드</h1>
+
+  <!-- ================================================================= -->
+  <!-- 1. 일반 파일 업로드 컴포넌트 (fileUpload) -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">1. 일반 첨부파일 업로드 컴포넌트 (fileUpload)</div>
+    <div class="guide-desc">
+      공통 프래그먼트 <code>fileUpload</code>를 활용한 단일 문서/일반 파일 첨부 UI입니다.<br>
+      S3 Direct Upload 수행 후 서버로 제출될 <span class="code-badge">keyName</span>(S3 Key)과 <span
+        class="code-badge">fileName</span>(원본 파일명) Hidden 필드가 자동 생성됩니다.
+    </div>
+
+    <div class="table_type1">
+      <table>
+        <colgroup>
+          <col style="width:160px;" />
+          <col />
+        </colgroup>
+        <tbody>
+          <tr>
+            <th>기본 사용<br><small style="color:#888;">(기본 옵션 적용)</small></th>
+            <td>
+              <!-- 기본 옵션: keyName='s3Key', fileName='originalFileName', maxSize=20MB -->
+              <div th:replace="~{fragments/tag :: fileUpload(
+                path='TEMP',
+                label='기본 첨부파일'
+              )}"></div>
+            </td>
+          </tr>
+
+          <tr>
+            <th>옵션 커스텀<br><small style="color:#888;">(제한/파라미터 변경)</small></th>
+            <td>
+              <!-- 커스텀: keyName, fileName, maxSize(5MB), fileExt 제한 -->
+              <div th:replace="~{fragments/tag :: fileUpload(
+                path='TEMP',
+                label='증빙서류 첨부',
+                keyName='docKey',
+                fileName='docName',
+                idPrefix='custom',
+                clazz='wth250',
+                fileExt='pdf, docx, zip',
+                maxSize=5
+              )}"></div>
+              <div style="font-size: 12px; color: #888; margin-top: 4px;">
+                * 허용 확장자: PDF, DOCX, ZIP / 용량 제한: 5MB / Input 너비: wth250
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <th>수정 화면<br><small style="color:#888;">(기존 데이터 바인딩)</small></th>
+            <td>
+              <!-- 기존 저장된 파일 정보(keyValue, fileNameValue) 전달 -->
+              <div th:replace="~{fragments/tag :: fileUpload(
+                path='TEMP',
+                label='기존 파일 수정',
+                keyName='editFileKey',
+                fileName='editFileName',
+                keyValue='dev/board/sample-uuid-1234.pdf',
+                fileNameValue='2026_사업계획서_최종.pdf'
+              )}"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 2. 단일 이미지 업로드 컴포넌트 (imageUpload) -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">2. 단일 이미지 업로드 컴포넌트 (imageUpload)</div>
+    <div class="guide-desc">
+      대표/서브 이미지 첨부 UI입니다. 용량 제한(<span class="code-badge">maxSize</span>) 및 이미지 해상도 제한(<span
+        class="code-badge">maxWidth</span>, <span class="code-badge">maxHeight</span>)을 지원합니다.
+    </div>
+
+    <div class="table_type1">
+      <table>
+        <colgroup>
+          <col style="width:160px;" />
+          <col />
+        </colgroup>
+        <tbody>
+          <tr>
+            <th>기본 사용<br><small style="color:#888;">(기본 옵션 적용)</small></th>
+            <td>
+              <!-- 기본 옵션: keyName='imageKey', maxSize=10MB -->
+              <div th:replace="~{fragments/tag :: imageUpload(
+                path='TEMP',
+                label='대표 이미지'
+              )}"></div>
+            </td>
+          </tr>
+
+          <tr>
+            <th>옵션 커스텀<br><small style="color:#888;">(파일명 저장 & 규격 제한)</small></th>
+            <td>
+              <!-- 커스텀: 원본파일명 저장(fileName), 용량(2MB), 해상도 가로 1920px 이하 -->
+              <div th:replace="~{fragments/tag :: imageUpload(
+                path='TEMP',
+                label='메인 배너 이미지',
+                keyName='customImgKey',
+                fileName='customImgName',
+                fileExt='jpg, png',
+                maxSize=2,
+                maxWidth=1920
+              )}"></div>
+              <div style="font-size: 12px; color: #888; margin-top: 4px;">
+                * 허용 확장자: JPG, PNG / 용량 제한: 2MB / 최대 가로 너비: 1920px
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <th>수정 화면<br><small style="color:#888;">(기존 이미지 미리보기)</small></th>
+            <td>
+              <!-- 기존 imageUrl 및 keyValue 바인딩 -->
+              <div th:replace="~{fragments/tag :: imageUpload(
+                path='TEMP',
+                label='기존 이미지 수정',
+                keyName='editImgKey',
+                keyValue='dev/board/sample-img-5678.png',
+                imageUrl='/api/files/display?key=dev/editor/5eaa57d5-b787-434a-8832-bd8172791df6.jpg'
+              )}"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 3. Form 저장 및 제출 데이터 테스트 -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">3. 서버 제출(Form Submit) 데이터 테스트</div>
+    <div class="guide-desc">
+      업로드 후 생성되는 Hidden 필드의 <span class="code-badge">th:name</span> 값이 서버 DTO로 바인딩되는 구조입니다. 버튼을 클릭해 현재 바인딩된 값을 확인하세요.
+    </div>
+
+    <div class="btn_area_center">
+      <button type="button" id="btnCheckFormValues" class="btn_type2">제출 데이터 확인 (Console)</button>
+    </div>
+  </div>
+</th:block>
+
+</html>

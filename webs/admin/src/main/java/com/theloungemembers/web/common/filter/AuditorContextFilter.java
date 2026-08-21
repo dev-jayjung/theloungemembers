@@ -33,7 +33,7 @@ public class AuditorContextFilter extends OncePerRequestFilter {
             String workerId = SecurityUtil.getWorkerId();
             if (workerId != null) {
                 // TODO 추후 등록자 / 수정자 컬럼 생길시 세팅
-//                auditorContextAdapter.setAuditorId(workerId);
+                // auditorContextAdapter.setAuditorId(workerId);
             }
         } catch (Exception e) {
             // 비인증 요청(로그인, 정적 파일 등) 시 예외가 발생할 수 있으므로 무시

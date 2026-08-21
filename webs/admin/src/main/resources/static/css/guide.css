@@ -1,0 +1,76 @@
+/* guide.css - 가이드 문서 전용 스타일 */
+
+.guide-section {
+    display: block;
+    clear: both;
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px dashed #bbb;
+    background: #fff;
+    border-radius: 6px;
+}
+
+.guide-section::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.guide-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: var(--primary-color, #1D649B);
+    border-bottom: 2px solid var(--primary-color, #1D649B);
+    padding-bottom: 6px;
+}
+
+.guide-desc {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.code-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    background: #e9ecef;
+    color: #495057;
+    border-radius: 4px;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 12px;
+}
+
+/* ================================================================= */
+/* 트리 레이아웃 (.mTree) 가이드 전용 높이 보정 */
+/* ================================================================= */
+
+/* 1. 트리와 우측 폼 전체 컨테이너 높이 */
+.guide-section .mTree.typeNormal {
+    position: relative;
+    min-height: 420px;
+    clear: both;
+}
+
+/* 2. 외각 박스: 고정 높이 지정 및 스크롤 생성 주체 */
+.guide-section .gridTree {
+    height: 380px !important;
+    /* 원하는 전체 박스 높이 */
+    overflow-y: auto !important;
+    /* 진짜 내용이 380px을 넘을 때만 스크롤 생성 */
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+/* 3. 내부 jsTree 영역: 부모(.gridTree) 박스 높이에 100% 맞춤 (자체 스크롤/높이 제한 제거) */
+.guide-section .jstree-container-ul,
+.guide-section .jstree {
+    height: 100% !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    /* 내부 자식의 불필요한 스크롤 방지 */
+}

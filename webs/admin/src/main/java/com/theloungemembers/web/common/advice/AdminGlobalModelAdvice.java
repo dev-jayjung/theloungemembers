@@ -54,24 +54,21 @@ public class AdminGlobalModelAdvice {
             return;
         }
 
-         if (Strings.CS.equals("/main", uri)) {
-//        if (authentication != null && authentication.isAuthenticated()) {
-//            String workerId = authentication.getName();
-//            boolean isAdmin = authentication.getAuthorities().stream()
-//                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (Strings.CS.equals("/main", uri)) {
+            // if (authentication != null && authentication.isAuthenticated()) {
+            // String workerId = authentication.getName();
+            // boolean isAdmin = authentication.getAuthorities().stream()
+            // .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-            //  String workerId = SecurityUtil.getWorkerId();
-             AdminMenuQuery query = new AdminMenuQuery();
-            //  query.setWorkerId(workerId);
-            query.setAdmin(true);
+            AdminMenuQuery query = AdminMenuQuery.builder()
+                    // .workerId(SecurityUtil.getWorkerId())
+                    .isAdmin(true)
+                    .build();
 
-             // 모든 어드민 요청 시 LNB/즐겨찾기 메뉴 자동 주입
-             List<AdminMenuResult> mainMenuList = adminMenuService.getMenuList(query);
-             List<AdminMenuResult> bookmarkList = adminMenuService.getBookmarkList(query);
+            // 메뉴 자동 주입
+            List<AdminMenuResult> mainMenuList = adminMenuService.getMenuList(query);
 
-             model.addAttribute("mainMenuList", modelMapperHelper.mapList(mainMenuList, AdminMenuResponse.class));
-             model.addAttribute("bookmarkList", modelMapperHelper.mapList(bookmarkList, AdminMenuResponse.class));
-    //    }
+            model.addAttribute("menuList", modelMapperHelper.mapList(mainMenuList, AdminMenuResponse.class));
         } else {
             AdminMenuResult result = adminMenuService.getMenuTitle(uri);
             if (result != null) {

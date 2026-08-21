@@ -9,7 +9,8 @@ import com.theloungemembers.core.common.dto.PageResponse;
 
 public class PageUtil {
 
-    private PageUtil() {}
+    private PageUtil() {
+    }
 
     private static <T> PageResponse<T> of(List<T> content, int page, int size, long totalElements) {
         return new PageResponse<>(
@@ -17,19 +18,20 @@ public class PageUtil {
                 page,
                 size,
                 size == 0 ? 0 : (int) Math.ceil((double) totalElements / size),
-                totalElements
-        );
+                totalElements);
     }
 
     /**
      * custom paging 처리, 복잡 쿼리에 사용
+     * 
      * @param <T>
-     * @param pageRequest - 검색조건
-     * @param supplier - 목록 조회 쿼리
+     * @param pageRequest   - 검색조건
+     * @param supplier      - 목록 조회 쿼리
      * @param countSupplier - 카운트 조회 쿼리
      * @return PageResponse<T>
      */
-    public static <T> PageResponse<T> getPage(PageRequest pageRequest, Supplier<List<T>> supplier, Supplier<Integer> countSupplier) {
+    public static <T> PageResponse<T> getPage(PageRequest pageRequest, Supplier<List<T>> supplier,
+            Supplier<Integer> countSupplier) {
         AssertUtil.notNull(pageRequest, "pageRequest must not be null");
         AssertUtil.notNull(supplier, "supplier must not be null");
         AssertUtil.notNull(countSupplier, "countSupplier must not be null");

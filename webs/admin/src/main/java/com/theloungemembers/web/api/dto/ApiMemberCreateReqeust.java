@@ -6,10 +6,12 @@ import java.util.List;
 import com.theloungemembers.core.type.ServiceStatus;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ApiMemberCreateReqeust {
     private String accountId;
 
@@ -50,4 +52,6 @@ public class ApiMemberCreateReqeust {
     private String memo;
 
     private List<String> selectedMenuCodes;
+
+    private String content;
 }

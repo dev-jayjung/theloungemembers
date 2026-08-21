@@ -17,13 +17,13 @@ import lombok.Getter;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
-//  @CreatedBy
-//  @Column(updatable = false)
-//  private Long sysRegNo;
+    // @CreatedBy
+    // @Column(updatable = false)
+    // private Long sysRegNo;
 
-//    @LastModifiedBy
-//    @Column
-//    private Long sysUpdNo;
+    // @LastModifiedBy
+    // @Column
+    // private Long sysUpdNo;
 
     @CreatedDate
     @Column(updatable = false)

@@ -11,10 +11,6 @@ dependencies {
     implementation 'org.springframework:spring-tx'
 }
 
-//bootJar {
-//    enabled = false
-//}
-
 jar {
     enabled = true
 }

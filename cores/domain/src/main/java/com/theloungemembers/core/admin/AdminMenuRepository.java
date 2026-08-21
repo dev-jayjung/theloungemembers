@@ -13,7 +13,8 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class AdminMenuRepository extends AbstractBaseRepository<AdminMenuCommand, AdminMenuQuery, AdminMenuResult, Integer, AdminMenuEntity, AdminMenuMapper, AdminMenuJpaRepository> {
+public class AdminMenuRepository extends
+        AbstractBaseRepository<AdminMenuCommand, AdminMenuQuery, AdminMenuResult, Long, AdminMenuEntity, AdminMenuMapper, AdminMenuJpaRepository> {
 
     public List<AdminMenuResult> selectMainMenuList(AdminMenuQuery query) {
         return mapper.selectMainMenuList(query);

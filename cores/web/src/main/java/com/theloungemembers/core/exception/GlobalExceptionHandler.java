@@ -3,10 +3,12 @@ package com.theloungemembers.core.exception;
 import java.util.Locale;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.theloungemembers.core.dto.ApiResponse;
@@ -73,6 +75,31 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * HTTP Request Body JSON 파라미터 바인딩 및 파싱 실패 예외 (예: Enum 타입 불일치, JSON 문법 오류)
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(
+            final HttpMessageNotReadableException e) {
+        logException(e, CommonErrorCode.BAD_REQUEST.toString(), false);
+
+        return ResponseUtil.fail(CommonErrorCode.BAD_REQUEST,
+                messageHelper.getMessage(CommonErrorCode.BAD_REQUEST));
+    }
+
+    /**
+     * 쿼리 파라미터 / PathVariable 타입 불일치 예외
+     * (예: ?onService=99 또는 /users/abc에서 Integer/Enum 매핑 실패)
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatchException(
+            final MethodArgumentTypeMismatchException e) {
+        logException(e, CommonErrorCode.BAD_REQUEST.toString(), false);
+
+        String errorMessage = String.format("[%s] 필드의 값이 유효하지 않습니다.", e.getName());
+        return ResponseUtil.fail(CommonErrorCode.BAD_REQUEST, errorMessage);
+    }
+
+    /**
      * 최상위 예외 (처리되지 않은 모든 런타임/시스템 예외)
      */
     @ExceptionHandler(Exception.class)
@@ -92,7 +119,8 @@ public class GlobalExceptionHandler {
 
         String location = (element != null)
                 ? String.format("%s.%s(%s:%d)", element.getClassName(), element.getMethodName(),
-                        element.getFileName(), element.getLineNumber()) : "Unknown Location";
+                        element.getFileName(), element.getLineNumber())
+                : "Unknown Location";
 
         if (isError) {
             // ex를 마지막에 넣으면 전체 스택트레이스도 출력됨

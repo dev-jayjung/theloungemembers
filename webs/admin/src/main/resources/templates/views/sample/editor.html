@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>스마트에디터 컴포넌트 가이드</title>
+  <link rel="stylesheet" th:href="@{/css/guide.css}" />
+</head>
+
+<th:block layout:fragment="script">
+  <script type="text/javascript" th:inline="javascript">
+    (() => {
+      $(() => {
+        // 스마트에디터 초기화
+        EditorUtil.init('txtContent');
+
+        $('#btnSampleData').on('click', setSampleData);
+        $('#btnSaveContent').on('click', saveContent);
+      });
+
+      // 폼 저장 예시 (저장 버튼 클릭 시)
+      const saveContent = () => {
+        // 서버 제출 전 에디터 내용을 textarea로 동기화 필수
+        EditorUtil.sync('txtContent');
+
+        const formData = FormUtil.serialize('#editorForm');
+        console.log('=== [제출 데이터] ===', formData);
+        alert('동기화 완료! 콘솔(F12)에서 제출값을 확인하세요.');
+      };
+
+      // 데이터 상세 조회 시 내용 바인딩 예시
+      const setSampleData = () => {
+        const dbContent = '<h3>조회된 제목</h3><p>DB에서 넘어온 <b>본문 내용</b>입니다.</p>';
+        EditorUtil.setHTML('txtContent', dbContent);
+      };
+
+    })();
+  </script>
+</th:block>
+
+<th:block layout:fragment="content">
+
+  <h1 class="b_title">스마트에디터 컴포넌트 가이드</h1>
+
+  <div class="guide-section">
+    <div class="guide-title">1. 스마트에디터 기본 사용법</div>
+    <div class="guide-desc">
+      스크립트에서 <span class="code-badge">EditorUtil.init('textareaId')</span>로 초기화하여 사용합니다.<br />
+      에디터 툴바의 <b>[사진]</b> 버튼을 누르면 S3 업로드가 자동 처리되며, Form 저장 직전 <span
+        class="code-badge">EditorUtil.sync('textareaId')</span>를 호출해야 값이 제출됩니다.<br />
+      * 백엔드 처리: DTO 필드에 <span class="code-badge">@S3File</span>을 부여하고, 저장 Service 메서드에 <span
+        class="code-badge">@ProcessS3File</span>을 붙이면 S3 <span class="code-badge">TEMP</span> 경로가 영구 경로로 자동 이동됩니다.
+    </div>
+
+    <form id="editorForm" name="editorForm">
+      <div class="table_type1">
+        <table>
+          <colgroup>
+            <col style="width:140px;" />
+            <col />
+          </colgroup>
+          <tbody>
+            <tr>
+              <th>게시글 본문 <strong class="red">*</strong></th>
+              <td>
+                <!-- 백엔드 DTO 바인딩용 @S3Move Target 필드 -->
+                <textarea name="content" id="txtContent" rows="10" cols="100" class="wthEditor"
+                  style="height: 400px;"></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+
+    <div class="btn_area_center">
+      <button type="button" id="btnSampleData" class="btn_type1">DB 데이터 바인딩 테스트</button>
+      <button type="button" id="btnSaveContent" class="btn_type2">저장하기 (Form 제출)</button>
+    </div>
+  </div>
+</th:block>
+
+</html>

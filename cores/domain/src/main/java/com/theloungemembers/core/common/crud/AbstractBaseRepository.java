@@ -21,15 +21,16 @@ import com.theloungemembers.core.util.PageUtil;
 /**
  * 기본 CRUD 공통 로직을 제공하는 추상 레포지토리
  *
- * @param <C> Command (등록/수정 DTO)
- * @param <Q> Query (검색 조건 DTO)
- * @param <R> Result (응답 DTO)
+ * @param <C>  Command (등록/수정 DTO)
+ * @param <Q>  Query (검색 조건 DTO)
+ * @param <R>  Result (응답 DTO)
  * @param <ID> PK 타입 (Integer, Long 등)
- * @param <E> Entity (Entity)
- * @param <M> Mapper (Mybatis Mapper)
- * @param <J> Repository (JPA Repository)
+ * @param <E>  Entity (Entity)
+ * @param <M>  Mapper (Mybatis Mapper)
+ * @param <J>  Repository (JPA Repository)
  */
-public abstract class AbstractBaseRepository<C, Q extends PageRequest, R, ID, E, M extends BaseMapper<Q, R, ID>, J extends JpaRepository<E, ID> & JpaSpecificationExecutor<E>> implements BaseRepository<C, Q, R, ID> {
+public abstract class AbstractBaseRepository<C, Q extends PageRequest, R, ID, E, M extends BaseMapper<Q, R, ID>, J extends JpaRepository<E, ID> & JpaSpecificationExecutor<E>>
+        implements BaseRepository<C, Q, R, ID> {
 
     protected M mapper; // MyBatis Mapper
     protected J repository; // JPA Repository
@@ -104,9 +105,11 @@ public abstract class AbstractBaseRepository<C, Q extends PageRequest, R, ID, E,
         AssertUtil.notNull(command);
 
         E e = repository.findById(id)
-            .orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND));
 
         modelMapperHelper.map(command, e);
+
+        // e.setId();
     }
 
     @Override

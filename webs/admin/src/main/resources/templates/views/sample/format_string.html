@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>FormatUtil & StringUtil 가이드</title>
+  <link rel="stylesheet" th:href="@{/css/guide.css}" />
+</head>
+
+<th:block layout:fragment="script">
+  <script th:inline="javascript">
+    (() => {
+      $(() => {
+        $('#btnFormatPhone').on('click', testPhone);
+        $('#btnFormatBizNo').on('click', testBizNo);
+        $('#btnFormatComma').on('click', testComma);
+        $('#btnTestString').on('click', testString);
+      });
+
+      // 1. 전화번호 포맷팅 & 마스킹
+      const testPhone = () => {
+        const val = $('#inputPhone').val();
+        const phone = FormatUtil.phone(val);
+        const masked = FormatUtil.maskPhone(val);
+        $('#resPhone').text(`하이픈 적용: ${phone} / 마스킹: ${masked}`);
+      };
+
+      // 2. 사업자/법인/우편번호 포맷팅
+      const testBizNo = () => {
+        const val = $('#inputBizNo').val();
+        $('#resBizNo').text(`사업자번호: ${FormatUtil.bizNo(val)} / 법인번호: ${FormatUtil.cprNo(val)}`);
+      };
+
+      // 3. 천단위 콤마
+      const testComma = () => {
+        const val = $('#inputComma').val();
+        const withComma = FormatUtil.addComma(val);
+        const origin = FormatUtil.removeComma(withComma);
+        $('#resComma').text(`콤마 추가: ${withComma} / 순수 숫자 추출: ${origin}`);
+      };
+
+      // 4. StringUtil 제어
+      const testString = () => {
+        const val = $('#inputString').val();
+        const stripped = StringUtil.stripSpace(val);
+        const truncated = StringUtil.truncate(val, 8);
+        const escaped = StringUtil.escapeHtml(val);
+        $('#resString').text(`공백 완전제거: "${stripped}" / 말줄임(8자): "${truncated}" / HTML escape: "${escaped}"`);
+      };
+    })();
+  </script>
+</th:block>
+
+<th:block layout:fragment="content">
+  <h1 class="b_title">Format & String 유틸리티 가이드</h1>
+
+  <!-- 1. FormatUtil -->
+  <div class="guide-section">
+    <div class="guide-title">1. FormatUtil (문자열/숫자 포맷팅)</div>
+    <div class="guide-desc">
+      전화번호, 사업자번호, 천단위 콤마 자동 정렬 유틸리티입니다.
+    </div>
+
+    <!-- 전화번호 -->
+    <div style="margin-bottom: 15px;">
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" id="inputPhone" class="input_text" value="01012345678" placeholder="숫자만 입력" />
+        <button type="button" id="btnFormatPhone" class="btn_type2">전화번호 포맷 변환</button>
+      </div>
+      <div id="resPhone" class="code-badge" style="margin-top: 5px; display: block;">결과가 여기에 표시됩니다.</div>
+    </div>
+
+    <!-- 사업자번호 -->
+    <div style="margin-bottom: 15px;">
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" id="inputBizNo" class="input_text" value="1234567890" placeholder="사업자번호 10자리" />
+        <button type="button" id="btnFormatBizNo" class="btn_type1">사업자/법인번호 변환</button>
+      </div>
+      <div id="resBizNo" class="code-badge" style="margin-top: 5px; display: block;">결과가 여기에 표시됩니다.</div>
+    </div>
+
+    <!-- 천단위 콤마 -->
+    <div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" id="inputComma" class="input_text" value="1500000" placeholder="금액 입력" />
+        <button type="button" id="btnFormatComma" class="btn_type2">천단위 콤마 변환</button>
+      </div>
+      <div id="resComma" class="code-badge" style="margin-top: 5px; display: block;">결과가 여기에 표시됩니다.</div>
+    </div>
+  </div>
+
+  <!-- 2. StringUtil -->
+  <div class="guide-section">
+    <div class="guide-title">2. StringUtil (문자열 조작 & Lodash Wrapper)</div>
+    <div class="guide-desc">
+      문자열 공백 제거, 말줄임표 처리, XSS 방지 HTML escape 유틸리티입니다.
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="text" id="inputString" class="input_text" value=" 010 - 1234 - 5678 <script>"
+        style="width: 350px;" />
+      <button type="button" id="btnTestString" class="btn_type1">문자열 변환 실행</button>
+    </div>
+    <div id="resString" class="code-badge" style="margin-top: 10px; display: block; padding: 10px;">결과가 여기에 표시됩니다.</div>
+  </div>
+</th:block>
+
+</html>

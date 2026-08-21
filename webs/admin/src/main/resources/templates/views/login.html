@@ -1,123 +1,97 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
-    <head>
-        <th:block th:replace="~{fragments/head_common :: headCommon}"></th:block>
 
-        <style>
-            .login_cont > div:first-child {
-                position: fixed;
-                width: 100%;
-                height: 100%;
-                left: 0;
-                top: 0;
-                background: url("/images/login-bg.png") no-repeat center top / cover;
-            }
-            .login_cont h2::after {
-                display: block;
-                content: "관리자 시스템";
-                text-align: center;
-                color: rgb(255, 255, 255);
-                font-size: 52px;
-                font-weight: 600;
-                line-height: 65px;
-                letter-spacing: -2.7px;
-            }
-        </style>
+<head>
+  <th:block th:replace="~{fragments/head_common :: headCommon}"></th:block>
 
-        <script type="text/javascript" th:inline="javascript">
-            $(document).ready(function(){
-                $("#loginBtn").click(function(e){
-                    e.preventDefault();
-                    saveId(document.loginForm);
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
 
-                    var options = {
-                        /* Thymeleaf URL 타겟팅 */
-                        url : /*[[@{/api/login}]]*/ '/api/login'
-                        , data : $("#loginForm").serializeJson()
-                        , sendType: 'json'
-                        , callBack : function(result) {
-                            if (!result.success) {
-                                return;
-                            }
+  <script type="text/javascript" th:inline="javascript">
+    if (window.self !== window.top) {
+      window.top.location.href = window.location.href;
+    }
 
-                            const data = result.data;
+    $(() => {
 
-                            location.href = '/main'
+      getId();
 
-                        }
-                    };
+      if ($('#workerId').val().trim() !== '') {
+        $('#password').focus();
+      }
 
-                    ajax.call(options);
-                });
+      $('#loginBtn').on('click', e => {
+        e.preventDefault();
 
-                $("#password").keydown(function(event) {
-                    if(event.keyCode === 13) {
-                        $('#loginBtn').click();
-                        return false;
-                    }
-                });
+        if (!$('#workerId').val().trim()) {
+          alert('아이디를 입력해주세요.');
+          $('#workerId').focus();
+          return;
+        }
+        if (!$('#password').val().trim()) {
+          alert('비밀번호를 입력해주세요.');
+          $('#password').focus();
+          return;
+        }
 
-                getId(document.loginForm);
+        saveId();
 
-                if ( "" !== document.loginForm.workerId.value ) {
-                    $('#password').focus();
-                }
-            });
-
-            function setCookie(name, value, expires) {
-                document.cookie = name + "=" + escape (value) + "; path=/; expires=" + expires.toGMTString();
+        AjaxUtil.call({
+          url: /*[[@{/api/login}]]*/ '/api/login',
+          data: FormUtil.serialize('#loginForm'),
+          callBack: result => {
+            if (!result.success) {
+              return;
             }
 
-            function getCookie(Name) {
-                var search = Name + "=";
-                if (document.cookie.length > 0) {
-                    offset = document.cookie.indexOf(search);
-                    if (offset != -1) {
-                        offset += search.length;
-                        end = document.cookie.indexOf(";", offset);
-                        if (end == -1)
-                            end = document.cookie.length;
+            location.href = '/main'
+          }
+        });
+      });
 
-                        return unescape(document.cookie.substring(offset, end));
-                    }
-                }
-                return "";
-            }
+      $('#password').keydown(e => {
+        if (e.keyCode === 13) {
+          $('#loginBtn').click();
+        }
+      });
+    });
 
-            function saveId(form) {
-                var expdate = new Date();
-                if (form.checkId.checked)
-                    expdate.setTime(expdate.getTime() + 1000 * 3600 * 24 * 30); // 30일
-                else
-                    expdate.setTime(expdate.getTime() - 1); // 쿠키 삭제
+    const saveId = () => {
+      if ($('#checkId').is(':checked')) {
+        localStorage.setItem('savedWorkerId', $('#workerId').val().trim());
+      } else {
+        localStorage.removeItem('savedWorkerId');
+      }
+    }
 
-                setCookie("veciSaveId", form.workerId.value, expdate);
-            }
+    const getId = () => {
+      const savedId = localStorage.getItem('savedWorkerId');
+      if (savedId) {
+        $('#workerId').val(savedId);
+        $('#checkId').prop('checked', true);
+      }
+    }
+  </script>
+</head>
 
-            function getId(form) {
-                form.checkId.checked = (
-                    "" !== (form.workerId.value = getCookie("veciSaveId"))
-                );
-            }
-        </script>
-    </head>
-    <body>
-        <div class="login_cont">
-            <div><img th:src="@{/images/login_title_418x33.png}" alt="Title Logo"></div>
-            <h2></h2>
-            <div class="loginMainWrap">
-                <form name="loginForm" id="loginForm" method="post" role="form" autocomplete="off">
-                    <input placeholder="아이디" name="workerId" id="workerId" type="text" title="아이디" autocomplete="off" />
-                    <input class="mt10" placeholder="비밀번호" name="password" id="password" type="password" title="비밀번호" autocomplete="off" />
-                    <div class="checkbox">
-                        <label for="checkId">
-                            <input type="checkbox" name="checkId" id="checkId" onclick="saveId(this.form);"> 아이디 저장
-                        </label>
-                    </div> 
-                    <a href="javascript://" id="loginBtn" class="btn_login btn-block">로그인</a>
-                </form>
-            </div>
-            <p class="desc"></p>
+<body>
+  <div class="login_cont">
+    <div><img th:src="@{/images/login_title_418x33.png}" alt="Title Logo"></div>
+    <h2></h2>
+    <div class="loginMainWrap">
+      <form name="loginForm" id="loginForm" method="post" role="form" autocomplete="off">
+        <input placeholder="아이디" name="workerId" id="workerId" type="text" title="아이디" autocomplete="off" />
+        <input class="mt10" placeholder="비밀번호" name="password" id="password" type="password" title="비밀번호"
+          autocomplete="off" />
+        <div class="checkbox">
+          <label for="checkId">
+            <input type="checkbox" name="checkId" id="checkId" onclick="saveId();"> 아이디 저장
+          </label>
         </div>
-    </body>
+        <a href="javascript:void(0)" id="loginBtn" class="btn_login btn-block">로그인</a>
+      </form>
+    </div>
+    <p class="desc"></p>
+  </div>
+</body>
+
 </html>

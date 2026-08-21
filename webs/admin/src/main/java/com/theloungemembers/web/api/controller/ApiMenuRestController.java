@@ -36,7 +36,6 @@ public class ApiMenuRestController {
     private final ApiMenuService apiMenuService;
     private final ModelMapperHelper modelMapperHelper;
 
-
     /**
      * API 메뉴 목록 조회
      *

@@ -222,17 +222,17 @@
         <button type="button" class="propBtn">프로필변경</button>
       </div>
 
-      <div class="corpInfo" th:text="${session.adminSession != null ? session.adminSession.compNm : ''}">회사명</div>
+      <!-- <div class="corpInfo" th:text="${session.adminSession != null ? session.adminSession.compNm : ''}">회사명</div> -->
 
       <div class="logId">
-        <span sec:authentication="principal.workerName">관리자</span>
-        <span>(<th:block sec:authentication="principal.workerId"></th:block>)</span>님!
+        <!-- <span sec:authentication="principal.workerName">관리자</span>
+        <span>(<th:block sec:authentication="principal.workerId"></th:block>)</span>님! -->
       </div>
     </div>
     <div class="btns">
       <a class="message" href="javascript:void(0)" onclick="userMessageList()">쪽지함<span class="batNum">0</span></a>
       <a class="info" href="javascript:void(0)" onclick="layerUserInfo.create()">정보변경</a>
-      <a sec:authorize="isAuthenticated()" class="logout" href="javascript:void(0)" id="btnLogout">로그아웃</a>
+      <!-- <a sec:authorize="isAuthenticated()" class="logout" href="javascript:void(0)" id="btnLogout">로그아웃</a> -->
     </div>
   </div>
 

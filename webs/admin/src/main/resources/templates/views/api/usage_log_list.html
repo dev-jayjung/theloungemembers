@@ -9,123 +9,133 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        let apiUsageLogGrid;
+        (() => {
+            let apiUsageLogGrid;
 
-        $(document).ready(function() {
-            // Tabulator 그리드 생성
-            createApiUsageLogGrid();
+            $(() => {
+                // Tabulator 그리드 생성
+                createApiUsageLogGrid();
 
-            $('#searchForm').on('change', '#searchTarget', function () {
-                const $searchValue = $('#searchValue');
-                if (!!$(this).val()) {
-                    $searchValue.prop('disabled', false);
-                } else {
-                    $searchValue.val('');
-                    $searchValue.prop('disabled', true);
-                }
+                $('#searchForm').on('change', '#searchTarget', e => {
+                    const $this = $(e.currentTarget);
+                    const $searchValue = $('#searchValue');
+                    if (!!$this.val()) {
+                        $searchValue.prop('disabled', false);
+                    } else {
+                        $searchValue.val('');
+                        $searchValue.prop('disabled', true);
+                    }
+                });
+
+                $('#btnSearch').on('click', reloadGrid);
+                $('#btnReset').on('click', resetSearchForm);
+                $('#btnExcel').on('click', downloadExcel);
             });
-        });
 
-        function createApiUsageLogGrid() {
-            apiUsageLogGrid = initTabulatorGrid('#apiUsageLogList', {
-                ajaxURL: '/api/api-usage-logs',
+            const createApiUsageLogGrid = () => {
+                apiUsageLogGrid = GridUtil.init('#apiUsageLogList', {
+                    ajaxURL: '/api/api-usage-logs',
 
-                // 검색 폼 파라미터 지정
-                ajaxParams: function() {
-                    const params = $('#searchForm').serializeJson();
+                    // 검색 폼 파라미터 지정
+                    ajaxParams: () => {
+                        const params = FormUtil.serialize('#searchForm');
 
-                    const startDate = $('#searchStartDate').val();
-                    const endDate = $('#searchEndDate').val();
+                        const startDate = $('#searchStartDate').val();
+                        const endDate = $('#searchEndDate').val();
 
-                    if (startDate) {
-                        params.startDtm = startDate + 'T00:00:00';
-                    }
-                    if (endDate) {
-                        params.endDtm = endDate + 'T23:59:59';
-                    }
-
-                    return params;
-                },
-
-                useCreatedAt: true,
-                columns: [
-                    { title: '코드', field: 'uid', hozAlign: 'center' },
-                    { title: '접속 계정', field: 'accountId', hozAlign: 'center' },
-                    { title: 'API 코드', field: 'apiCode', hozAlign: 'center' },
-                    {
-                        title: '트랜잭션 ID',
-                        field: 'transactionId',
-                        hozAlign: 'left',
-                        formatter: function(cell) {
-                            const row = cell.getRow().getData();
-                            const transactionId = cell.getValue();
-                            if (row.result === 'F') {
-                                return '<a href="javascript:;" style="color:#d33;text-decoration:underline;">' + transactionId + '</a>';
-                            }
-                            return transactionId;
+                        if (startDate) {
+                            params.startDtm = startDate + 'T00:00:00';
                         }
+                        if (endDate) {
+                            params.endDtm = endDate + 'T23:59:59';
+                        }
+
+                        return params;
                     },
-                    {
-                        title: '성공 여부',
-                        field: 'result',
-                        hozAlign: 'center',
-                        formatter: function(cell) {
-                            return cell.getValue() === 'S' ? '성공' : '<p style="color:red;">실패</p>';
+
+                    useCreatedAt: true,
+                    columns: [
+                        { title: '코드', field: 'uid', hozAlign: 'center' },
+                        { title: '접속 계정', field: 'accountId', hozAlign: 'center' },
+                        { title: 'API 코드', field: 'apiCode', hozAlign: 'center' },
+                        {
+                            title: '트랜잭션 ID',
+                            field: 'transactionId',
+                            hozAlign: 'left',
+                            formatter: cell => {
+                                const row = cell.getRow().getData();
+                                const transactionId = cell.getValue();
+                                if (row.result === 'F') {
+                                    return `<a href="javascript:;" style="color:#d33;text-decoration:underline;">${transactionId}</a>`;
+                                }
+                                return transactionId;
+                            }
                         },
-                    },
-                    { title: '전달인자', field: 'argument', width: 350, hozAlign: 'left' },
-                    { title: '응답 전문', field: 'response', width: 350, hozAlign: 'left' },
-                    { title: 'IP 주소', field: 'ipAddress', hozAlign: 'center' }
-                ]
-            });
+                        {
+                            title: '성공 여부',
+                            field: 'result',
+                            hozAlign: 'center',
+                            formatter: cell => {
+                                return cell.getValue() === 'S' ? '성공' : '<p style="color:red;">실패</p>';
+                            },
+                        },
+                        { title: '전달인자', field: 'argument', width: 350, hozAlign: 'left' },
+                        { title: '응답 전문', field: 'response', width: 350, hozAlign: 'left' },
+                        { title: 'IP 주소', field: 'ipAddress', hozAlign: 'center' }
+                    ]
+                });
 
-            apiUsageLogGrid.on('cellClick', function(e, cell) {
-                if (cell.getField() === 'transactionId') {
-                    const rowData = cell.getRow().getData();
-                    if (rowData.result === 'F') {
-                        moveToErrorLog(rowData.transactionId);
+                apiUsageLogGrid.on('cellClick', (e, cell) => {
+                    if (cell.getField() === 'transactionId') {
+                        const rowData = cell.getRow().getData();
+                        if (rowData.result === 'F') {
+                            moveToErrorLog(rowData.transactionId);
+                        }
                     }
+                });
+            }
+
+            // 검색
+            const reloadGrid = () => {
+                const searchTarget = $('#searchTarget').val();
+                const searchValue = $('#searchValue').val();
+
+                if (!!searchTarget && !searchValue) {
+                    alert('검색어를 입력해 주세요.');
+                    return;
                 }
-            });
-        }
 
-        // 검색
-        function reloadGrid() {
-            const searchTarget = $('#searchTarget').val();
-            const searchValue = $('#searchValue').val();
-
-            if (!!searchTarget && !searchValue) {
-                alert('검색어를 입력해 주세요.');
-                return;
+                if (apiUsageLogGrid) {
+                    apiUsageLogGrid.setData();
+                }
             }
 
-            if (apiUsageLogGrid) {
-                apiUsageLogGrid.setData();
+            // 초기화
+            const resetSearchForm = () => {
+                FormUtil.reset('#searchForm');
+                $('#searchValue').prop('disabled', true);
             }
-        }
 
-        // 초기화
-        function resetSearchForm() {
-            resetForm('searchForm');
-        }
+            const downloadExcel = () => {
+                apiUsageLogGrid.download('xlsx', 'API_이용_기록_목록.xlsx');
+            }
 
-        function downloadExcel() {
-            apiUsageLogGrid.download('xlsx', 'API_이용_기록_목록.xlsx');
-        }
-
-        // 실패 건 에러 로그 화면으로 이동
-        function moveToErrorLog(transactionId) {
-            const params = new URLSearchParams({
-                searchTarget: 'transaction_id',
-                searchValue: transactionId
-            });
-            openTab({ url: '/api-error-logs?' + params.toString() });
-        }
+            // 실패 건 에러 로그 화면으로 이동
+            const moveToErrorLog = transactionId => {
+                TabUtil.openTab({
+                    url: '/api-error-logs',
+                    data: {
+                        searchTarget: 'transaction_id',
+                        searchValue: transactionId
+                    }
+                });
+            }
+        })();
     </script>
 </th:block>
 
-<body>
-    <div layout:fragment="content">
+<th:block layout:fragment="content">
+    <div>
         <!-- 검색 조건 박스 -->
         <div class="table_type1">
             <form id="searchForm" name="searchForm" method="get">
@@ -197,8 +207,8 @@
 
         <!-- 버튼 영역 -->
         <div class="btn_area_center">
-            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
-            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+            <button type="button" id="btnSearch" class="btn_type2">검색</button>
+            <button type="button" id="btnReset" class="btn_type1">초기화</button>
         </div>
 
         <div class="mTitle gTitle">
@@ -206,7 +216,7 @@
         </div>
         <div class="mButton typeBorad">
             <div class="leftInner">
-                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+                <button type="button" id="btnExcel" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
             </div>
         </div>
 
@@ -215,5 +225,5 @@
             <div id="apiUsageLogList"></div>
         </div>
     </div>
-</body>
+</th:block>
 </html>

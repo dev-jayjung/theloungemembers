@@ -9,109 +9,116 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        let apiAccessibleIpGrid;
+        (() => {
+            let apiAccessibleIpGrid;
 
-        $(document).ready(function() {
-            // Tabulator 그리드 생성
-            createApiAccessibleIpGrid();
+            $(() => {
+                // Tabulator 그리드 생성
+                createApiAccessibleIpGrid();
 
-            $('#searchForm').on('change', '#searchTarget', function () {
-                const $searchValue = $('#searchValue');
-                if (!!$(this).val()) {
-                    $searchValue.prop('disabled', false);
-                } else {
-                    $searchValue.val('');
-                    $searchValue.prop('disabled', true);
-                }
+                $('#searchForm').on('change', '#searchTarget', e => {
+                    const $this = $(e.currentTarget);
+                    const $searchValue = $('#searchValue');
+                    if (!!$this.val()) {
+                        $searchValue.prop('disabled', false);
+                    } else {
+                        $searchValue.val('');
+                        $searchValue.prop('disabled', true);
+                    }
+                });
+
+                $('#btnSearch').on('click', reloadGrid);
+                $('#btnReset').on('click', resetSearchForm);
+                $('#btnExcel').on('click', downloadExcel);
+                $('#btnAdd').on('click', submitAddForm);
             });
-        });
 
-        function createApiAccessibleIpGrid() {
-            apiAccessibleIpGrid = initTabulatorGrid('#apiAccessibleIpList', {
-                ajaxURL: '/api/api-accessible-ips',
+            const createApiAccessibleIpGrid = () => {
+                apiAccessibleIpGrid = GridUtil.init('#apiAccessibleIpList', {
+                    ajaxURL: '/api/api-accessible-ips',
 
-                // 검색 폼 파라미터 지정
-                ajaxParams: function() {
-                    return $('#searchForm').serializeJson();
-                },
-
-                useCreatedAt: true,
-                useUpdatedAt: true,
-                columns: [
-                    { title: '코드', field: 'uid', hozAlign: 'center' },
-                    {
-                        title: 'IP 주소(→)',
-                        field: 'ipAddress',
-                        hozAlign: 'center',
-                        formatter: function(cell){
-                            return `<span style='text-decoration:underline;'>${cell.getValue() || ''}</span>`;
-                        }
+                    // 검색 폼 파라미터 지정
+                    ajaxParams: () => {
+                        return FormUtil.serialize('#searchForm');
                     },
-                    {
-                        title: '사용',
-                        field: 'onService',
-                        hozAlign: 'center',
-                        formatter: function(cell){
-                            return cell.getValue() === 'IN_SERVICE' ? 'O' : '<p style="color:red;">X</p>';
+
+                    useCreatedAt: true,
+                    useUpdatedAt: true,
+                    columns: [
+                        { title: '코드', field: 'uid', hozAlign: 'center' },
+                        {
+                            title: 'IP 주소(→)',
+                            field: 'ipAddress',
+                            hozAlign: 'center',
+                            formatter: cell => {
+                                return `<span style='text-decoration:underline;'>${cell.getValue() || ''}</span>`;
+                            }
                         },
-                    },
-                    { title: '메모', field: 'memo', hozAlign: 'left' }
-                ]
-            });
+                        {
+                            title: '사용',
+                            field: 'onService',
+                            hozAlign: 'center',
+                            formatter: cell => {
+                                return cell.getValue() === 'IN_SERVICE' ? 'O' : '<p style="color:red;">X</p>';
+                            },
+                        },
+                        { title: '메모', field: 'memo', hozAlign: 'left' }
+                    ]
+                });
 
-            // IP 주소 클릭 시 수정 상세 이동
-            apiAccessibleIpGrid.on('cellClick', function(e, cell) {
-                if (cell.getField() === 'ipAddress'){
-                    const rowData = cell.getRow().getData();
-                    submitModifyForm(rowData.uid);
+                // IP 주소 클릭 시 수정 상세 이동
+                apiAccessibleIpGrid.on('cellClick', (e, cell) => {
+                    if (cell.getField() === 'ipAddress') {
+                        const rowData = cell.getRow().getData();
+                        submitModifyForm(rowData.uid);
+                    }
+                });
+            }
+
+            // 검색
+            const reloadGrid = () => {
+                const searchTarget = $('#searchTarget').val();
+                const searchValue = $('#searchValue').val();
+
+                if (!!searchTarget && !searchValue) {
+                    alert('검색어를 입력해 주세요.');
+                    return;
                 }
-            });
-        }
 
-        // 검색
-        function reloadGrid() {
-            const searchTarget = $('#searchTarget').val();
-            const searchValue = $('#searchValue').val();
-
-            if (!!searchTarget && !searchValue) {
-                alert('검색어를 입력해 주세요.');
-                return;
+                if (apiAccessibleIpGrid) {
+                    apiAccessibleIpGrid.setData();
+                }
             }
 
-            if (apiAccessibleIpGrid) {
-                apiAccessibleIpGrid.setData();
+            // 등록 이동
+            const submitAddForm = () => {
+                TabUtil.openTab({
+                    url: '/api-accessible-ips/new'
+                });
             }
-        }
 
-        // 등록 이동
-        function submitAddForm() {
-            createTargetFormSubmit({
-                id: 'apiAccessibleIpView',
-                url: '/api-accessible-ips/new'
-            });
-        }
+            // 수정 이동
+            const submitModifyForm = uid => {
+                TabUtil.openTab({
+                    url: `/api-accessible-ips/detail?id=${uid}`
+                });
+            }
 
-        // 수정 이동
-        function submitModifyForm(uid) {
-            createTargetFormSubmit({
-                id: 'apiAccessibleIpView',
-                url: `/api-accessible-ips/detail?id=${uid}`
-            });
-        }
+            // 초기화
+            const resetSearchForm = () => {
+                FormUtil.reset('#searchForm');
+                $('#searchValue').prop('disabled', true);
+            }
 
-        // 초기화
-        function resetSearchForm() {
-            resetForm('searchForm');
-        }
-
-        function downloadExcel() {
-            apiAccessibleIpGrid.download('xlsx', 'API_접속_허용_IP_목록.xlsx');
-        }
+            const downloadExcel = () => {
+                apiAccessibleIpGrid.download('xlsx', 'API_접속_허용_IP_목록.xlsx');
+            }
+        })();
     </script>
 </th:block>
 
-<body>
-    <div layout:fragment="content">
+<th:block layout:fragment="content">
+    <div>
         <!-- 검색 조건 박스 -->
         <div class="table_type1">
             <form id="searchForm" name="searchForm" method="get">
@@ -153,8 +160,8 @@
 
         <!-- 버튼 영역 -->
         <div class="btn_area_center">
-            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
-            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+            <button type="button" id="btnSearch" class="btn_type2">검색</button>
+            <button type="button" id="btnReset" class="btn_type1">초기화</button>
         </div>
 
         <div class="mTitle gTitle">
@@ -162,8 +169,8 @@
         </div>
         <div class="mButton typeBorad">
             <div class="leftInner">
-                <button type="button" onclick="submitAddForm();" class="btn_h25_type1">등록하기</button>
-                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+                <button type="button" id="btnAdd" class="btn_h25_type1">등록하기</button>
+                <button type="button" id="btnExcel" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
             </div>
         </div>
 
@@ -172,5 +179,5 @@
             <div id="apiAccessibleIpList"></div>
         </div>
     </div>
-</body>
+</th:block>
 </html>

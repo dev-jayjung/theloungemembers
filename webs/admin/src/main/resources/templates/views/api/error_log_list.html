@@ -9,89 +9,97 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        let apiErrorLogGrid;
+        (() => {
+            let apiErrorLogGrid;
 
-        $(document).ready(function() {
-            // Tabulator 그리드 생성
-            createApiErrorLogGrid();
+            $(() => {
+                // Tabulator 그리드 생성
+                createApiErrorLogGrid();
 
-            $('#searchForm').on('change', '#searchTarget', function () {
-                const $searchValue = $('#searchValue');
-                if (!!$(this).val()) {
-                    $searchValue.prop('disabled', false);
-                } else {
-                    $searchValue.val('');
-                    $searchValue.prop('disabled', true);
+                $('#searchForm').on('change', '#searchTarget', e => {
+                    const $this = $(e.currentTarget);
+                    const $searchValue = $('#searchValue');
+                    if (!!$this.val()) {
+                        $searchValue.prop('disabled', false);
+                    } else {
+                        $searchValue.val('');
+                        $searchValue.prop('disabled', true);
+                    }
+                });
+
+                $('#btnSearch').on('click', reloadGrid);
+                $('#btnReset').on('click', resetSearchForm);
+                $('#btnExcel').on('click', downloadExcel);
+            });
+
+            const createApiErrorLogGrid = () => {
+                apiErrorLogGrid = GridUtil.init('#apiErrorLogList', {
+                    ajaxURL: '/api/api-error-logs',
+
+                    // 검색 폼 파라미터 지정
+                    ajaxParams: () => {
+                        const params = FormUtil.serialize('#searchForm');
+
+                        const startDate = $('#searchStartDate').val();
+                        const endDate = $('#searchEndDate').val();
+
+                        if (startDate) {
+                            params.startDtm = startDate + 'T00:00:00';
+                        }
+                        if (endDate) {
+                            params.endDtm = endDate + 'T23:59:59';
+                        }
+
+                        return params;
+                    },
+
+                    useCreatedAt: true,
+                    columns: [
+                        { title: '코드', field: 'uid', hozAlign: 'center' },
+                        { title: '접속 계정', field: 'accountId', hozAlign: 'center' },
+                        { title: 'API 코드', field: 'apiCode', hozAlign: 'center' },
+                        { title: '트랜잭션 ID', field: 'transactionId', hozAlign: 'left' },
+                        { title: '에러 코드', field: 'errorCode', hozAlign: 'center' },
+                        { title: '에러 내용', field: 'errorMsg', width: 250, hozAlign: 'left' },
+                        { title: '응답 전문', field: 'response', width: 250, hozAlign: 'left' },
+                        { title: 'GET 인자', field: 'argumentGet', width: 250, hozAlign: 'left' },
+                        { title: 'POST 인자', field: 'argumentPost', width: 250, hozAlign: 'left' },
+                        { title: 'USER_AGENT', field: 'argumentUserAgent', width: 250, hozAlign: 'left' },
+                        { title: 'IP 주소', field: 'ipAddress', hozAlign: 'center' }
+                    ]
+                });
+            }
+
+            // 검색
+            const reloadGrid = () => {
+                const searchTarget = $('#searchTarget').val();
+                const searchValue = $('#searchValue').val();
+
+                if (!!searchTarget && !searchValue) {
+                    alert('검색어를 입력해 주세요.');
+                    return;
                 }
-            });
-        });
 
-        function createApiErrorLogGrid() {
-            apiErrorLogGrid = initTabulatorGrid('#apiErrorLogList', {
-                ajaxURL: '/api/api-error-logs',
-
-                // 검색 폼 파라미터 지정
-                ajaxParams: function() {
-                    const params = $('#searchForm').serializeJson();
-
-                    const startDate = $('#searchStartDate').val();
-                    const endDate = $('#searchEndDate').val();
-
-                    if (startDate) {
-                        params.startDtm = startDate + 'T00:00:00';
-                    }
-                    if (endDate) {
-                        params.endDtm = endDate + 'T23:59:59';
-                    }
-
-                    return params;
-                },
-
-                useCreatedAt: true,
-                columns: [
-                    { title: '코드', field: 'uid', hozAlign: 'center' },
-                    { title: '접속 계정', field: 'accountId', hozAlign: 'center' },
-                    { title: 'API 코드', field: 'apiCode', hozAlign: 'center' },
-                    { title: '트랜잭션 ID', field: 'transactionId', hozAlign: 'left' },
-                    { title: '에러 코드', field: 'errorCode', hozAlign: 'center' },
-                    { title: '에러 내용', field: 'errorMsg', width: 250, hozAlign: 'left' },
-                    { title: '응답 전문', field: 'response', width: 250, hozAlign: 'left' },
-                    { title: 'GET 인자', field: 'argumentGet', width: 250, hozAlign: 'left' },
-                    { title: 'POST 인자', field: 'argumentPost', width: 250, hozAlign: 'left' },
-                    { title: 'USER_AGENT', field: 'argumentUserAgent', width: 250, hozAlign: 'left' },
-                    { title: 'IP 주소', field: 'ipAddress', hozAlign: 'center' }
-                ]
-            });
-        }
-
-        // 검색
-        function reloadGrid() {
-            const searchTarget = $('#searchTarget').val();
-            const searchValue = $('#searchValue').val();
-
-            if (!!searchTarget && !searchValue) {
-                alert('검색어를 입력해 주세요.');
-                return;
+                if (apiErrorLogGrid) {
+                    apiErrorLogGrid.setData();
+                }
             }
 
-            if (apiErrorLogGrid) {
-                apiErrorLogGrid.setData();
+            // 초기화
+            const resetSearchForm = () => {
+                FormUtil.reset('#searchForm');
+                $('#searchValue').prop('disabled', true);
             }
-        }
 
-        // 초기화
-        function resetSearchForm() {
-            resetForm('searchForm');
-        }
-
-        function downloadExcel() {
-            apiErrorLogGrid.download('xlsx', 'API_에러_로그_목록.xlsx');
-        }
+            const downloadExcel = () => {
+                apiErrorLogGrid.download('xlsx', 'API_에러_로그_목록.xlsx');
+            }
+        })();
     </script>
 </th:block>
 
-<body>
-    <div layout:fragment="content">
+<th:block layout:fragment="content">
+    <div>
         <!-- 검색 조건 박스 -->
         <div class="table_type1">
             <form id="searchForm" name="searchForm" method="get">
@@ -155,8 +163,8 @@
 
         <!-- 버튼 영역 -->
         <div class="btn_area_center">
-            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
-            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+            <button type="button" id="btnSearch" class="btn_type2">검색</button>
+            <button type="button" id="btnReset" class="btn_type1">초기화</button>
         </div>
 
         <div class="mTitle gTitle">
@@ -164,7 +172,7 @@
         </div>
         <div class="mButton typeBorad">
             <div class="leftInner">
-                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+                <button type="button" id="btnExcel" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
             </div>
         </div>
 
@@ -173,5 +181,5 @@
             <div id="apiErrorLogList"></div>
         </div>
     </div>
-</body>
+</th:block>
 </html>

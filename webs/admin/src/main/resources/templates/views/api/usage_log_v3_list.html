@@ -9,96 +9,104 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        let apiUsageLogV3Grid;
+        (() => {
+            let apiUsageLogV3Grid;
 
-        $(document).ready(function() {
-            // Tabulator 그리드 생성
-            createApiUsageLogV3Grid();
+            $(() => {
+                // Tabulator 그리드 생성
+                createApiUsageLogV3Grid();
 
-            $('#searchForm').on('change', '#searchTarget', function () {
-                const $searchValue = $('#searchValue');
-                if (!!$(this).val()) {
-                    $searchValue.prop('disabled', false);
-                } else {
-                    $searchValue.val('');
-                    $searchValue.prop('disabled', true);
-                }
+                $('#searchForm').on('change', '#searchTarget', e => {
+                    const $this = $(e.currentTarget);
+                    const $searchValue = $('#searchValue');
+                    if (!!$this.val()) {
+                        $searchValue.prop('disabled', false);
+                    } else {
+                        $searchValue.val('');
+                        $searchValue.prop('disabled', true);
+                    }
+                });
+
+                $('#btnSearch').on('click', reloadGrid);
+                $('#btnReset').on('click', resetSearchForm);
+                $('#btnExcel').on('click', downloadExcel);
             });
-        });
 
-        function createApiUsageLogV3Grid() {
-            apiUsageLogV3Grid = initTabulatorGrid('#apiUsageLogV3List', {
-                ajaxURL: '/api/api-usage-logs-v3',
+            const createApiUsageLogV3Grid = () => {
+                apiUsageLogV3Grid = GridUtil.init('#apiUsageLogV3List', {
+                    ajaxURL: '/api/api-usage-logs-v3',
 
-                // 검색 폼 파라미터 지정
-                ajaxParams: function() {
-                    const params = $('#searchForm').serializeJson();
+                    // 검색 폼 파라미터 지정
+                    ajaxParams: () => {
+                        const params = FormUtil.serialize('#searchForm');
 
-                    const startDate = $('#searchStartDate').val();
-                    const endDate = $('#searchEndDate').val();
+                        const startDate = $('#searchStartDate').val();
+                        const endDate = $('#searchEndDate').val();
 
-                    if (startDate) {
-                        params.startDtm = startDate + 'T00:00:00';
-                    }
-                    if (endDate) {
-                        params.endDtm = endDate + 'T23:59:59';
-                    }
+                        if (startDate) {
+                            params.startDtm = startDate + 'T00:00:00';
+                        }
+                        if (endDate) {
+                            params.endDtm = endDate + 'T23:59:59';
+                        }
 
-                    return params;
-                },
-
-                useCreatedAt: true,
-                columns: [
-                    { title: '코드', field: 'uid', hozAlign: 'center' },
-                    { title: '대분류', field: 'categoryMajor', hozAlign: 'center' },
-                    { title: '중분류', field: 'categoryMiddle', hozAlign: 'center' },
-                    {
-                        title: '전송결과',
-                        field: 'result',
-                        hozAlign: 'center',
-                        formatter: function(cell) {
-                            return cell.getValue() === 'success' ? '성공' : '<p style="color:red;">실패</p>';
-                        },
+                        return params;
                     },
-                    { title: '회원 UID', field: 'memberUid', hozAlign: 'center' },
-                    { title: '트랜잭션 ID', field: 'transactionId', hozAlign: 'left' },
-                    { title: '참조 키', field: 'referenceKey', hozAlign: 'center' },
-                    { title: '참조 값', field: 'referenceValue', hozAlign: 'center' },
-                    { title: '전달값', field: 'argument', width: 350, hozAlign: 'left' },
-                    { title: '응답값', field: 'response', width: 350, hozAlign: 'left' },
-                    { title: '에러코드', field: 'errorCode', hozAlign: 'center' }
-                ]
-            });
-        }
 
-        // 검색
-        function reloadGrid() {
-            const searchTarget = $('#searchTarget').val();
-            const searchValue = $('#searchValue').val();
-
-            if (!!searchTarget && !searchValue) {
-                alert('검색어를 입력해 주세요.');
-                return;
+                    useCreatedAt: true,
+                    columns: [
+                        { title: '코드', field: 'uid', hozAlign: 'center' },
+                        { title: '대분류', field: 'categoryMajor', hozAlign: 'center' },
+                        { title: '중분류', field: 'categoryMiddle', hozAlign: 'center' },
+                        {
+                            title: '전송결과',
+                            field: 'result',
+                            hozAlign: 'center',
+                            formatter: cell => {
+                                return cell.getValue() === 'success' ? '성공' : '<p style="color:red;">실패</p>';
+                            },
+                        },
+                        { title: '회원 UID', field: 'memberUid', hozAlign: 'center' },
+                        { title: '트랜잭션 ID', field: 'transactionId', hozAlign: 'left' },
+                        { title: '참조 키', field: 'referenceKey', hozAlign: 'center' },
+                        { title: '참조 값', field: 'referenceValue', hozAlign: 'center' },
+                        { title: '전달값', field: 'argument', width: 350, hozAlign: 'left' },
+                        { title: '응답값', field: 'response', width: 350, hozAlign: 'left' },
+                        { title: '에러코드', field: 'errorCode', hozAlign: 'center' }
+                    ]
+                });
             }
 
-            if (apiUsageLogV3Grid) {
-                apiUsageLogV3Grid.setData();
+            // 검색
+            const reloadGrid = () => {
+                const searchTarget = $('#searchTarget').val();
+                const searchValue = $('#searchValue').val();
+
+                if (!!searchTarget && !searchValue) {
+                    alert('검색어를 입력해 주세요.');
+                    return;
+                }
+
+                if (apiUsageLogV3Grid) {
+                    apiUsageLogV3Grid.setData();
+                }
             }
-        }
 
-        // 초기화
-        function resetSearchForm() {
-            resetForm('searchForm');
-        }
+            // 초기화
+            const resetSearchForm = () => {
+                FormUtil.reset('#searchForm');
+                $('#searchValue').prop('disabled', true);
+            }
 
-        function downloadExcel() {
-            apiUsageLogV3Grid.download('xlsx', 'V3_API_이용_로그_목록.xlsx');
-        }
+            const downloadExcel = () => {
+                apiUsageLogV3Grid.download('xlsx', 'V3_API_이용_로그_목록.xlsx');
+            }
+        })();
     </script>
 </th:block>
 
-<body>
-    <div layout:fragment="content">
+<th:block layout:fragment="content">
+    <div>
         <!-- 검색 조건 박스 -->
         <div class="table_type1">
             <form id="searchForm" name="searchForm" method="get">
@@ -173,8 +181,8 @@
 
         <!-- 버튼 영역 -->
         <div class="btn_area_center">
-            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
-            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+            <button type="button" id="btnSearch" class="btn_type2">검색</button>
+            <button type="button" id="btnReset" class="btn_type1">초기화</button>
         </div>
 
         <div class="mTitle gTitle">
@@ -182,7 +190,7 @@
         </div>
         <div class="mButton typeBorad">
             <div class="leftInner">
-                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+                <button type="button" id="btnExcel" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
             </div>
         </div>
 
@@ -191,5 +199,5 @@
             <div id="apiUsageLogV3List"></div>
         </div>
     </div>
-</body>
+</th:block>
 </html>

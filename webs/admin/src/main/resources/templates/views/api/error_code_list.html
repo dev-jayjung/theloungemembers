@@ -9,70 +9,78 @@
 
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-        let apiErrorCodeGrid;
+        (() => {
+            let apiErrorCodeGrid;
 
-        $(document).ready(function() {
-            // Tabulator 그리드 생성
-            createApiErrorCodeGrid();
+            $(() => {
+                // Tabulator 그리드 생성
+                createApiErrorCodeGrid();
 
-            $('#searchForm').on('change', '#searchTarget', function () {
-                const $searchValue = $('#searchValue');
-                if (!!$(this).val()) {
-                    $searchValue.prop('disabled', false);
-                } else {
-                    $searchValue.val('');
-                    $searchValue.prop('disabled', true);
+                $('#searchForm').on('change', '#searchTarget', e => {
+                    const $this = $(e.currentTarget);
+                    const $searchValue = $('#searchValue');
+                    if (!!$this.val()) {
+                        $searchValue.prop('disabled', false);
+                    } else {
+                        $searchValue.val('');
+                        $searchValue.prop('disabled', true);
+                    }
+                });
+
+                $('#btnSearch').on('click', reloadGrid);
+                $('#btnReset').on('click', resetSearchForm);
+                $('#btnExcel').on('click', downloadExcel);
+            });
+
+            const createApiErrorCodeGrid = () => {
+                apiErrorCodeGrid = GridUtil.init('#apiErrorCodeList', {
+                    ajaxURL: '/api/api-error-codes',
+
+                    // 검색 폼 파라미터 지정
+                    ajaxParams: () => {
+                        return FormUtil.serialize('#searchForm');
+                    },
+
+                    useCreatedAt: true,
+                    columns: [
+                        { title: '코드', field: 'uid', hozAlign: 'center' },
+                        { title: '에러 코드', field: 'errorCode', hozAlign: 'center' },
+                        { title: '에러 내용', field: 'errorMeaning', hozAlign: 'left' },
+                        { title: '메모', field: 'memo', hozAlign: 'left' }
+                    ]
+                });
+            }
+
+            // 검색
+            const reloadGrid = () => {
+                const searchTarget = $('#searchTarget').val();
+                const searchValue = $('#searchValue').val();
+
+                if (!!searchTarget && !searchValue) {
+                    alert('검색어를 입력해 주세요.');
+                    return;
                 }
-            });
-        });
 
-        function createApiErrorCodeGrid() {
-            apiErrorCodeGrid = initTabulatorGrid('#apiErrorCodeList', {
-                ajaxURL: '/api/api-error-codes',
-
-                // 검색 폼 파라미터 지정
-                ajaxParams: function() {
-                    return $('#searchForm').serializeJson();
-                },
-
-                useCreatedAt: true,
-                columns: [
-                    { title: '코드', field: 'uid', hozAlign: 'center' },
-                    { title: '에러 코드', field: 'errorCode', hozAlign: 'center' },
-                    { title: '에러 내용', field: 'errorMeaning', hozAlign: 'left' },
-                    { title: '메모', field: 'memo', hozAlign: 'left' }
-                ]
-            });
-        }
-
-        // 검색
-        function reloadGrid() {
-            const searchTarget = $('#searchTarget').val();
-            const searchValue = $('#searchValue').val();
-
-            if (!!searchTarget && !searchValue) {
-                alert('검색어를 입력해 주세요.');
-                return;
+                if (apiErrorCodeGrid) {
+                    apiErrorCodeGrid.setData();
+                }
             }
 
-            if (apiErrorCodeGrid) {
-                apiErrorCodeGrid.setData();
+            // 초기화
+            const resetSearchForm = () => {
+                FormUtil.reset('#searchForm');
+                $('#searchValue').prop('disabled', true);
             }
-        }
 
-        // 초기화
-        function resetSearchForm() {
-            resetForm('searchForm');
-        }
-
-        function downloadExcel() {
-            apiErrorCodeGrid.download('xlsx', 'API_에러_코드_목록.xlsx');
-        }
+            const downloadExcel = () => {
+                apiErrorCodeGrid.download('xlsx', 'API_에러_코드_목록.xlsx');
+            }
+        })();
     </script>
 </th:block>
 
-<body>
-    <div layout:fragment="content">
+<th:block layout:fragment="content">
+    <div>
         <!-- 검색 조건 박스 -->
         <div class="table_type1">
             <form id="searchForm" name="searchForm" method="get">
@@ -101,8 +109,8 @@
 
         <!-- 버튼 영역 -->
         <div class="btn_area_center">
-            <button type="button" onclick="reloadGrid();" class="btn_type2">검색</button>
-            <button type="button" onclick="resetSearchForm();" class="btn_type1">초기화</button>
+            <button type="button" id="btnSearch" class="btn_type2">검색</button>
+            <button type="button" id="btnReset" class="btn_type1">초기화</button>
         </div>
 
         <div class="mTitle gTitle">
@@ -110,7 +118,7 @@
         </div>
         <div class="mButton typeBorad">
             <div class="leftInner">
-                <button type="button" onclick="downloadExcel();" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+                <button type="button" id="btnExcel" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
             </div>
         </div>
 
@@ -119,5 +127,5 @@
             <div id="apiErrorCodeList"></div>
         </div>
     </div>
-</body>
+</th:block>
 </html>

@@ -9,87 +9,84 @@
 
 <th:block layout:fragment="script">
     <script type="text/javascript" th:inline="javascript">
-        $(document).ready(function() {
-
-        });
-
-        // 등록
-        function menuInsert() {
-            if (!validate.check('menuForm')) {
-                return;
-            }
-
-            if (!confirm('등록 하시겠습니까?')) {
-                return;
-            }
-
-            const options = {
-                url: /*[[@{/api/api-menus}]]*/ '/api/api-menus',
-                data: $('#menuForm').serializeJson(),
-                sendType: 'json',
-                callBack: function(result) {
-                    if (!result.success) {
-                        return;
-                    }
-
-                    const uid = result.data.uid;
-
-                    createTargetFormSubmit({
-                        id: 'apiMenuView',
-                        url: `/api-menus/detail?id=${uid}`
-                    });
-                }
-            };
-
-            ajax.call(options);
-        }
-
-        // 수정
-        function menuUpdate() {
-            if (!validate.check('menuForm')) {
-                return;
-            }
-            
-            if (!confirm('수정 하시겠습니까?')) {
-                return;
-            }
-
-            const uid = $('#uid').val();
-
-            const options = {
-                url: `/api/api-menus/${uid}`,
-                data: $('#menuForm').serializeJson(),
-                sendType: 'json',
-                type: 'PUT',
-                callBack: function(result) {
-                    if (!result.success) {
-                        return;
-                    }
-
-                    createTargetFormSubmit({
-                        id: 'apiMenuView',
-                        url: `/api-menus/detail?id=${uid}`
-                    });
-                }
-            };
-            ajax.call(options);
-        }
-
-        // 팝업
-        function openMenuPop() {
-            openWindowPop({
-                url: '/api-menus/new',
-                width: '800',
-                height: '600',
-                target: 'apiMenuPop',
-                scrollbars: 'no',
-                resizable: 'no',
-                location: 'no',
-                menubar: 'no',
-                data: { uid: $('#uid').val() }
+        (() => {
+            $(() => {
+                $('#btnInsert').on('click', menuInsert);
+                $('#btnUpdate').on('click', menuUpdate);
+                $('#btnPopup').on('click', openMenuPop);
+                $('#btnList').on('click', () => TabUtil.openTab({ url: '/api-menus' }));
             });
-        }
 
+            // 등록
+            const menuInsert = () => {
+                if (!FormUtil.validate.check('#menuForm')) {
+                    return;
+                }
+
+                if (!confirm('등록 하시겠습니까?')) {
+                    return;
+                }
+
+                AjaxUtil.call({
+                    url: /*[[@{/api/api-menus}]]*/ '/api/api-menus',
+                    data: FormUtil.serialize('#menuForm'),
+                    callBack: result => {
+                        if (!result.success) {
+                            return;
+                        }
+
+                        const uid = result.data.uid;
+
+                        TabUtil.openTab({
+                            url: `/api-menus/detail?id=${uid}`
+                        });
+                    }
+                });
+            }
+
+            // 수정
+            const menuUpdate = () => {
+                if (!FormUtil.validate.check('#menuForm')) {
+                    return;
+                }
+
+                if (!confirm('수정 하시겠습니까?')) {
+                    return;
+                }
+
+                const uid = $('#uid').val();
+
+                AjaxUtil.call({
+                    url: `/api/api-menus/${uid}`,
+                    data: FormUtil.serialize('#menuForm'),
+                    type: 'PUT',
+                    callBack: result => {
+                        if (!result.success) {
+                            return;
+                        }
+
+                        TabUtil.openTab({
+                            url: `/api-menus/detail?id=${uid}`
+                        });
+                    }
+                });
+            }
+
+            // 팝업
+            const openMenuPop = () => {
+                WindowUtil.open({
+                    url: '/api-menus/new',
+                    target: 'apiMenuPop',
+                    width: 800,
+                    height: 600,
+                    scrollbars: 'no',
+                    resizable: 'no',
+                    location: 'no',
+                    menubar: 'no',
+                    data: { uid: $('#uid').val() }
+                });
+            }
+        })();
     </script>
 </th:block>
 
@@ -218,14 +215,14 @@
 </form>
     <!-- 하단 버튼 영역 -->
     <div class="btn_area_center">
-        <button type="button" onclick="menuInsert()" class="btn_type2" th:if="${menu == null || menu.uid == null}">등록</button>
+        <button type="button" id="btnInsert" class="btn_type2" th:if="${menu == null || menu.uid == null}">등록</button>
 
         <th:block th:if="${menu != null && menu.uid != null}">
-            <button type="button" onclick="menuUpdate();" class="btn_type2">수정</button>
-            <button type="button" onclick="openMenuPop();" class="btn_type2">test</button>
+            <button type="button" id="btnUpdate" class="btn_type2">수정</button>
+            <button type="button" id="btnPopup" class="btn_type2">test</button>
         </th:block>
 
-        <button type="button" onclick="goUrl('/api-menus');" class="btn_type1">목록</button>
+        <button type="button" id="btnList" class="btn_type1">목록</button>
     </div>
 </th:block>
 </html>

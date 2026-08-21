@@ -3,10 +3,12 @@ package com.theloungemembers.web.admin.dto;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class AdminMenuResponse {
     private Long uid;
 
@@ -59,4 +61,6 @@ public class AdminMenuResponse {
     private String mainTitle;
 
     private String subTitle;
+
+    private Boolean isBookmark;
 }

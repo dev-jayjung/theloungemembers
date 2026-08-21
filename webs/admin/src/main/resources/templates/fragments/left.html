@@ -1,220 +1,279 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <!-- 좌측 사이드바 전체 프래그먼트 정의 -->
 <div id="side" th:fragment="left">
-    <!-- 상단 프로필 및 로그인 정보 영역 -->
-    <div class="topInfo">
-        <a href="javascript://" onclick="openHome()">
-            <strong>
-                <em>theloungemembers.com</em>
-                <span>BACK OFFICE</span>
-            </strong>
-        </a>
-        <div class="logInfoArea">
-            <div class="loginInfo">
-                <div class="photoImg">
-                    <img th:src="@{/images/ICON-LOGO.svg}" alt="프로필 사진" />
-                </div>
-                <button type="button" class="propBtn">프로필변경</button>
-            </div>
+  <!-- LNB 동작 관련 자바스크립트 -->
+  <script type="text/javascript" th:inline="javascript">
+    (() => {
+      $(() => {
+        $('#btnHome').on('click', () => {
+          if (typeof TabUtil !== 'undefined') {
+            TabUtil.openHome();
+          }
+        });
+        $('#btnLogout').on('click', logOut);
 
-            <div class="corpInfo" th:text="${session.adminSession != null ? session.adminSession.compNm : ''}">회사명</div>
-
-            <div class="logId">
-                <span th:text="${session.adminSession != null ? session.adminSession.usrNm : '관리자'}">관리자</span> 
-                <span>(<th:block th:text="${session.adminSession != null ? session.adminSession.loginId : 'admin'}"></th:block>)</span>님!
-            </div>
-        </div>
-<!--         <div class="btns"> -->
-<!--             <a class="message" href="javascript://" onclick="userMessageList()">쪽지함<span class="batNum">0</span></a> -->
-<!--             <a class="info" href="javascript://" onclick="layerUserInfo.create()">정보변경</a> -->
-<!--             <a class="logout" href="javascript://" onclick="logOut()">로그아웃</a> -->
-<!--         </div> -->
-    </div>
-
-    <!-- 좌측 상단 통합 검색 폼 -->
-    <form name="searchListForm" id="searchListForm" method="post">
-        <table class="table_type1">
-            <tbody>
-                <tr>
-                    <td>
-                        <select class="wth100" id="searchFieldTpCd" name="searchFieldTpCd">
-<!--                             <option value="10">상품번호</option> -->
-<!--                             <option value="20">기획전번호</option> -->
-<!--                             <option value="30">메뉴명</option> -->
-                            <option value="">메뉴URL</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="text" class="w80" id="searchFieldTpNm" name="searchFieldTpNm" />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
-
-    <div class="btn_area_sch">
-        <button type="button" class="btRefresh" onclick="searchReset('');">초기화</button>
-        <button type="button" class="btSch" onclick="selectSearchType();">검색</button>
-    </div>
-
-    <div class="btn_area_lnb">
-        <button id="BookmarkToggle" class="lnbMenuBtn" value="BOOKMARK">즐겨찾기</button>
-    </div>
-
-    <!-- 메뉴 트리가 출력되는 영역 (서브페이지 leftMenu.html 호출) -->
-    <ul id="lnb_tree" class="lnb_tree">
-        <th:block th:insert="~{fragments/left_menu :: leftMenu}"></th:block>
-    </ul>
-
-    <button class="side-toggleBtn">MENU COLLAPSE</button>
-
-    <!-- LNB 동작 관련 자바스크립트 -->
-    <script type="text/javascript" th:inline="javascript">
-        $(document).ready(function() {
-            // 검색어 엔터키 이벤트
-            $('#searchFieldTpNm').on('keydown', function(e) {
-                if (e.keyCode == 13) {
-                    e.preventDefault();
-                    selectSearchType();
-                }
-            });
+        // 검색어 엔터키 이벤트
+        $('#searchFieldTpNm').on('keydown', e => {
+          if (e.keyCode == 13) {
+            e.preventDefault();
+            selectSearchType();
+          }
         });
 
-        // 좌측 메뉴 검색/초기화 함수
-        function selectSearchType() {
-            const searchFieldTpCd = $('#searchFieldTpCd').val();
-            const searchFieldTpNm = $.trim($('#searchFieldTpNm').val());
+        $('.side-toggleBtn').on('click', () => $('html').toggleClass('sideHide'));
 
-            openTab({
-                url: searchFieldTpNm,
-                tabName: searchFieldTpNm
+        // 전체메뉴 / 즐겨찾기 목록 전환
+        let bookmarkMenuIng = false;
+        $('#btnBookmark').on('click', e => {
+          if (!bookmarkMenuIng) {
+            bookmarkMenuIng = true;
+            const $toggleBtn = $(e.currentTarget);
+            const currentVal = $toggleBtn.val();
+
+            AjaxUtil.call({
+              url: '/admin-menus',
+              type: 'GET',
+              data: { bookmark: currentVal },
+              wait: false,
+              dataType: 'html',
+              callBack: resHtml => {
+                const $lnb_tree = $('#lnb_tree');
+                $lnb_tree.children().remove();
+                $lnb_tree.append($(resHtml));
+
+                if (currentVal == 'BOOKMARK') {
+                  $toggleBtn.html('전체메뉴').val('ALL');
+                } else {
+                  $toggleBtn.html('즐겨찾기').val('BOOKMARK');
+                }
+              },
+              fail: (xhr, status, error) => {
+                alert('메뉴조회 오류');
+              },
+              complete: () => {
+                bookmarkMenuIng = false;
+              }
             });
+          }
+        });
+      });
 
-// TODO 임시
-return;
+      // 좌측 메뉴 검색/초기화 함수
+      const selectSearchType = () => {
+        const searchFieldTpCd = $('#searchFieldTpCd').val();
+        const searchFieldTpNm = StringUtil.trim($('#searchFieldTpNm').val());
 
-            if (searchFieldTpNm == '') {
-                alert('검색어를 입력해주세요.');
+        openTab({
+          url: searchFieldTpNm,
+          tabName: searchFieldTpNm
+        });
+
+        // TODO 임시
+        return;
+
+        if (searchFieldTpNm == '') {
+          alert('검색어를 입력해주세요.');
+          return;
+        }
+
+        if (searchFieldTpCd == '10') { // 상품 검색
+          $('body').css('cursor', 'progress');
+          $.ajax({
+            url: /*[[@{/goods/goodsSearchFieldTp.do}]]*/ '/goods/goodsSearchFieldTp.do',
+            type: 'POST',
+            dataType: 'json',
+            data: { goodsId: searchFieldTpNm },
+            success: data => {
+              $('body').css('cursor', 'auto');
+              if (data.goodsTpCd == '99') {
+                alert('검색된 상품이 없습니다.');
                 return;
+              }
+              const url_next = /*[[@{/goods/goodsDetailView.do}]]*/ '/goods/goodsDetailView.do';
+              if (data.goodsTpCd == '20') {
+                url_next = /*[[@{/goods/goodsDealView.do}]]*/ '/goods/goodsDealView.do';
+              } else if (data.goodsTpCd == '30') {
+                url_next = /*[[@{/goods/giftGoodsDetailView.do}]]*/ '/goods/giftGoodsDetailView.do';
+              }
+
+              createTargetFormSubmit({
+                id: 'goodsDetailForm',
+                url: url_next,
+                target: '_blank',
+                data: { goodsId: searchFieldTpNm }
+              });
+            },
+            error: () => {
+              $('body').css('cursor', 'auto');
+              alert('상품 검색 시 오류가 발생했습니다.');
             }
-
-            if (searchFieldTpCd == '10') { // 상품 검색
-                $('body').css('cursor', 'progress');
-                $.ajax({
-                    url: /*[[@{/goods/goodsSearchFieldTp.do}]]*/ '/goods/goodsSearchFieldTp.do',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: { goodsId: searchFieldTpNm },
-                    success: function (data) {
-                        $('body').css('cursor', 'auto');
-                        if (data.goodsTpCd == '99') {
-                            alert('검색된 상품이 없습니다.');
-                            return;
-                        }
-                        const url_next = /*[[@{/goods/goodsDetailView.do}]]*/ '/goods/goodsDetailView.do';
-                        if (data.goodsTpCd == '20') {
-                            url_next = /*[[@{/goods/goodsDealView.do}]]*/ '/goods/goodsDealView.do';
-                        } else if (data.goodsTpCd == '30') {
-                            url_next = /*[[@{/goods/giftGoodsDetailView.do}]]*/ '/goods/giftGoodsDetailView.do';
-                        }
-
-                        createTargetFormSubmit({
-                            id: 'goodsDetailForm',
-                            url: url_next,
-                            target: '_blank',
-                            data: { goodsId: searchFieldTpNm }
-                        });
-                    },
-                    error: function() {
-                        $('body').css('cursor', 'auto');
-                        alert('상품 검색 시 오류가 발생했습니다.');
-                    }
-                });
-            } else if (searchFieldTpCd == '20') { // 기획전 검색
-                if (/[^0-9]+/.test(searchFieldTpNm)) {
-                    alert('기획전 번호는 숫자만 입력하세요.');
-                    return;
-                }
-                $('body').css('cursor', 'progress');
-                $.ajax({
-                    url: /*[[@{/promotion/exhibitionSearchFieldTp.do}]]*/ '/promotion/exhibitionSearchFieldTp.do',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: { exhbtNo: +searchFieldTpNm },
-                    success: function (data) {
-                        $('body').css('cursor', 'auto');
-                        if (!data.exhbtNo || data.exhbtNo == 0) {
-                            alert('검색된 기획전이 없습니다.');
-                            return;
-                        }
-                        createTargetFormSubmit({
-                            id: 'exhibitionBaseView',
-                            url: /*[[@{/promotion/exhibitionBaseView.do}]]*/ '/promotion/exhibitionBaseView.do',
-                            target: '_blank',
-                            data: { exhbtNo: data.exhbtNo }
-                        });
-                    },
-                    error: function() {
-                        $('body').css('cursor', 'auto');
-                        alert('기획전 검색 시 오류가 발생했습니다.');
-                    }
-                });
-            } else { // 메뉴명 검색
-                $('body').css('cursor', 'progress');
-                $.ajax({
-                    url: /*[[@{/main/menuSearchFieldTp.do}]]*/ '/main/menuSearchFieldTp.do',
-                    type: 'POST',
-                    dataType: 'html',
-                    data: { menuName: searchFieldTpNm },
-                    success: function(resHtml) {
-                        const $lnb_tree = $('#lnb_tree');
-                        $lnb_tree.children().remove();
-                        $lnb_tree.append($(resHtml));
-                        $('body').css('cursor', 'auto');
-                    },
-                    error: function() {
-                        $('body').css('cursor', 'auto');
-                        alert('메뉴조회 오류');
-                    }
-                });
+          });
+        } else if (searchFieldTpCd == '20') { // 기획전 검색
+          if (/[^0-9]+/.test(searchFieldTpNm)) {
+            alert('기획전 번호는 숫자만 입력하세요.');
+            return;
+          }
+          $('body').css('cursor', 'progress');
+          $.ajax({
+            url: /*[[@{/promotion/exhibitionSearchFieldTp.do}]]*/ '/promotion/exhibitionSearchFieldTp.do',
+            type: 'POST',
+            dataType: 'json',
+            data: { exhbtNo: +searchFieldTpNm },
+            success: data => {
+              $('body').css('cursor', 'auto');
+              if (!data.exhbtNo || data.exhbtNo == 0) {
+                alert('검색된 기획전이 없습니다.');
+                return;
+              }
+              createTargetFormSubmit({
+                id: 'exhibitionBaseView',
+                url: /*[[@{/promotion/exhibitionBaseView.do}]]*/ '/promotion/exhibitionBaseView.do',
+                target: '_blank',
+                data: { exhbtNo: data.exhbtNo }
+              });
+            },
+            error: () => {
+              $('body').css('cursor', 'auto');
+              alert('기획전 검색 시 오류가 발생했습니다.');
             }
+          });
+        } else { // 메뉴명 검색
+          $('body').css('cursor', 'progress');
+          $.ajax({
+            url: /*[[@{/main/menuSearchFieldTp.do}]]*/ '/main/menuSearchFieldTp.do',
+            type: 'POST',
+            dataType: 'html',
+            data: { menuName: searchFieldTpNm },
+            success: resHtml => {
+              const $lnb_tree = $('#lnb_tree');
+              $lnb_tree.children().remove();
+              $lnb_tree.append($(resHtml));
+              $('body').css('cursor', 'auto');
+            },
+            error: () => {
+              $('body').css('cursor', 'auto');
+              alert('메뉴조회 오류');
+            }
+          });
         }
+      }
 
-        function resetLeftMenu() {
-            $('body').css('cursor', 'progress');
-            $.ajax({
-                url: /*[[@{/main/menuSearchFieldTp.do}]]*/ '/main/menuSearchFieldTp.do',
-                type: 'POST',
-                dataType: 'html',
-                data: { menuName: '' },
-                success: function(resHtml) {
-                    const $lnb_tree = $('#lnb_tree');
-                    $lnb_tree.children().remove();
-                    $lnb_tree.append($(resHtml));
-                    $('#BookmarkToggle').html('즐겨찾기').val('BOOKMARK');
-                    $('body').css('cursor', 'auto');
-                },
-                error: function() {
-                    $('body').css('cursor', 'auto');
-                    alert('메뉴조회 오류');
-                }
-            });
-        }
+      const resetLeftMenu = () => {
+        $('body').css('cursor', 'progress');
+        $.ajax({
+          url: /*[[@{/main/menuSearchFieldTp.do}]]*/ '/main/menuSearchFieldTp.do',
+          type: 'POST',
+          dataType: 'html',
+          data: { menuName: '' },
+          success: resHtml => {
+            const $lnb_tree = $('#lnb_tree');
+            $lnb_tree.children().remove();
+            $lnb_tree.append($(resHtml));
+            $('#btnBookmark').html('즐겨찾기').val('BOOKMARK');
+            $('body').css('cursor', 'auto');
+          },
+          error: () => {
+            $('body').css('cursor', 'auto');
+            alert('메뉴조회 오류');
+          }
+        });
+      }
 
-        function searchReset() {
-            resetForm('searchListForm');
-            resetLeftMenu();
-        }
+      const searchReset = () => {
+        FormUtil.reset('#searchListForm')
+        resetLeftMenu();
+      }
 
-        function logOut() {
-            top.location.href = /*[[@{/login/logout.do}]]*/ '/login/logout.do';
-        }
-    </script>
+      const logOut = () => {
+        const uid = $('#uid').val();
+
+        AjaxUtil.call({
+          url: `/api/logout`,
+          type: 'GET',
+          callBack: res => {
+            // 로그아웃 성공 시 전체 프레임(window.top)을 로그인 페이지로 전환
+            window.top.location.href = '/login';
+          },
+          fail: (xhr, status, error) => {
+            // 실패하더라도 쿠키 및 세션 정리를 위해 로그인 화면으로 이동
+            alert('로그아웃 처리 중 오류가 발생했습니다.');
+            window.top.location.href = '/login';
+          }
+        });
+      }
+    })();
+  </script>
+
+  <!-- 상단 프로필 및 로그인 정보 영역 -->
+  <div class="topInfo">
+    <a href="javascript:void(0)" id="btnHome">
+      <strong>
+        <em>theloungemembers.com</em>
+        <span>BACK OFFICE</span>
+      </strong>
+    </a>
+    <div class="logInfoArea">
+      <div class="loginInfo">
+        <div class="photoImg">
+          <img th:src="@{/images/ICON-LOGO.svg}" alt="프로필 사진" />
+        </div>
+        <button type="button" class="propBtn">프로필변경</button>
+      </div>
+
+      <div class="corpInfo" th:text="${session.adminSession != null ? session.adminSession.compNm : ''}">회사명</div>
+
+      <div class="logId">
+        <span sec:authentication="principal.workerName">관리자</span>
+        <span>(<th:block sec:authentication="principal.workerId"></th:block>)</span>님!
+      </div>
+    </div>
+    <div class="btns">
+      <a class="message" href="javascript:void(0)" onclick="userMessageList()">쪽지함<span class="batNum">0</span></a>
+      <a class="info" href="javascript:void(0)" onclick="layerUserInfo.create()">정보변경</a>
+      <a sec:authorize="isAuthenticated()" class="logout" href="javascript:void(0)" id="btnLogout">로그아웃</a>
+    </div>
+  </div>
+
+  <!-- 좌측 상단 통합 검색 폼 -->
+  <form name="searchListForm" id="searchListForm" method="post">
+    <table class="table_type1">
+      <tbody>
+        <tr>
+          <td>
+            <select class="wth100" id="searchFieldTpCd" name="searchFieldTpCd">
+              <!--                             <option value="10">상품번호</option> -->
+              <!--                             <option value="20">기획전번호</option> -->
+              <!--                             <option value="30">메뉴명</option> -->
+              <option value="">메뉴URL</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" class="w80" id="searchFieldTpNm" name="searchFieldTpNm" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  <div class="btn_area_sch">
+    <button type="button" class="btRefresh" onclick="searchReset('');">초기화</button>
+    <button type="button" class="btSch" onclick="selectSearchType();">검색</button>
+  </div>
+
+  <div class="btn_area_lnb">
+    <button id="btnBookmark" class="lnbMenuBtn" value="BOOKMARK">즐겨찾기</button>
+  </div>
+
+  <!-- 메뉴 트리가 출력되는 영역 (서브페이지 leftMenu.html 호출) -->
+  <ul id="lnb_tree" class="lnb_tree">
+    <th:block th:insert="~{fragments/left_menu :: leftMenu}"></th:block>
+  </ul>
+
+  <button class="side-toggleBtn">MENU COLLAPSE</button>
 </div>
 
 </html>

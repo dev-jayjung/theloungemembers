@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 
-import com.theloungemembers.core.common.type.BaseCodeEnum;
+import com.theloungemembers.core.type.BaseCodeEnum;
 
 public class StringToBaseCodeEnumConverterFactory implements ConverterFactory<String, BaseCodeEnum> {
 

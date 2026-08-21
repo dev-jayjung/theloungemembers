@@ -8,9 +8,9 @@ import com.theloungemembers.core.common.dto.PageResponse;
 /**
  * 기본 CRUD 공통 메서드 제공하는 레포지토리
  *
- * @param <C> Command (등록/수정 DTO)
- * @param <Q> Query (검색 조건 DTO)
- * @param <R> Result (응답 DTO)
+ * @param <C>  Command (등록/수정 DTO)
+ * @param <Q>  Query (검색 조건 DTO)
+ * @param <R>  Result (응답 DTO)
  * @param <ID> PK 타입 (Integer, Long 등)
  */
 public interface BaseRepository<C, Q, R, ID> {

@@ -11,7 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.helper.CookieHelper;
 import com.theloungemembers.core.worker.WorkerResult;
 import com.theloungemembers.core.worker.WorkerService;

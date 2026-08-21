@@ -3,13 +3,10 @@ plugins {
 }
 
 dependencies {
+    implementation project(':core-common')
     implementation 'org.springframework.boot:spring-boot-starter-json'
-    implementation 'com.google.guava:guava:33.2.1-jre'
+    // implementation 'com.google.guava:guava:33.2.1-jre'
 }
-
-//bootJar {
-//    enabled = false
-//}
 
 jar {
     enabled = true

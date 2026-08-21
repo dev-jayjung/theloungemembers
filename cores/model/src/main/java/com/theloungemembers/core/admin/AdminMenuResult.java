@@ -5,10 +5,12 @@ import java.util.List;
 import com.theloungemembers.core.common.dto.BaseResult;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class AdminMenuResult extends BaseResult {
     private Long uid;
 
@@ -33,4 +35,6 @@ public class AdminMenuResult extends BaseResult {
     private String mainTitle;
 
     private String subTitle;
+
+    private Boolean isBookmark;
 }

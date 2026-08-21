@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>Form 및 Table 컴포넌트 가이드</title>
+  <link rel="stylesheet" th:href="@{/css/guide.css}" />
+</head>
+
+<th:block layout:fragment="script">
+  <script type="text/javascript" th:inline="javascript">
+    (() => {
+
+      $(() => {
+        // Form 데이터 직렬화 및 제출 테스트
+        $('#btnCheckFormData').on('click', () => {
+          const formData = FormUtil.serialize('#sampleForm');
+          console.log('=== [Form 제출 데이터] ===', formData);
+          alert('콘솔(F12)에 Form 데이터가 출력되었습니다.\n\n' + JSON.stringify(formData, null, 2));
+        });
+
+        // Form 초기화
+        $('#btnResetFormData').on('click', () => {
+          FormUtil.reset('#sampleForm');
+        });
+      });
+
+    })();
+  </script>
+</th:block>
+
+<th:block layout:fragment="content">
+  <h1 class="b_title">Form & Table 컴포넌트 가이드</h1>
+
+  <!-- ================================================================= -->
+  <!-- 1. 기본 입력 폼 컴포넌트 (table_type1) -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">1. 입력/상세 폼 레이아웃 (table_type1 & Form Elements)</div>
+    <div class="guide-desc">
+      백오피스 기본 등록 및 수정용 테이블 레이아웃입니다. 필수 입력 항목은 <span class="code-badge">&lt;strong
+        class="red"&gt;*&lt;/strong&gt;</span>을 표시합니다.
+    </div>
+
+    <form id="sampleForm" name="sampleForm" th:fragment="formFragment">
+      <!-- 상단 타이틀 및 액션 버튼 영역 -->
+      <div class="mTitle gTitle">
+        <h2>사용자 정보 등록</h2>
+        <div class="buttonArea">
+          <button type="button" id="btnResetFormData" class="btn_type1">초기화</button>
+          <button type="button" id="btnCheckFormData" class="btn_type2">저장</button>
+        </div>
+      </div>
+
+      <div class="table_type1">
+        <table>
+          <colgroup>
+            <col style="width:140px;" />
+            <col />
+            <col style="width:140px;" />
+            <col />
+          </colgroup>
+          <tbody>
+            <tr>
+              <th>사용자 ID <strong class="red">*</strong></th>
+              <td>
+                <!-- 읽기 전용 텍스트 필드 (.readonly) -->
+                <input type="text" class="readonly wth200" readonly name="userId" id="userId" value="USER_0001" />
+              </td>
+              <th>서비스 코드 <strong class="red">*</strong></th>
+              <td>
+                <th:block th:replace="~{fragments/tag :: selectBox(
+                  name='serviceCode',
+                  target=${ServiceCode},
+                  clazz='wth150 validate[required]',
+                  textKey='description',
+                  defaultType='select'
+                )}" />
+              </td>
+            </tr>
+
+            <tr>
+              <th>사용자명 <strong class="red">*</strong></th>
+              <td colspan="3">
+                <!-- 일반 텍스트 입력 (.wth500) -->
+                <input type="text" class="wth500 validate[required]" name="userNm" id="userNm"
+                  placeholder="이름을 입력하세요." />
+              </td>
+            </tr>
+
+            <tr>
+              <th>알림 설정 (Radio)</th>
+              <td>
+                <th:block th:replace="~{fragments/tag :: radioGroup(
+                  name='onService',
+                  target=${ServiceStatus},
+                  checkedValue='1'
+                )}" />
+              </td>
+              <th>권한 그룹 (Checkbox)</th>
+              <td>
+                <th:block th:replace="~{fragments/tag :: checkboxGroup(
+                  name='roles',
+                  label='관리자',
+                  checkedValues='ADMIN'
+                )}" />
+              </td>
+            </tr>
+
+            <tr>
+              <th>첨부파일</th>
+              <td>
+                <!-- 공통 fileUpload 프래그먼트 연동 -->
+                <th:block th:replace="~{fragments/tag :: fileUpload(
+                  label='증빙서류',
+                  keyName='fileKey',
+                  fileName='fileName',
+                  maxSize=10
+                )}" />
+              </td>
+              <th>프로필 이미지</th>
+              <td>
+                <!-- 공통 imageUpload 프래그먼트 연동 -->
+                <th:block th:replace="~{fragments/tag :: imageUpload(
+                  label='프로필',
+                  keyName='profileImgKey',
+                  maxSize=2,
+                  maxWidth=500
+                )}" />
+              </td>
+            </tr>
+
+            <tr>
+              <th>비고</th>
+              <td colspan="3">
+                <!-- 텍스트 영역 (.wthTa: 95% 너비) -->
+                <textarea name="rmk" id="rmk" rows="3" class="wthTa" placeholder="특이사항을 입력하세요."></textarea>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </form>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 2. 하단 액션 버튼 영역 (btn_area_center) -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">2. 하단 액션 버튼 영역 (btn_area_center)</div>
+    <div class="guide-desc">
+      페이지 최하단에 위치하는 목록/초기화/저장 액션 버튼 레이아웃입니다.
+    </div>
+
+    <div class="btn_area_center">
+      <button type="button" class="btn_type1">목록으로</button>
+      <button type="button" class="btn_type1">초기화</button>
+      <button type="button" class="btn_type2">저장하기</button>
+    </div>
+  </div>
+</th:block>
+
+</html>

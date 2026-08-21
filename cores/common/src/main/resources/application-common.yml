@@ -4,3 +4,15 @@ spring:
       host: localhost
       port: 6379
       timeout: 6000ms
+  cloud:
+    aws:
+      credentials:
+        access-key: rootuser
+        secret-key: secretkey123
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: test
+        url: http://localhost:19000/test
+        directory: dev
+        endpoint: http://localhost:19000

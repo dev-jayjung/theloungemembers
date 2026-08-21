@@ -6,7 +6,8 @@ import jakarta.persistence.Converter;
 
 public final class JpaEnumConverter {
 
-    private JpaEnumConverter() {}
+    private JpaEnumConverter() {
+    }
 
     @Converter(autoApply = true)
     public static class ServiceStatusConverter extends AbstractEnumConverter<ServiceStatus> {

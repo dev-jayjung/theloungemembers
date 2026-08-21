@@ -29,7 +29,6 @@ public class ApiMenuViewController {
     private final ApiMenuService apiMenuService;
     private final ModelMapperHelper modelMapperHelper;
 
-
     @GetMapping
     public String apiMenuList(Model model) {
 

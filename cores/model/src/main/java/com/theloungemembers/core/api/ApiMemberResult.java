@@ -6,11 +6,17 @@ import java.util.List;
 import com.theloungemembers.core.common.dto.BaseResult;
 import com.theloungemembers.core.type.ServiceStatus;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiMemberResult extends BaseResult {
     private Long uid;
 

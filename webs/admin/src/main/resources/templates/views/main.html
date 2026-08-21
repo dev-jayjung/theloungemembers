@@ -1,60 +1,35 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main_layout}"> <!-- 기존 mainLayout 상속 -->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/main_layout}">
 
 <head>
-    <!-- JSP의 <t:putAttribute name="title"> 대응 -->
-    <title>더 라운지 관리자 시스템</title>
+  <title>더 라운지 관리자 시스템</title>
 </head>
 
-<!-- JSP의 <t:putAttribute name="script"> 대응 (main_layout의 script fragment로 주입) -->
 <th:block layout:fragment="script">
-    <script type="text/javascript">
-        function companyNoticeView(compNtcNo) {
-            createTargetFormSubmit({
-                id: 'noticeView',
-                url: '/company/noticeView.do',
-                target: '_blank',
-                data: {
-                    compNtcNo: compNtcNo
-                }
-            });
-        }
+  <script type="text/javascript">
+    $(() => {
+      // 메인 레이아웃 로드 완료 시 대시보드(홈) 탭 오픈
+      if (typeof TabUtil !== 'undefined') {
+        TabUtil.openHome();
+      }
 
-        function noticeView(bbsId, lettNo) {
-            createTargetFormSubmit({
-                id: 'noticeView',
-                url: '/bbsLetterView.do',
-                target: '_blank',
-                data: {
-                    bbsId: bbsId,
-                    lettNo: lettNo
-                }
-            });
-        }
+      $(document).on('load resize', () => {
+        makeHeight();
+      });
+    });
 
-        // iframe 높이 동적 계산 스크립트
-        function makeHeight() {
-            const height = $(window).innerHeight();
-            $('iframe').css({'height': (height - 126) + 'px'});
-        }
-
-        $(document).on('load resize', function() {
-            makeHeight();
-        });
-    </script>
+    // iframe 높이 동적 계산 스크립트
+    const makeHeight = () => {
+      const height = $(window).innerHeight();
+      $('iframe').css({
+        'height': (height - 126) + 'px'
+      });
+    }
+  </script>
 </th:block>
 
 <body>
-    <!-- JSP의 <t:putAttribute name="content"> 대응 -->
-<!--     <th:block layout:fragment="content" style="height: 100%;"> -->
-        <!-- 메인 대시보드 아이프레임 -->
-<!--         <iframe th:src="@{/main/dashBoard}" -->
-<!--                 width="100%"  -->
-<!--                 height="800px"  -->
-<!--                 style="border: none;"></iframe> -->
-<!--     </th:block> -->
 </body>
+
 </html>

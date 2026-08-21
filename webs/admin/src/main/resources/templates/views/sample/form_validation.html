@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>FormUtil & ValidationUtil 가이드</title>
+  <link rel="stylesheet" th:href="@{/css/guide.css}" />
+</head>
+
+<th:block layout:fragment="script">
+  <script th:inline="javascript">
+    (() => {
+      $(() => {
+        // 1. ValidationEngine 초기화
+        FormUtil.validate.init('#sampleForm');
+        FormUtil.validate.init('#detailValidateForm');
+
+        // 2. 이벤트 바인딩 - 기본 FormUtil
+        $('#btnSerialize').on('click', testSerialize);
+        $('#btnReset').on('click', testReset);
+        $('#btnValidate').on('click', testValidate);
+
+        // 3. 이벤트 바인딩 - 상세 FormUtil.validate
+        $('#btnCheckDetail').on('click', testDetailValidate);
+        $('#btnHidePrompt').on('click', testHidePrompt);
+
+        // 4. 이벤트 바인딩 - ValidationUtil
+        $('#btnTestValidation').on('click', testValidationUtil);
+      });
+
+      // --- [FormUtil 기본 테스트] ---
+      const testSerialize = () => {
+        const formData = FormUtil.serialize('#sampleForm');
+        $('#resSerialize').text(JSON.stringify(formData, null, 2));
+      };
+
+      const testReset = () => {
+        FormUtil.reset('#sampleForm');
+        $('#resSerialize').text('Form이 초기화되었습니다.');
+      };
+
+      const testValidate = () => {
+        const isValid = FormUtil.validate.check('#sampleForm');
+        alert(isValid ? '검증 통과!' : '입력값을 확인해 주세요.');
+      };
+
+      // --- [FormUtil.validate 상세 테스트] ---
+      const testDetailValidate = () => {
+        const isValid = FormUtil.validate.check('#detailValidateForm');
+        if (isValid) {
+          alert('모든 상세 조건 검증 통과!');
+        }
+      };
+
+      const testHidePrompt = () => {
+        FormUtil.validate.hide('#detailValidateForm');
+      };
+
+      // --- [ValidationUtil 테스트] ---
+      const testValidationUtil = () => {
+        const val = $('#inputTestVal').val();
+
+        const result = {
+          inputValue: val,
+          isEmpty: ValidationUtil.isEmpty(val),
+          isNotEmpty: ValidationUtil.isNotEmpty(val),
+          isValidPassword: ValidationUtil.isValidPassword(val),
+          hasSpecialChar: ValidationUtil.hasSpecialChar(val),
+          isValidDate: ValidationUtil.isValidDate(val)
+        };
+
+        $('#resValidation').text(JSON.stringify(result, null, 2));
+      };
+    })();
+  </script>
+</th:block>
+
+<th:block layout:fragment="content">
+  <h1 class="b_title">Form & Validation 유틸리티 가이드</h1>
+
+  <!-- ================================================================= -->
+  <!-- SECTION 1. FormUtil (기본 조작 및 직렬화) -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">1. FormUtil (Form 직렬화 및 기본 조작)</div>
+    <div class="guide-desc">
+      <span class="code-badge">FormUtil.serialize()</span>를 통해 Input 항목들을 JSON Object로 자동 변환하고[cite: 2], <span
+        class="code-badge">FormUtil.reset()</span>으로 입력값을 초기화합니다[cite: 2].
+    </div>
+
+    <form id="sampleForm"
+      style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 4px; background: #fff;">
+      <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" name="userName" value="홍길동" class="input_text validate[required]" placeholder="이름 (필수)" />
+        <input type="text" name="userEmail" value="test@example.com" class="input_text validate[required,custom[email]]"
+          placeholder="이메일" />
+        <input type="hidden" name="hiddenCode" value="HIDDEN_1024" />
+      </div>
+      <div style="display: flex; gap: 15px; align-items: center;">
+        <label><input type="checkbox" name="hobby" value="SPORTS" checked /> 운동</label>
+        <label><input type="checkbox" name="hobby" value="MUSIC" checked /> 음악</label>
+      </div>
+    </form>
+
+    <div class="btn_area_center">
+      <button type="button" id="btnSerialize" class="btn_type2">Form 직렬화 (serialize)</button>
+      <button type="button" id="btnReset" class="btn_type1">Form 초기화 (reset)</button>
+      <button type="button" id="btnValidate" class="btn_type2">기본 유효성 검사 (check)</button>
+    </div>
+
+    <pre id="resSerialize" class="code-badge"
+      style="margin-top: 15px; display: block; padding: 10px; white-space: pre-wrap;">결과가 여기에 표시됩니다.</pre>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SECTION 2. FormUtil.validate (상세 유효성 검사 패턴) -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">2. FormUtil.validate (상세 유효성 검사 패턴)</div>
+    <div class="guide-desc">
+      HTML Class 속성에 <span class="code-badge">validate[규칙]</span>을 적용하여 다양한 조건(필수, 자릿수, 비밀번호 비교 등)을 검증합니다.
+    </div>
+
+    <form id="detailValidateForm"
+      style="border: 1px solid #ddd; padding: 20px; border-radius: 6px; background: #fafafa;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+
+        <!-- 1. 글자 수 제한 -->
+        <div>
+          <label style="display:block; margin-bottom:5px; font-weight:bold;">아이디 (필수, 4~12자)</label>
+          <input type="text" name="userId" class="input_text validate[required,minSize[4],maxSize[12]]"
+            placeholder="4~12자 입력" style="width:100%;" />
+        </div>
+
+        <!-- 2. 숫자 범위 제한 -->
+        <div>
+          <label style="display:block; margin-bottom:5px; font-weight:bold;">나이 (숫자, 18~99세)</label>
+          <input type="text" name="userAge" class="input_text validate[required,custom[integer],min[18],max[99]]"
+            placeholder="18~99 사이 숫자" style="width:100%;" />
+        </div>
+
+        <!-- 3. 비밀번호 -->
+        <div>
+          <label style="display:block; margin-bottom:5px; font-weight:bold;">비밀번호 (8자 이상)</label>
+          <input type="password" id="userPw" name="userPw" class="input_text validate[required,minSize[8]]"
+            placeholder="8자 이상" style="width:100%;" />
+        </div>
+
+        <!-- 4. 비밀번호 확인 (equals) -->
+        <div>
+          <label style="display:block; margin-bottom:5px; font-weight:bold;">비밀번호 확인</label>
+          <input type="password" name="userPwConfirm" class="input_text validate[required,equals[userPw]]"
+            placeholder="비밀번호 재입력" style="width:100%;" />
+        </div>
+
+      </div>
+
+      <!-- 5. 그룹 체크박스 -->
+      <div style="margin-bottom: 15px;">
+        <label style="display:block; margin-bottom:5px; font-weight:bold;">수신 동의 (최소 1개 선택)</label>
+        <div style="display:flex; gap:15px;">
+          <label><input type="checkbox" name="agree" value="SMS" class="validate[groupRequired[agreeGroup]]" /> SMS
+            동의</label>
+          <label><input type="checkbox" name="agree" value="EMAIL" class="validate[groupRequired[agreeGroup]]" /> 이메일
+            동의</label>
+        </div>
+      </div>
+
+      <div class="btn_area_center" style="margin-top:20px;">
+        <button type="button" id="btnCheckDetail" class="btn_type2">전체 유효성 검사 (check)</button>
+        <button type="button" id="btnHidePrompt" class="btn_type1">에러 툴팁 숨기기 (hide)</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- SECTION 3. ValidationUtil (단일 값 유효성 검증) -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">3. ValidationUtil (단일 값 개별 검증)</div>
+    <div class="guide-desc">
+      <span class="code-badge">ValidationUtil.isEmpty()</span>, <span class="code-badge">isValidPassword()</span>, <span
+        class="code-badge">isValidDate()</span> 등의 정밀 검증 함수를 제공합니다[cite: 1].
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+      <input type="text" id="inputTestVal" class="input_text" value="Test@1234"
+        placeholder="검증할 값 입력 (예: 2026-08-20 또는 비밀번호)" style="width: 350px;" />
+      <button type="button" id="btnTestValidation" class="btn_type1">단일 값 검증 실행</button>
+    </div>
+
+    <pre id="resValidation" class="code-badge"
+      style="display: block; padding: 10px; white-space: pre-wrap;">결과가 여기에 표시됩니다.</pre>
+  </div>
+</th:block>
+
+</html>

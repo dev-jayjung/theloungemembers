@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>DateUtil 가이드</title>
+  <link rel="stylesheet" th:href="@{/css/guide.css}" />
+</head>
+
+<th:block layout:fragment="script">
+  <script th:inline="javascript">
+    (() => {
+      $(() => {
+        $('#btnToday').on('click', testToday);
+        $('#btnFormatDate').on('click', testFormat);
+        $('#btnDiff').on('click', testDiff);
+        $('#btnDDay').on('click', testDDay);
+      });
+
+      // 1. 오늘 날짜 조회
+      const testToday = () => {
+        $('#resToday').text(`오늘: ${DateUtil.today()} / 요일포함: ${DateUtil.formatWithDay(new Date())}`);
+      };
+
+      // 2. 날짜 포맷 변환
+      const testFormat = () => {
+        const val = $('#inputDate').val();
+        const formatted = DateUtil.formatDateTime(val);
+        const monthBoundary = DateUtil.monthBoundary(val, 'end');
+        $('#resFormat').text(`DATETIME: ${formatted} / 해당월 마지막일: ${monthBoundary}`);
+      };
+
+      // 3. 날짜 차이 계산
+      const testDiff = () => {
+        const start = $('#startDt').val();
+        const end = $('#endDt').val();
+        const diffDays = DateUtil.diff(end, start, 'day');
+        const isAfter = DateUtil.isAfter(start, end);
+
+        $('#resDiff').text(`차이: ${diffDays}일 / 시작일이 종료일보다 미래인가?: ${isAfter}`);
+      };
+
+      // 4. D-Day 계산
+      const testDDay = () => {
+        const target = $('#targetDt').val();
+        $('#resDDay').text(`D-Day 결과: ${DateUtil.getDDay(target)}`);
+      };
+    })();
+  </script>
+</th:block>
+
+<th:block layout:fragment="content">
+  <h1 class="b_title">DateUtil (날짜 & 시간) 가이드</h1>
+
+  <!-- 1. 날짜 조회 및 포맷 -->
+  <div class="guide-section">
+    <div class="guide-title">1. 날짜 조회 및 포맷팅</div>
+    <div class="guide-desc">
+      <span class="code-badge">DateUtil.today()</span>, <span class="code-badge">formatDateTime()</span> 등 표준 날짜 포맷팅을
+      지원합니다.
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+      <button type="button" id="btnToday" class="btn_type2">오늘 날짜 구하기</button>
+      <div id="resToday" class="code-badge">버튼을 클릭하세요.</div>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="text" id="inputDate" class="input_text" value="2026-08-18 14:30:00" />
+      <button type="button" id="btnFormatDate" class="btn_type1">포맷 변환 및 월말 계산</button>
+    </div>
+    <div id="resFormat" class="code-badge" style="margin-top: 5px; display: block;">결과가 여기에 표시됩니다.</div>
+  </div>
+
+  <!-- 2. 기간 검색 퀵 버튼 (공통 프래그먼트 연동) -->
+  <div class="guide-section">
+    <div class="guide-title">2. 기간 검색 컴포넌트 (공통 dateRangePicker 프래그먼트)</div>
+    <div class="guide-desc">
+      <span class="code-badge">useQuick=true</span> 옵션을 통해 <span class="code-badge">DateUtil.setRange</span>가 자동 바인딩된 표준
+      기간 선택 컴포넌트입니다.
+    </div>
+
+    <!-- 공통 dateRangePicker 프래그먼트 호출 (경로는 프로젝트 프래그먼트 위치에 맞게 조정) -->
+    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+      <th:block th:replace="~{fragments/tag :: dateRangePicker(
+        startName='searchStrtDt',
+        endName='searchEndDt',
+        startId='searchStrtDt',
+        endId='searchEndDt',
+        useQuick=true,
+        isRequired=false
+      )}"></th:block>
+    </div>
+  </div>
+
+  <!-- 3. 날짜 계산 & D-Day -->
+  <div class="guide-section">
+    <div class="guide-title">3. 날짜 비교 및 D-Day 계산</div>
+    <div class="guide-desc">
+      두 날짜 사이의 일수 계산(<span class="code-badge">diff</span>) 및 D-Day 계산(<span class="code-badge">getDDay</span>)을
+      제공합니다.
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+      <input type="date" id="startDt" class="input_text" value="2026-08-01" />
+      <input type="date" id="endDt" class="input_text" value="2026-08-20" />
+      <button type="button" id="btnDiff" class="btn_type1">차이 일수 계산</button>
+    </div>
+    <div id="resDiff" class="code-badge" style="margin-bottom: 15px; display: block;">결과가 여기에 표시됩니다.</div>
+
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="date" id="targetDt" class="input_text" value="2026-12-25" />
+      <button type="button" id="btnDDay" class="btn_type2">D-Day 계산</button>
+    </div>
+    <div id="resDDay" class="code-badge" style="margin-top: 5px; display: block;">결과가 여기에 표시됩니다.</div>
+  </div>
+</th:block>
+
+</html>

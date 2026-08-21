@@ -1,33 +1,33 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-    <head>
-        <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">관리자 팝업</title>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
-        <!-- 개별 팝업 전용 meta 영역 -->
-        <th:block layout:fragment="meta"></th:block>
+<head>
+  <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">관리자 팝업</title>
 
-        <!-- 개별 팝업 전용 script 영역 -->
-        <th:block layout:fragment="script"></th:block>
+  <!-- 개별 팝업 전용 meta 영역 -->
+  <th:block layout:fragment="meta"></th:block>
 
-        <!-- 팝업 높이 리사이징 스크립트 -->
-        <script type="text/javascript">
-            $(document).ready(function(){
-                const popContentHeight = $('.popArea').height() - $('.popArea > .popTitle').height();
-                $('.popArea > .popContent').height(popContentHeight - 32);
-            });
-        </script>
-    </head>
+  <!-- 개별 팝업 전용 script 영역 -->
+  <th:block layout:fragment="script"></th:block>
 
-    <body>
-        <div class="blankPop">
-            <div class="mBlank">
-                <div class="popArea">
-                    <!-- 팝업 페이지의 본문이 삽입되는 영역 -->
-                    <div layout:fragment="content"></div>
-                </div>
-            </div>
-        </div>
-    </body>
+  <!-- 팝업 높이 리사이징 스크립트 -->
+  <script type="text/javascript">
+    $(() => {
+      const popContentHeight = $('.popArea').height() - $('.popArea > .popTitle').height();
+      $('.popArea > .popContent').height(popContentHeight - 32);
+    });
+  </script>
+</head>
+
+<body>
+  <div class="blankPop">
+    <div class="mBlank">
+      <div class="popArea">
+        <!-- 팝업 페이지의 본문이 삽입되는 영역 -->
+        <div layout:fragment="content"></div>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>

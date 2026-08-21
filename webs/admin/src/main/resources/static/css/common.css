@@ -5,7 +5,7 @@
 .wth80 {width:80px !important;}
 .wth90 {width:90px !important;}
 .wth100 {width:100px !important;}
-.wth120 {width: 130px !important;}
+.wth120 {width:120px !important;}
 .wth150 {width:150px !important;}
 .wth200 {width:200px !important;}
 .wth250 {width:250px !important;}
@@ -101,3 +101,5 @@
 .ui-jqgrid tr.jqgrow td{
     height: 50px !important;
 }
+
+.clear { clear: both !important; }

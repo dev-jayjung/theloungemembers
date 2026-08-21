@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.theloungemembers.core.api.ApiMenuCommand;
 import com.theloungemembers.core.common.crud.AbstractBaseService;
 import com.theloungemembers.core.util.AssertUtil;
 
@@ -18,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AdminMenuService extends AbstractBaseService<ApiMenuCommand, AdminMenuQuery, AdminMenuResult, Long> {
+public class AdminMenuService extends AbstractBaseService<AdminMenuCommand, AdminMenuQuery, AdminMenuResult, Long> {
     private final AdminMenuRepository adminMenuRepository;
 
     @Cacheable(value = "adminMenuListCache", key = "'all'")
@@ -57,13 +56,13 @@ public class AdminMenuService extends AbstractBaseService<ApiMenuCommand, AdminM
         return adminMenuRepository.selectMenuTitle(linkUrl);
     }
 
-//    @CacheEvict(value = "adminMenuTreeCache", allEntries = true)
-//    public void clearMenuTreeCache() {
-//        log.info(">>>> [Cache Evict] 메뉴 트리 캐시 전체 삭제");
-//    }
-//
-//    @CacheEvict(value = "adminBookmarkCache", key = "#workerId")
-//    public void clearBookmarkCache(String workerId) {
-//        log.info(">>>> [Cache Evict] adminSeq={} 의 즐겨찾기 캐시 삭제", adminSeq);
-//    }
+    // @CacheEvict(value = "adminMenuTreeCache", allEntries = true)
+    // public void clearMenuTreeCache() {
+    // log.info(">>>> [Cache Evict] 메뉴 트리 캐시 전체 삭제");
+    // }
+    //
+    // @CacheEvict(value = "adminBookmarkCache", key = "#workerId")
+    // public void clearBookmarkCache(String workerId) {
+    // log.info(">>>> [Cache Evict] adminSeq={} 의 즐겨찾기 캐시 삭제", adminSeq);
+    // }
 }

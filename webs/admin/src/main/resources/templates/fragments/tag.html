@@ -1,88 +1,312 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-    <th:block th:fragment="select"
-            th:with="vKey=${valueKey ?: 'code'},
-                     tKey=${textKey ?: 'description'},
-                     selectClass=${clazz ?: 'wth100'},
-                     showAll=${isAll ?: true}">
+<th:block th:fragment="selectBox" th:with="
+              vKey=${valueKey ?: 'code'},
+              tKey=${textKey ?: 'description'},
+              selectClass=${clazz ?: 'wth100'},
+              dType=${defaultType ?: 'all'},
+              dText=${defaultText ?: (dType == 'select' ? '선택' : '전체')}
+          ">
 
-        <select th:if="${not #strings.isEmpty(name) and target != null}"
-                th:name="${name}"
-                th:class="${selectClass}"
-                th:title="${title}">
-            <option value="" th:if="${showAll}">전체</option>
-            <option th:each="item : ${target}"
-                    th:value="${item[vKey]}"
-                    th:text="${item[tKey]}">
-            </option>
-        </select>
+  <!-- defaultType: all, select, none -->
+  <select th:if="${not #strings.isEmpty(name) and target != null}" th:id="${id ?: name}" th:name="${name}"
+    th:class="${selectClass}" th:title="${title}">
+    <option value="" th:if="${dType != 'none'}" th:text="${dText}" th:selected="${#strings.isEmpty(selectedValue)}">
+      전체/선택</option>
 
-        <span th:unless="${not #strings.isEmpty(name) and target != null}"
-              style="color: red; font-weight: bold;">
-            [Error: 'name'과 'target'은 필수 입력값입니다.]
-        </span>
+    <option th:each="item : ${target}" th:value="${item[vKey]}" th:text="${item[tKey]}"
+      th:selected="${selectedValue != null and (#strings.toString(selectedValue) == #strings.toString(item) or #strings.toString(selectedValue) == #strings.toString(item[vKey]))}">
+    </option>
+  </select>
+
+  <span th:unless="${not #strings.isEmpty(name) and target != null}" style="color: red; font-weight: bold;">
+    [Error: selectBox 사용 시 'name'과 'target'은 필수 입력값입니다.]
+  </span>
+</th:block>
+
+<th:block th:fragment="radioGroup" th:with="
+              vKey=${valueKey ?: 'code'},
+              tKey=${textKey ?: 'description'},
+              prefix=${idPrefix ?: name},
+              dIndex=${defaultIndex ?: 0}
+            ">
+
+  <th:block th:if="${not #strings.isEmpty(name) and target != null}">
+    <label class="fRadio" th:each="item, stat : ${target}">
+      <input type="radio" th:name="${name}" th:id="|${prefix}${stat.index}|" th:value="${item[vKey]}" th:checked="${checkedValue != null ? 
+                        (#strings.toString(checkedValue) == #strings.toString(item) or #strings.toString(checkedValue) == #strings.toString(item[vKey])) :
+                        (stat.index == dIndex)}">
+      <span th:text="${item[tKey]}"></span>
+    </label>
+  </th:block>
+
+  <span th:unless="${not #strings.isEmpty(name) and target != null}" style="color: red; font-weight: bold;">
+    [Error: radioGroup 사용 시 'name'과 'target'은 필수 입력값입니다.]
+  </span>
+</th:block>
+
+<th:block th:fragment="checkboxGroup" th:with="
+              vKey=${valueKey ?: 'code'},
+              tKey=${textKey ?: 'description'},
+              prefix=${idPrefix ?: name}
+            ">
+
+  <th:block th:if="${not #strings.isEmpty(name)}">
+
+    <!-- 다중 체크박스 (target 리스트가 있을 때) -->
+    <th:block th:if="${target != null}">
+      <label class="fCheck" th:each="item, stat : ${target}">
+        <input type="checkbox" th:name="${name}" th:id="|${prefix}${stat.index}|" th:value="${item[vKey]}"
+          th:checked="${checkedValues != null and #lists.contains(checkedValues, item[vKey])}">
+        <span th:text="${item[tKey]}"></span>
+      </label>
     </th:block>
 
-    <th:block th:fragment="radio"
-              th:with="vKey=${valueKey ?: 'code'},
-                       tKey=${textKey ?: 'description'},
-                       prefix=${idPrefix ?: name}">
+    <!-- 단일 체크박스 (target 없이 label만 있을 때) -->
+    <th:block th:if="${target == null}">
+      <!-- label 값이 정상적으로 넘어왔을 때만 출력 -->
+      <th:block th:if="${not #strings.isEmpty(label)}">
+        <label class="fCheck">
+          <input type="checkbox" th:name="${name}" th:id="${prefix}" th:value="${valueKey ?: '1'}"
+            th:checked="${checkedValues != null and (#strings.toString(checkedValues) == 'true' or #lists.contains(checkedValues, (valueKey ?: '1')))}">
+          <span th:text="${label}"></span>
+        </label>
+      </th:block>
 
-        <th:block th:if="${not #strings.isEmpty(name) and target != null}">
-            <label class="fRadio" th:each="item, stat : ${target}">
-                <input type="radio"
-                       th:name="${name}"
-                       th:id="|${prefix}${stat.index}|"
-                       th:value="${item[vKey]}"
-                       th:checked="${checkedValue != null and (checkedValue == item or checkedValue == item[vKey])}">
-                <span th:text="${item[tKey]}"></span>
-            </label>
-        </th:block>
-
-        <span th:unless="${not #strings.isEmpty(name) and target != null}"
-              style="color: red; font-weight: bold;">
-            [Error: 'name'과 'target'은 필수 입력값입니다.]
-        </span>
+      <!-- 단일 체크박스인데 label이 없는 경우 에러 표출 -->
+      <span th:unless="${not #strings.isEmpty(label)}" style="color: red; font-weight: bold;">
+        [Error: 단일 체크박스 사용 시 'label'은 필수 입력값입니다.]
+      </span>
     </th:block>
+  </th:block>
 
-    <th:block th:fragment="checkbox"
-              th:with="vKey=${valueKey ?: 'code'},
-                       tKey=${textKey ?: 'description'},
-                       prefix=${idPrefix ?: name}">
+  <!-- 필수값(name) 누락 시 에러 출력 -->
+  <span th:unless="${not #strings.isEmpty(name)}" style="color: red; font-weight: bold;">
+    [Error: checkboxGroup 사용 시 'name'은 필수 입력값입니다.]
+  </span>
+</th:block>
 
-        <th:block th:if="${not #strings.isEmpty(name)}">
+<div th:fragment="fileUpload" th:with="
+          label=${label ?: '첨부파일'},
+          keyName=${keyName ?: 's3Key'},
+          fileName=${fileName ?: 'originalFileName'},
+          keyValue=${keyValue ?: ''},
+          fileNameValue=${fileNameValue ?: ''},
+          cssClass=${clazz ?: 'wth350'},
+          fileExt=${fileExt ?: 'jpg, jpeg, png, gif, pdf, doc, docx, pptx, xls, xlsx'},
+          maxSize=${maxSize ?: 20},
+          prefix=${idPrefix != null ? idPrefix + '_' : ''},
+          keyId=${prefix + keyName},
+          fileId=${prefix + fileName}
+        " class="s3-upload-wrapper" style="margin-bottom: 10px;">
 
-            <!-- 다중 체크박스 (target 리스트가 있을 때) -->
-            <th:block th:if="${target != null}">
-                <label class="fCheck" th:each="item, stat : ${target}">
-                    <input type="checkbox" 
-                           th:name="${name}" 
-                           th:id="|${prefix}${stat.index}|" 
-                           th:value="${item[vKey]}" 
-                           th:checked="${checkedValues != null and #lists.contains(checkedValues, item[vKey])}">
-                    <span th:text="${item[tKey]}"></span>
-                </label>
-            </th:block>
+  <!-- 필수값(keyName, fileName)이 존재할 때만 정상 출력 -->
+  <th:block th:if="${not #strings.isEmpty(keyName) and not #strings.isEmpty(fileName)}">
+    <label th:text="${label}" style="margin-right: 8px;">첨부파일</label>
 
-            <!-- 단일 체크박스 (target 없이 label만 있을 때) -->
-            <th:block th:if="${target == null}">
-                <label class="fCheck">
-                    <input type="checkbox" 
-                           th:name="${name}" 
-                           th:id="${prefix}" 
-                           th:value="${valueKey ?: '1'}" 
-                           th:checked="${checkedValues != null and (#strings.toString(checkedValues) == 'true' or #lists.contains(checkedValues, (valueKey ?: '1')))}">
-                    <span th:text="${label}"></span>
-                </label>
-            </th:block>
+    <!-- 눈에 보이는 파일명 표시용 Input -->
+    <input type="text" th:id="'display_' + ${fileId}" class="readonly" th:classappend="${cssClass}"
+      th:value="${fileNameValue}" placeholder="선택된 파일 없음" readonly />
 
-        </th:block>
+    <button type="button" class="btn_h25_type1 btn-s3-file-select">파일 선택</button>
 
-        <!-- 필수값(name) 누락 시 에러 출력 -->
-        <span th:unless="${not #strings.isEmpty(name)}"
-              style="color: red; font-weight: bold;">
-            [Error: 'name'은 필수 입력값입니다.]
-        </span>
-    </th:block>
+    <button type="button" class="btn_h25_type1 btn-s3-file-delete"
+      th:style="${#strings.isEmpty(keyValue) ? 'display: none;' : 'display: inline-block;'}">삭제</button>
+
+    <!-- 상태 및 기존 파일명 표출 -->
+    <span class="upload-status" th:text="${#strings.isEmpty(fileNameValue) ? '' : ' 기존: ' + fileNameValue}"
+      style="color: green;"></span>
+
+    <!-- 파일 선택 input -->
+    <input type="file" th:id="'file_input_' + ${fileId}" class="auto-s3-upload" th:data-path="'TEMP'"
+      th:data-target-key="'#' + ${keyId}" th:data-target-name="'#' + ${fileId}"
+      th:data-target-display="'#display_' + ${fileId}" th:data-target-ext="${fileExt}" th:data-max-size="${maxSize}"
+      style="display: none;" />
+
+    <!-- 서버 제출용 hidden 필드 -->
+    <input type="hidden" th:id="${keyId}" th:name="${keyName}" th:value="${keyValue}" />
+    <input type="hidden" th:id="${fileId}" th:name="${fileName}" th:value="${fileNameValue}" />
+  </th:block>
+
+  <!-- 필수값 누락 시 에러 메시지 표출 -->
+  <span th:unless="${not #strings.isEmpty(keyName) and not #strings.isEmpty(fileName)}"
+    style="color: red; font-weight: bold;">
+    [Error: fileUpload 사용 시 'keyName'과 'fileName'은 필수 입력값입니다.]
+  </span>
+</div>
+
+<div th:fragment="imageUpload" th:with="
+          label=${label ?: '이미지'},
+          keyName=${keyName ?: 'imageKey'},
+          fileName=${fileName ?: 'imageName'},
+          keyValue=${keyValue ?: ''},
+          fileNameValue=${fileNameValue ?: ''},
+          imageUrl=${imageUrl ?: '/images/noimage.png'},
+          fileExt=${fileExt ?: 'jpg, jpeg, png, gif'},
+          maxSize=${maxSize ?: 10},
+          maxWidth=${maxWidth ?: ''},
+          maxHeight=${maxHeight ?: ''},
+          prefix=${idPrefix != null ? idPrefix + '_' : ''},
+          keyId=${prefix + keyName},
+          fileId=${prefix + fileName}
+        " class="s3-image-wrapper" style="margin-bottom: 10px;">
+
+  <!-- 필수값(keyName, fileName)이 존재할 때만 정상 출력 -->
+  <th:block th:if="${not #strings.isEmpty(keyName) and not #strings.isEmpty(fileName)}">
+    <label th:text="${label}">이미지</label>
+
+    <!-- 이미지 미리보기 박스 -->
+    <div style="margin: 5px 0;">
+      <img th:id="'img_' + ${fileId}" th:src="${#strings.isEmpty(imageUrl) ? '/images/noimage.png' : imageUrl}"
+        alt="미리보기"
+        style="width: 120px; height: 120px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; display: block;" />
+    </div>
+
+    <!-- 이미지 선택 버튼 -->
+    <button type="button" class="wth50 btn_h25_type1 btn-img-select">추가</button>
+    <button type="button" class="wth50 btn_h25_type1 btn-s3-img-delete">삭제</button>
+    <span class="upload-status"></span>
+
+    <!-- 숨겨진 file input -->
+    <input type="file" class="auto-s3-upload-img" accept="image/*" th:data-path="'TEMP'"
+      th:data-target-key="'#' + ${keyId}" th:data-target-name="'#' + ${fileId}" th:data-target-img="'#img_' + ${fileId}"
+      th:data-target-ext="${fileExt}" th:data-max-size="${maxSize}" th:data-max-width="${maxWidth}"
+      th:data-max-height="${maxHeight}" style="display: none;" />
+
+    <!-- 서버 제출용 hidden key -->
+    <input type="hidden" th:id="${keyId}" th:name="${keyName}" th:value="${keyValue}" />
+    <input type="hidden" th:id="${fileId}" th:name="${fileName}" th:value="${fileNameValue}" />
+  </th:block>
+
+  <!-- 필수값 누락 시 에러 메시지 표출 -->
+  <span th:unless="${not #strings.isEmpty(keyName) and not #strings.isEmpty(fileName)}"
+    style="color: red; font-weight: bold;">
+    [Error: imageUpload 사용 시 'keyName'과 'fileName'은 필수 입력값입니다.]
+  </span>
+</div>
+
+<th:block th:fragment="pageSize" th:with="
+            selectId=${id ?: 'pageSize'},
+            selectName=${name ?: 'pageSize'},
+            selectClass=${clazz ?: 'wth120'},
+            defaultSize=${selectedSize ?: '15'}
+            ">
+  <select th:id="${selectId}" th:name="${selectName}" th:class="${selectClass}">
+    <option value="15" th:selected="${defaultSize == '15'}">15개씩 보기</option>
+    <option value="30" th:selected="${defaultSize == '30'}">30개씩 보기</option>
+    <option value="50" th:selected="${defaultSize == '50'}">50개씩 보기</option>
+    <option value="100" th:selected="${defaultSize == '100'}">100개씩 보기</option>
+  </select>
+</th:block>
+
+
+<!-- 단일 날짜 선택 프래그먼트 -->
+<th:block th:fragment="datePicker" th:with="
+              inputName=${name ?: 'calDt'},
+              inputId=${id ?: inputName},
+              customClass=${clazz ?: ''},
+              inputTitle=${title ?: '날짜선택'},
+              isRequired=${required ?: false}
+            ">
+
+  <div class="mCalendar typeLayer" th:if="${not #strings.isEmpty(inputName)}">
+    <span class="date_picker_box">
+      <input type="text" class="datepicker" th:id="${inputId}" th:name="${inputName}" th:value="${selectedValue}"
+        th:classappend="|${customClass} ${isRequired ? 'validate[required,custom[date]]' : 'validate[custom[date]]'}|"
+        th:title="${inputTitle}" placeholder="YYYY-MM-DD" readonly />
+      <img th:src="@{/images/calendar_icon.png}" class="datepickerBtn" th:alt="${inputTitle}" />
+    </span>
+  </div>
+
+  <!-- 필수값 누락 시 에러 출력 -->
+  <span th:unless="${not #strings.isEmpty(inputName)}" style="color: red; font-weight: bold;">
+    [Error: datePicker 사용 시 'name'은 필수 입력값입니다.]
+  </span>
+</th:block>
+
+<!-- 기간(시작일 ~ 종료일) 날짜 선택 프래그먼트 -->
+<th:block th:fragment="dateRangePicker" th:with="
+              sName=${startName ?: 'strtDt'},
+              eName=${endName ?: 'endDt'},
+              sId=${startId ?: sName},
+              eId=${endId ?: eName},
+              customClass=${clazz ?: ''},
+              isRequired=${required ?: true},
+              useQuick=${useQuick ?: false}
+            ">
+
+  <th:block th:if="${not #strings.isEmpty(sName) and not #strings.isEmpty(eName)}">
+    <!-- 시작일 -->
+    <div th:replace="~{::datePicker(
+          name=${sName},
+          id=${sId},
+          selectedValue=${startValue},
+          clazz=${customClass},
+          required=${isRequired},
+          title='시작일 선택'
+      )}"></div>
+
+    &nbsp;~&nbsp;
+
+    <!-- 종료일 -->
+    <div th:replace="~{::datePicker(
+          name=${eName},
+          id=${eId},
+          selectedValue=${endValue},
+          clazz=${customClass},
+          required=${isRequired},
+          title='종료일 선택'
+      )}"></div>
+
+
+    <div th:if="${useQuick}" class="btn-group-quick-date ml5" th:data-start-target="'#' + ${sId}"
+      th:data-end-target="'#' + ${eId}">
+      &nbsp;&nbsp;
+
+      <button type="button" class="wth60 btn_type1" onclick="DateUtil.setRange(this, 0, 'day')">오늘</button>
+      <button type="button" class="wth60 btn_type1" onclick="DateUtil.setRange(this, 3, 'day')">3일</button>
+      <button type="button" class="wth60 btn_type1" onclick="DateUtil.setRange(this, 7, 'day')">1주일</button>
+      <button type="button" class="wth60 btn_type1" onclick="DateUtil.setRange(this, 1, 'month')">1개월</button>
+      <button type="button" class="wth60 btn_type1" onclick="DateUtil.setRange(this, 3, 'month')">3개월</button>
+      <button type="button" class="wth60 btn_type1" onclick="DateUtil.setRange(this, 1, 'year')">1년</button>
+    </div>
+  </th:block>
+
+  <!-- 필수값 누락 시 에러 출력 -->
+  <span th:unless="${not #strings.isEmpty(sName) and not #strings.isEmpty(eName)}"
+    style="color: red; font-weight: bold;">
+    [Error: dateRangePicker 사용 시 'startName'과 'endName'은 필수 입력값입니다.]
+  </span>
+</th:block>
+
+<div class="mTab1" th:fragment="tabMenu" th:with="
+          vKey=${valueKey ?: 'code'},
+          tKey=${textKey ?: 'description'},
+          currentVal=${activeValue ?: ''},
+          paramKey=${paramName ?: 'tabStatus'}
+        ">
+
+  <!-- target 리스트가 정상적으로 존재할 때만 출력 -->
+  <ul class="tabMenu" th:if="${target != null}">
+    <li th:each="item : ${target}"
+      th:classappend="${#strings.toString(currentVal) == #strings.toString(item[vKey]) or (#strings.isEmpty(currentVal) and itemStat.first)} ? 'active'">
+      <!-- URL 링크 이동 방식 (href) -->
+      <a th:if="${not #strings.isEmpty(baseUrl)}" th:href="@{${baseUrl}(${paramKey}=${item[vKey]})}">
+        <span th:text="${item[tKey]}"></span>
+      </a>
+
+      <!-- 스크립트/클릭 이벤트 처리 방식 (onclick 이벤트 전역 바인딩, onTabClick 함수 콜백으로 구현하면 됨) -->
+      <a th:unless="${not #strings.isEmpty(baseUrl)}" href="javascript:void(0);" th:data-val="${item[vKey]}">
+        <span th:text="${item[tKey]}"></span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- 필수값(target) 누락 시 에러 출력 -->
+  <span th:unless="${target != null}" style="color: red; font-weight: bold;">
+    [Error: tabMenu 사용 시 'target'은 필수 입력값입니다.]
+  </span>
+</div>
+
 </html>

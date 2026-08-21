@@ -34,7 +34,8 @@ public class ApiMemberRestController {
     private final ModelMapperHelper modelMapperHelper;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ApiMemberResponse>>> getApiMemberList(ApiMemberSearchReqeust request) {
+    public ResponseEntity<ApiResponse<PageResponse<ApiMemberResponse>>> getApiMemberList(
+            ApiMemberSearchReqeust request) {
         ApiMemberQuery query = modelMapperHelper.map(request, ApiMemberQuery.class);
 
         PageResponse<ApiMemberResult> page = apiMemberService.getPage(query);
@@ -52,7 +53,8 @@ public class ApiMemberRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateApiMember(@PathVariable Long id, @RequestBody ApiMemberUpdateReqeust request) {
+    public ResponseEntity<ApiResponse<Void>> updateApiMember(@PathVariable Long id,
+            @RequestBody ApiMemberUpdateReqeust request) {
         ApiMemberCommand command = modelMapperHelper.map(request, ApiMemberCommand.class);
 
         apiMemberService.update(id, command);

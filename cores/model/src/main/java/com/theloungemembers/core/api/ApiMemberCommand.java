@@ -3,16 +3,22 @@ package com.theloungemembers.core.api;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import com.theloungemembers.core.annotation.S3File;
+import com.theloungemembers.core.helper.S3FilePath;
 import com.theloungemembers.core.type.ServiceStatus;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiMemberCommand {
-    private Long uid;
-
     private String accountId;
 
     private String companyName;
@@ -54,4 +60,7 @@ public class ApiMemberCommand {
     private String memo;
 
     private List<String> selectedMenuCodes;
+
+    @S3File(path = S3FilePath.EDITOR)
+    private String content;
 }

@@ -75,7 +75,9 @@ public class ApiMemberViewController {
             model.addAttribute("member", modelMapperHelper.map(member, ApiMemberResponse.class));
 
             if (member.getEncData() != null) {
-                Map<String, String> map = jsonMapperHelper.readValue(member.getEncData(), new TypeReference<Map<String, String>>() {});
+                Map<String, String> map = jsonMapperHelper.readValue(member.getEncData(),
+                        new TypeReference<Map<String, String>>() {
+                        });
 
                 model.addAttribute("encInfo", map.get("enc_info"));
                 model.addAttribute("encKey", map.get("enc_key"));

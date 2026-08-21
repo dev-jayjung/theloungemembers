@@ -6,10 +6,12 @@ import java.util.List;
 import com.theloungemembers.core.type.ServiceStatus;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ApiMemberUpdateReqeust {
     private String uid;
 

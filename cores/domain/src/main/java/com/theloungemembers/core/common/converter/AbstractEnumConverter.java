@@ -2,7 +2,7 @@ package com.theloungemembers.core.common.converter;
 
 import java.util.EnumSet;
 
-import com.theloungemembers.core.common.type.BaseCodeEnum;
+import com.theloungemembers.core.type.BaseCodeEnum;
 
 import jakarta.persistence.AttributeConverter;
 

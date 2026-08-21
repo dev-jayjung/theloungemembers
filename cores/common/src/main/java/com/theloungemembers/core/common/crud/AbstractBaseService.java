@@ -15,9 +15,9 @@ import com.theloungemembers.core.util.AssertUtil;
 /**
  * 기본 CRUD 공통 로직을 제공하는 추상 서비스
  *
- * @param <C> Command (등록/수정 DTO)
- * @param <Q> Query (검색 조건 DTO)
- * @param <R> Result (응답 DTO)
+ * @param <C>  Command (등록/수정 DTO)
+ * @param <Q>  Query (검색 조건 DTO)
+ * @param <R>  Result (응답 DTO)
  * @param <ID> PK 타입 (Integer, Long 등)
  */
 public abstract class AbstractBaseService<C, Q extends PageRequest, R, ID> implements BaseService<C, Q, R, ID> {

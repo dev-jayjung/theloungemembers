@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/default_layout}">
+
+<head>
+  <title>탭 및 프레임 제어 가이드</title>
+  <link rel="stylesheet" th:href="@{/css/guide.css}" />
+</head>
+
+<th:block layout:fragment="script">
+  <script type="text/javascript" th:inline="javascript">
+    (() => {
+      $(() => {
+        // 이벤트 핸들러 바인딩
+        $('#btnOpenTab').on('click', openSampleTab);
+        $('#btnOpenTabWithData').on('click', openTabWithData);
+        $('#btnCloseSelf').on('click', closeCurrentTab);
+        $('#btnCloseAll').on('click', closeAllTabs);
+      });
+
+      // 1. 단순 새 탭 오픈
+      const openSampleTab = () => {
+        TabUtil.openTab({
+          url: '/api-members'
+        });
+      };
+
+      // 2. 파라미터 전달 새 탭 오픈
+      const openTabWithData = () => {
+        TabUtil.openTab({
+          url: '/api-members/detail',
+          data: {
+            id: 30,
+          }
+        });
+      };
+
+      // 3. 현재 탭 닫기
+      const closeCurrentTab = () => {
+        TabUtil.closeSelf();
+      };
+
+      // 4. 전체 탭 닫기
+      const closeAllTabs = () => {
+        if (confirm('열려있는 모든 탭을 닫으시겠습니까?')) {
+          TabUtil.closeAllTabs();
+        }
+      };
+    })();
+  </script>
+</th:block>
+
+<th:block layout:fragment="content">
+  <h1 class="b_title">탭(Tab) 및 프레임 제어 유틸리티 가이드</h1>
+
+  <!-- ================================================================= -->
+  <!-- 1. 탭 오픈 제어 -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">1. 새 탭 오픈 (TabUtil.openTab)</div>
+    <div class="guide-desc">
+      <span class="code-badge">TabUtil.openTab(param)</span>을 통해 상단 메인 프레임에 새 탭을 추가합니다.<br />
+      <span class="code-badge">data</span> 객체를 전달하면 자동으로 QueryString으로 변환하여 URL에 머지되며, <span
+        class="code-badge">tabName</span> 생략 시 메뉴 API에서 명칭을 비동기로 가져옵니다.
+    </div>
+
+    <div class="btn_area_center">
+      <button type="button" id="btnOpenTab" class="btn_type2">단순 탭 오픈 (/api-members)</button>
+      <button type="button" id="btnOpenTabWithData" class="btn_type1">파라미터 전달 오픈 (/api-members/detail?id=1024)</button>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 2. 탭 닫기 및 종료 제어 -->
+  <!-- ================================================================= -->
+  <div class="guide-section">
+    <div class="guide-title">2. 탭 종료 및 정리 (TabUtil.closeSelf / closeAllTabs)</div>
+    <div class="guide-desc">
+      현재 활성화된 본인 탭을 닫거나(<span class="code-badge">closeSelf</span>), 열려있는 모든 작업 탭을 일괄 정리합니다(<span
+        class="code-badge">closeAllTabs</span>).
+    </div>
+
+    <div class="btn_area_center">
+      <button type="button" id="btnCloseSelf" class="btn_type1">현재 탭 닫기 (closeSelf)</button>
+      <button type="button" id="btnCloseAll" class="btn_type2">전체 탭 닫기 (closeAllTabs)</button>
+    </div>
+  </div>
+</th:block>
+
+</html>

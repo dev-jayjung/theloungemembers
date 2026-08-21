@@ -9,7 +9,7 @@ import java.util.EnumSet;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
-import com.theloungemembers.core.common.type.BaseCodeEnum;
+import com.theloungemembers.core.type.BaseCodeEnum;
 import com.theloungemembers.core.util.AssertUtil;
 
 public abstract class AbstractEnumHandler<E extends Enum<E> & BaseCodeEnum> extends BaseTypeHandler<E> {

@@ -3,19 +3,23 @@ plugins {
 }
 
 dependencies {
-    implementation project(':core-model')
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-json'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-aspectj'
     implementation 'org.springframework:spring-web'
     implementation 'org.modelmapper:modelmapper:3.2.4'
     implementation 'com.github.codemonstur:embedded-redis:1.4.3'
-    api 'org.apache.commons:commons-lang3'
-}
 
-//bootJar {
-//    enabled = false
-//}
+    implementation platform('software.amazon.awssdk:bom:2.51.4')
+    implementation 'software.amazon.awssdk:s3'
+
+    implementation 'com.google.guava:guava:33.2.1-jre'
+    implementation 'org.jsoup:jsoup:1.23.1'
+    implementation "org.apache.tika:tika-core:3.2.0"
+    implementation 'commons-io:commons-io:2.22.0'
+    api 'org.apache.commons:commons-lang3:3.20.0'
+}
 
 jar {
     enabled = true

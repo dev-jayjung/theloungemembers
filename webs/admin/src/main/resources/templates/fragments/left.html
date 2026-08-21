@@ -13,6 +13,9 @@
           }
         });
         $('#btnLogout').on('click', logOut);
+        $('#btnLogout').on('click', logOut);
+        $('#btRefresh').on('click', searchReset);
+        $('#btSch').on('click', selectSearchType);
 
         // 검색어 엔터키 이벤트
         $('#searchFieldTpNm').on('keydown', e => {
@@ -65,7 +68,7 @@
         const searchFieldTpCd = $('#searchFieldTpCd').val();
         const searchFieldTpNm = StringUtil.trim($('#searchFieldTpNm').val());
 
-        openTab({
+        TabUtil.openTab({
           url: searchFieldTpNm,
           tabName: searchFieldTpNm
         });
@@ -260,8 +263,8 @@
   </form>
 
   <div class="btn_area_sch">
-    <button type="button" class="btRefresh" onclick="searchReset('');">초기화</button>
-    <button type="button" class="btSch" onclick="selectSearchType();">검색</button>
+    <button type="button" class="btRefresh" id="btRefresh">초기화</button>
+    <button type="button" class="btSch" id="btSch">검색</button>
   </div>
 
   <div class="btn_area_lnb">

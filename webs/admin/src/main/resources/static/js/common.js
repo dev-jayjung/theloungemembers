@@ -159,4 +159,4 @@ $(document).on('click', '.mTab1 .tabMenu a[data-val]', e => {
   $this.trigger('tabChange', [tabVal]);
 });
 
-const goUrl = url => FormUtil.openTab({ url });
+const goUrl = url => TabUtil.openTab({ url });

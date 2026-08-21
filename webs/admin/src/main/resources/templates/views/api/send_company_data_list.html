@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default_layout}">
+
+<head>
+    <title>업체 통보 데이터 조회</title>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        (() => {
+            let apiSendCompanyDataGrid;
+
+            $(() => {
+                // Tabulator 그리드 생성
+                createApiSendCompanyDataGrid();
+
+                $('#searchForm').on('change', '#searchTarget', e => {
+                    const $this = $(e.currentTarget);
+                    const $searchValue = $('#searchValue');
+                    if (!!$this.val()) {
+                        $searchValue.prop('disabled', false);
+                    } else {
+                        $searchValue.val('');
+                        $searchValue.prop('disabled', true);
+                    }
+                });
+
+                $('#btnSearch').on('click', reloadGrid);
+                $('#btnReset').on('click', resetSearchForm);
+                $('#btnExcel').on('click', downloadExcel);
+            });
+
+            const createApiSendCompanyDataGrid = () => {
+                apiSendCompanyDataGrid = GridUtil.init('#apiSendCompanyDataList', {
+                    ajaxURL: '/api/api-send-company-data',
+
+                    // 검색 폼 파라미터 지정
+                    ajaxParams: () => {
+                        const params = FormUtil.serialize('#searchForm');
+
+                        const startDate = $('#searchStartDate').val();
+                        const endDate = $('#searchEndDate').val();
+
+                        if (startDate) {
+                            params.startDtm = startDate + 'T00:00:00';
+                        }
+                        if (endDate) {
+                            params.endDtm = endDate + 'T23:59:59';
+                        }
+
+                        return params;
+                    },
+
+                    useCreatedAt: true,
+                    useUpdatedAt: true,
+                    columns: [
+                        { title: '코드', field: 'uid', hozAlign: 'center' },
+                        { title: '접속 계정', field: 'apiAccountId', hozAlign: 'center' },
+                        { title: '업체명', field: 'companyName', hozAlign: 'left' },
+                        { title: '상품타입', field: 'type', hozAlign: 'center' },
+                        { title: '쿠폰발행코드', field: 'loungeCouponIssueHistoryUid', hozAlign: 'center' },
+                        { title: '쿠폰번호', field: 'couponNum', hozAlign: 'center' },
+                        { title: '입장인원', field: 'admissionCount', hozAlign: 'center' },
+                        {
+                            title: '사용유무',
+                            field: 'useType',
+                            hozAlign: 'center',
+                            formatter: cell => {
+                                return cell.getValue() === 0 ? '사용' : '<p style="color:red;">취소</p>';
+                            },
+                        },
+                        {
+                            title: '전송유무',
+                            field: 'sendType',
+                            hozAlign: 'center',
+                            formatter: cell => {
+                                const value = cell.getValue();
+                                if (value === 0) return '전송 중';
+                                if (value === 1) return '전송 완료';
+                                return '<p style="color:red;">전송 실패</p>';
+                            },
+                        },
+                        { title: '전송데이터', field: 'jsonData', width: 300, hozAlign: 'left' },
+                        { title: '응답데이터', field: 'responseData', width: 300, hozAlign: 'left' }
+                    ]
+                });
+            }
+
+            // 검색
+            const reloadGrid = () => {
+                const searchTarget = $('#searchTarget').val();
+                const searchValue = $('#searchValue').val();
+
+                if (!!searchTarget && !searchValue) {
+                    alert('검색어를 입력해 주세요.');
+                    return;
+                }
+
+                if (apiSendCompanyDataGrid) {
+                    apiSendCompanyDataGrid.setData();
+                }
+            }
+
+            // 초기화
+            const resetSearchForm = () => {
+                FormUtil.reset('#searchForm');
+                $('#searchValue').prop('disabled', true);
+            }
+
+            const downloadExcel = () => {
+                apiSendCompanyDataGrid.download('xlsx', '업체_통보_데이터_목록.xlsx');
+            }
+        })();
+    </script>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div>
+        <!-- 검색 조건 박스 -->
+        <div class="table_type1">
+            <form id="searchForm" name="searchForm" method="get">
+                <table>
+                    <colgroup>
+                        <col style="width:12%;">
+                        <col>
+                        <col style="width:12%;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">검색조건</th>
+                            <td>
+                                <select name="searchTarget" id="searchTarget" class="wth100">
+                                    <option value="">전체</option>
+                                    <option value="uid">코드</option>
+                                    <option value="api_account_id">접속 계정</option>
+                                    <option value="api_account_id_like">접속 계정(포함)</option>
+                                    <option value="company_name_like">업체명</option>
+                                    <option value="coupon_num_like">쿠폰번호</option>
+                                </select>
+                                <input type="text" name="searchValue" id="searchValue" class="wth150" placeholder="검색어 입력" disabled>
+                            </td>
+                            <th scope="row">등록 기간</th>
+                            <td>
+                                <input type="date" id="searchStartDate" class="wth150">
+                                ~
+                                <input type="date" id="searchEndDate" class="wth150">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="btn_area_center">
+            <button type="button" id="btnSearch" class="btn_type2">검색</button>
+            <button type="button" id="btnReset" class="btn_type1">초기화</button>
+        </div>
+
+        <div class="mTitle gTitle">
+            <h2>업체 통보 데이터 목록</h2>
+        </div>
+        <div class="mButton typeBorad">
+            <div class="leftInner">
+                <button type="button" id="btnExcel" class="btn_type1"><span class="icoExl">엑셀 다운로드</span></button>
+            </div>
+        </div>
+
+        <!-- Tabulator 그리드가 위치할 영역 -->
+        <div class="mModule">
+            <div id="apiSendCompanyDataList"></div>
+        </div>
+    </div>
+</th:block>
+</html>

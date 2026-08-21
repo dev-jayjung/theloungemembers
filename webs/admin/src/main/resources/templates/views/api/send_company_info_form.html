@@ -9,78 +9,78 @@
 
 <th:block layout:fragment="script">
     <script type="text/javascript" th:inline="javascript">
-        $(document).ready(function() {
-            $('#apiAccountId').on('change', function() {
-                $('#companyName').val($(this).find(':selected').data('company-name') || '');
+        (() => {
+            $(() => {
+                $('#apiAccountId').on('change', e => {
+                    $('#companyName').val($(e.currentTarget).find(':selected').data('company-name') || '');
+                });
+
+                $('#btnSelectLoungeCouponIssueHistory').on('click', selectLoungeCouponIssueHistory);
+                $('#btnInsert').on('click', sendCompanyInfoInsert);
+                $('#btnUpdate').on('click', sendCompanyInfoUpdate);
+                $('#btnList').on('click', () => TabUtil.openTab({ url: '/api-send-company-infos' }));
             });
-        });
 
-        // 등록
-        function sendCompanyInfoInsert() {
-            if (!validate.check('sendCompanyInfoForm')) {
-                return;
-            }
-
-            if (!confirm('등록 하시겠습니까?')) {
-                return;
-            }
-
-            const options = {
-                url: /*[[@{/api/api-send-company-infos}]]*/ '/api/api-send-company-infos',
-                data: $('#sendCompanyInfoForm').serializeJson(),
-                sendType: 'json',
-                callBack: function(result) {
-                    if (!result.success) {
-                        return;
-                    }
-
-                    const uid = result.data.uid;
-
-                    createTargetFormSubmit({
-                        id: 'apiSendCompanyInfoView',
-                        url: `/api-send-company-infos/detail?id=${uid}`
-                    });
+            // 등록
+            const sendCompanyInfoInsert = () => {
+                if (!FormUtil.validate.check('#sendCompanyInfoForm')) {
+                    return;
                 }
-            };
 
-            ajax.call(options);
-        }
-
-        // 쿠폰발행내역 선택 - 팝업 연동 전까지는 안내만 노출
-        function selectLoungeCouponIssueHistory() {
-            alert('쿠폰발행내역 선택 팝업 기능은 추후 제공 예정입니다. 쿠폰발행내역 uid를 직접 입력해 주세요.');
-        }
-
-        // 수정
-        function sendCompanyInfoUpdate() {
-            if (!validate.check('sendCompanyInfoForm')) {
-                return;
-            }
-
-            if (!confirm('수정 하시겠습니까?')) {
-                return;
-            }
-
-            const uid = $('#uid').val();
-
-            const options = {
-                url: `/api/api-send-company-infos/${uid}`,
-                data: $('#sendCompanyInfoForm').serializeJson(),
-                sendType: 'json',
-                type: 'PUT',
-                callBack: function(result) {
-                    if (!result.success) {
-                        return;
-                    }
-
-                    createTargetFormSubmit({
-                        id: 'apiSendCompanyInfoView',
-                        url: `/api-send-company-infos/detail?id=${uid}`
-                    });
+                if (!confirm('등록 하시겠습니까?')) {
+                    return;
                 }
-            };
-            ajax.call(options);
-        }
+
+                AjaxUtil.call({
+                    url: /*[[@{/api/api-send-company-infos}]]*/ '/api/api-send-company-infos',
+                    data: FormUtil.serialize('#sendCompanyInfoForm'),
+                    callBack: result => {
+                        if (!result.success) {
+                            return;
+                        }
+
+                        const uid = result.data.uid;
+
+                        TabUtil.openTab({
+                            url: `/api-send-company-infos/detail?id=${uid}`
+                        });
+                    }
+                });
+            }
+
+            // 쿠폰발행내역 선택 - 팝업 연동 전까지는 안내만 노출
+            const selectLoungeCouponIssueHistory = () => {
+                alert('쿠폰발행내역 선택 팝업 기능은 추후 제공 예정입니다. 쿠폰발행내역 uid를 직접 입력해 주세요.');
+            }
+
+            // 수정
+            const sendCompanyInfoUpdate = () => {
+                if (!FormUtil.validate.check('#sendCompanyInfoForm')) {
+                    return;
+                }
+
+                if (!confirm('수정 하시겠습니까?')) {
+                    return;
+                }
+
+                const uid = $('#uid').val();
+
+                AjaxUtil.call({
+                    url: `/api/api-send-company-infos/${uid}`,
+                    data: FormUtil.serialize('#sendCompanyInfoForm'),
+                    type: 'PUT',
+                    callBack: result => {
+                        if (!result.success) {
+                            return;
+                        }
+
+                        TabUtil.openTab({
+                            url: `/api-send-company-infos/detail?id=${uid}`
+                        });
+                    }
+                });
+            }
+        })();
     </script>
 </th:block>
 
@@ -164,7 +164,7 @@
                     <th>선택 쿠폰<strong class="red">*</strong></th>
                     <td>
                         <input type="text" class="wth200 validate[required]" name="loungeCouponIssueHistoryUid" id="loungeCouponIssueHistoryUid" title="선택 쿠폰" th:field="*{loungeCouponIssueHistoryUid}" placeholder="쿠폰발행내역 uid 직접 입력" />
-                        <button type="button" onclick="selectLoungeCouponIssueHistory();" class="btn_h25_type1">선택</button>
+                        <button type="button" id="btnSelectLoungeCouponIssueHistory" class="btn_h25_type1">선택</button>
                     </td>
                 </tr>
                 <tr>
@@ -182,7 +182,7 @@
                 <tr>
                    <th>통보사용<strong class="red">*</strong></th>
                    <td colspan="3">
-                       <th:block th:replace="~{fragments/tag :: radio(name='onService', target=${ServiceStatus}, checkedValue=*{onService})}" />
+                       <th:block th:replace="~{fragments/tag :: radioGroup(name='onService', target=${ServiceStatus}, checkedValue=*{onService})}" />
                    </td>
                 </tr>
             </tbody>
@@ -220,11 +220,11 @@
 </form>
     <!-- 하단 버튼 영역 -->
     <div class="btn_area_center">
-        <button type="button" onclick="sendCompanyInfoInsert()" class="btn_type2" th:if="${sendCompanyInfo == null || sendCompanyInfo.uid == null}">등록</button>
+        <button type="button" id="btnInsert" class="btn_type2" th:if="${sendCompanyInfo == null || sendCompanyInfo.uid == null}">등록</button>
 
-        <button type="button" onclick="sendCompanyInfoUpdate();" class="btn_type2" th:if="${sendCompanyInfo != null && sendCompanyInfo.uid != null}">수정</button>
+        <button type="button" id="btnUpdate" class="btn_type2" th:if="${sendCompanyInfo != null && sendCompanyInfo.uid != null}">수정</button>
 
-        <button type="button" onclick="goUrl('/api-send-company-infos');" class="btn_type1">목록</button>
+        <button type="button" id="btnList" class="btn_type1">목록</button>
     </div>
 </th:block>
 </html>

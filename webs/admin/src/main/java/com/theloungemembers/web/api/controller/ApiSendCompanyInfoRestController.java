@@ -1,11 +1,15 @@
 package com.theloungemembers.web.api.controller;
 
+import com.theloungemembers.core.api.ApiMemberResult;
+import com.theloungemembers.core.api.ApiMemberService;
 import com.theloungemembers.core.api.ApiSendCompanyInfoCommand;
 import com.theloungemembers.core.api.ApiSendCompanyInfoQuery;
 import com.theloungemembers.core.api.ApiSendCompanyInfoResult;
 import com.theloungemembers.core.api.ApiSendCompanyInfoService;
 import com.theloungemembers.core.common.dto.PageResponse;
 import com.theloungemembers.core.dto.ApiResponse;
+import com.theloungemembers.core.exception.BusinessException;
+import com.theloungemembers.core.exception.CommonErrorCode;
 import com.theloungemembers.core.helper.ModelMapperHelper;
 import com.theloungemembers.core.util.ResponseUtil;
 import com.theloungemembers.web.api.dto.ApiSendCompanyInfoCreateRequest;
@@ -36,6 +40,7 @@ public class ApiSendCompanyInfoRestController {
     private static final Integer DEFAULT_CANCEL_USE = 0;
 
     private final ApiSendCompanyInfoService apiSendCompanyInfoService;
+    private final ApiMemberService apiMemberService;
     private final ModelMapperHelper modelMapperHelper;
 
 
@@ -49,6 +54,7 @@ public class ApiSendCompanyInfoRestController {
     @PostMapping
     public ResponseEntity<ApiResponse<ApiSendCompanyInfoResponse>> create(@RequestBody ApiSendCompanyInfoCreateRequest request) {
         final ApiSendCompanyInfoCommand command = modelMapperHelper.map(request, ApiSendCompanyInfoCommand.class);
+        command.setCompanyName(resolveCompanyName(request.getApiAccountId()));
         command.setMethod(DEFAULT_METHOD);
         command.setCancelUse(DEFAULT_CANCEL_USE);
         final ApiSendCompanyInfoResult result = apiSendCompanyInfoService.save(command);
@@ -59,6 +65,7 @@ public class ApiSendCompanyInfoRestController {
     public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id, @RequestBody ApiSendCompanyInfoCreateRequest request) {
         final ApiSendCompanyInfoCommand command = modelMapperHelper.map(request, ApiSendCompanyInfoCommand.class);
         command.setUid(id);
+        command.setCompanyName(resolveCompanyName(request.getApiAccountId()));
 
         // PHP ajax.php도 이 두 필드는 UPDATE 문에 포함하지 않아 기존 값이 그대로 유지됨 -
         // ModelMapper는 null도 덮어쓰므로 기존 값을 그대로 다시 채워 넣어 덮어쓰기를 막는다.
@@ -68,6 +75,16 @@ public class ApiSendCompanyInfoRestController {
 
         apiSendCompanyInfoService.update(id, command);
         return ResponseUtil.success();
+    }
+
+    /**
+     * PHP ajax.php와 동일하게, 클라이언트가 보낸 업체명을 신뢰하지 않고 선택된 접속 계정으로
+     * DB에서 다시 조회해 채운다 (api_company_send_detail.ajax.php의 ApiMember::get_company_name).
+     */
+    private String resolveCompanyName(String apiAccountId) {
+        return apiMemberService.getByAccountId(apiAccountId)
+            .map(ApiMemberResult::getCompanyName)
+            .orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND, "존재하지 않는 접속 계정입니다."));
     }
 
 }

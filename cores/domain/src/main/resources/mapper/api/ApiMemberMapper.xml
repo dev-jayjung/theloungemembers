@@ -63,6 +63,32 @@
          WHERE am.uid = #{uid}
     </select>
 
+    <select id="selectByAccountId" resultMap="ApiMemberResultMap">
+        SELECT
+               am.uid
+             , am.account_id
+             , am.company_name
+             , am.service_code
+             , am.password
+             , am.password_reset_date
+             , am.freepass_ip
+             , am.allow_msg_notify
+             , am.lounge_code
+             , am.lounge_name
+             , am.lounge_uid
+             , am.on_service
+             , am.user_name
+             , am.phone_num
+             , am.email_address
+             , am.is_encrypted
+             , am.enc_data
+             , am.memo
+             , am.reg_date
+             , am.update_date
+          FROM api_member am
+         WHERE am.account_id = #{accountId}
+    </select>
+
     <select id="selectList" resultMap="ApiMemberResultMap">
         SELECT
                am.uid

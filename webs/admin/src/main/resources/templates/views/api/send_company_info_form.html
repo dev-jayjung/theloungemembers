@@ -46,6 +46,11 @@
             ajax.call(options);
         }
 
+        // 쿠폰발행내역 선택 - 팝업 연동 전까지는 안내만 노출
+        function selectLoungeCouponIssueHistory() {
+            alert('쿠폰발행내역 선택 팝업 기능은 추후 제공 예정입니다. 쿠폰발행내역 uid를 직접 입력해 주세요.');
+        }
+
         // 수정
         function sendCompanyInfoUpdate() {
             if (!validate.check('sendCompanyInfoForm')) {
@@ -158,7 +163,8 @@
                     </td>
                     <th>선택 쿠폰<strong class="red">*</strong></th>
                     <td>
-                        <input type="text" class="wth300 validate[required]" name="loungeCouponIssueHistoryUid" id="loungeCouponIssueHistoryUid" title="선택 쿠폰" th:field="*{loungeCouponIssueHistoryUid}" placeholder="쿠폰발행내역 uid 직접 입력" />
+                        <input type="text" class="wth200 validate[required]" name="loungeCouponIssueHistoryUid" id="loungeCouponIssueHistoryUid" title="선택 쿠폰" th:field="*{loungeCouponIssueHistoryUid}" placeholder="쿠폰발행내역 uid 직접 입력" />
+                        <button type="button" onclick="selectLoungeCouponIssueHistory();" class="btn_h25_type1">선택</button>
                     </td>
                 </tr>
                 <tr>

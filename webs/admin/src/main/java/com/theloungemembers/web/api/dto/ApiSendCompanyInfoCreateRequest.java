@@ -11,8 +11,6 @@ public class ApiSendCompanyInfoCreateRequest {
 
     private String apiAccountId;
 
-    private String companyName;
-
     private String type;
 
     private Long loungeCouponIssueHistoryUid;

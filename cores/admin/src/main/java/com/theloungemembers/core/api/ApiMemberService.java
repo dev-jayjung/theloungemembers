@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,8 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ApiMemberService extends AbstractBaseService<ApiMemberCommand, ApiMemberQuery, ApiMemberResult, Long> {
 
+    private final ApiMemberRepository apiMemberRepository;
     private final ApiMenuPermissionRepository apiMenuPermissionRepository;
     private final JsonMapperHelper jsonMapperHelper;
+
+    @Transactional(readOnly = true)
+    public Optional<ApiMemberResult> getByAccountId(String accountId) {
+        AssertUtil.notNull(accountId);
+
+        return apiMemberRepository.selectByAccountId(accountId);
+    }
 
     @Override
     @Transactional

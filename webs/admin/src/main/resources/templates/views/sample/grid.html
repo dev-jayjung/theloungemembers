@@ -210,12 +210,12 @@
 
       // 등록 화면 이동
       const submitAddForm = () => {
-        TabUtil.openTab({ url: '/api-members/new' });
+        TabUtil.open({ url: '/api-members/new' });
       }
 
       // 수정 화면 이동
       const submitModifyForm = uid => {
-        TabUtil.openTab({ url: `/api-members/detail?id=${uid}` });
+        TabUtil.open({ url: `/api-members/detail?id=${uid}` });
       }
 
       // 엑셀 다운로드

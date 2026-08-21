@@ -72,7 +72,7 @@ const TabUtil = (() => {
      * 새 탭 오픈 (data 객체자동 URL 파싱)
      * @param {Object} param - { url, data, tabName, isHome }
      */
-    async openTab(param = {}) {
+    async open(param = {}) {
       const tabList = getTopTabList();
       if (!tabList) {
         return;
@@ -117,15 +117,15 @@ const TabUtil = (() => {
      * 현재 탭 닫고 새 탭 열기
      * @param {Object} param - { closeUrl, openUrl, data }
      */
-    openTabAndCloseSelf(param = {}) {
+    openAndCloseSelf(param = {}) {
       const { closeUrl, openUrl, data } = param;
 
       if (closeUrl) {
-        TabUtil.closeTabByUrl(closeUrl);
+        TabUtil.closeByUrl(closeUrl);
       }
 
       if (openUrl) {
-        TabUtil.openTab({ url: openUrl, data });
+        TabUtil.open({ url: openUrl, data });
       }
     },
 
@@ -142,7 +142,7 @@ const TabUtil = (() => {
       }
 
       if (closeUrl) {
-        TabUtil.closeTabByUrl(closeUrl);
+        TabUtil.closeByUrl(closeUrl);
       }
     },
 
@@ -151,14 +151,14 @@ const TabUtil = (() => {
      */
     closeSelf() {
       const curUrl = cleanUrl(window.location.pathname);
-      this.closeTabByUrl(curUrl);
+      this.closeByUrl(curUrl);
     },
 
     /**
      * Tab ID 기준 탭 닫기
      * @param {String} tabId 
      */
-    closeTab(tabId) {
+    close(tabId) {
       if (!tabId) {
         return;
       }
@@ -173,20 +173,20 @@ const TabUtil = (() => {
      * URL 경로 기준 탭 닫기
      * @param {String} closeUrl 
      */
-    closeTabByUrl(closeUrl) {
+    closeByUrl(closeUrl) {
       if (!closeUrl) {
         return;
       }
       const targetTabId = TabUtil.getTabIdByUrl(closeUrl);
       if (targetTabId) {
-        TabUtil.closeTab(targetTabId);
+        TabUtil.close(targetTabId);
       }
     },
 
     /**
      * 특정 탭 활성화
      */
-    activateTab(tabId) {
+    activate(tabId) {
       const tabList = getTopTabList();
       if (tabList && tabId) {
         tabList.activeTab({ tabId });
@@ -197,7 +197,7 @@ const TabUtil = (() => {
      * 홈(대시보드) 탭 열기
      */
     openHome() {
-      TabUtil.openTab({
+      TabUtil.open({
         url: '/main/dashboard',
         isHome: true,
         tabName: '홈'
@@ -207,7 +207,7 @@ const TabUtil = (() => {
     /**
      * 열려있는 모든 탭 순차 닫기
      */
-    closeAllTabs() {
+    closeAll() {
       const tabList = getTopTabList();
       if (!tabList || !tabList.list) {
         return;
@@ -216,9 +216,9 @@ const TabUtil = (() => {
       const list = tabList.list;
       if (list.length > 1) {
         const lastTab = list[list.length - 1];
-        TabUtil.closeTab(lastTab.tabId);
+        TabUtil.close(lastTab.tabId);
 
-        setTimeout(() => TabUtil.closeAllTabs(), 50);
+        setTimeout(() => TabUtil.closeAll(), 50);
       }
     },
 

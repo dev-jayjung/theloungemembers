@@ -64,7 +64,7 @@
               }
 
               if (typeof TabUtil !== 'undefined') {
-                TabUtil.activateTab(tabId);
+                TabUtil.activate(tabId);
               }
             });
 
@@ -72,7 +72,7 @@
             $tabLi.find('.btn-tab-close').on('click', e => {
               e.stopPropagation();
               if (typeof TabUtil !== 'undefined') {
-                TabUtil.closeTab(tabId);
+                TabUtil.close(tabId);
               }
             });
 
@@ -249,7 +249,7 @@
 
   <div class="tabWrap">
     <ul id="tabList"></ul>
-    <a href="javascript:void(0)" onclick="TabUtil.closeAllTabs()" class="tabAllClear">탭 전체삭제</a>
+    <a href="javascript:void(0)" onclick="TabUtil.closeAll()" class="tabAllClear">탭 전체삭제</a>
   </div>
 </th:block>
 

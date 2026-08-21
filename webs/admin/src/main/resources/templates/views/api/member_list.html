@@ -198,14 +198,14 @@
 
       // 등록 이동
       const submitAddForm = () => {
-        TabUtil.openTab({
+        TabUtil.open({
           url: '/api-members/new'
         });
       }
 
       // 수정 이동
       const submitModifyForm = uid => {
-        TabUtil.openTab({
+        TabUtil.open({
           url: `/api-members/detail?id=${uid}`
         });
       }

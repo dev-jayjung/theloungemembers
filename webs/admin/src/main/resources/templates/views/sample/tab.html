@@ -20,14 +20,14 @@
 
       // 1. 단순 새 탭 오픈
       const openSampleTab = () => {
-        TabUtil.openTab({
+        TabUtil.open({
           url: '/api-members'
         });
       };
 
       // 2. 파라미터 전달 새 탭 오픈
       const openTabWithData = () => {
-        TabUtil.openTab({
+        TabUtil.open({
           url: '/api-members/detail',
           data: {
             id: 30,
@@ -43,7 +43,7 @@
       // 4. 전체 탭 닫기
       const closeAllTabs = () => {
         if (confirm('열려있는 모든 탭을 닫으시겠습니까?')) {
-          TabUtil.closeAllTabs();
+          TabUtil.closeAll();
         }
       };
     })();

@@ -15,7 +15,7 @@
         $('#btnInsert').on('click', memberInsert);
         $('#btnUpdate').on('click', memberUpdate);
         $('#btnDelete').on('click', memberDelete);
-        $('#btnList').on('click', () => TabUtil.openTab({ url: '/api-members' }));
+        $('#btnList').on('click', () => TabUtil.open({ url: '/api-members' }));
       });
 
       // 등록
@@ -42,7 +42,7 @@
 
             const uid = result.data.uid;
 
-            TabUtil.openTab({
+            TabUtil.open({
               url: `/api-members/detail?id=${uid}`
             });
           }
@@ -70,7 +70,7 @@
               return;
             }
 
-            TabUtil.openTab({
+            TabUtil.open({
               url: `/api-members/detail?id=${uid}`
             });
           }
@@ -93,7 +93,7 @@
               return;
             }
 
-            TabUtil.openTabAndCloseSelf({
+            TabUtil.openAndCloseSelf({
               openUrl: '/api-members'
             });
           }

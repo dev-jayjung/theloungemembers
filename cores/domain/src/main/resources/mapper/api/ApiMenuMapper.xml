@@ -80,6 +80,7 @@
              , amg.name as group_name
         FROM api_menu am
         LEFT JOIN api_menu_group amg ON am.group_code = amg.code
+        <include refid="whereSearch"/>
         <include refid="sortSearch"/>
         <include refid="CommonMapper.pageSql"/>
     </select>

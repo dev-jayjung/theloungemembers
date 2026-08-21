@@ -33,8 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class ApiSendCompanyInfoRestController {
 
     /**
-     * PHP 원본 등록/수정 화면(api_company_send_detail.html)에도 노출되지 않고 DB 기본값에 의존하던 컬럼.
-     * Java 쪽 엔티티가 nullable=false라 저장 시 명시적으로 채워야 함.
+     * PHP 원본 등록/수정 화면(api_company_send_detail.html)에도 노출되지 않고 DB 기본값에 의존하던 컬럼. Java 쪽 엔티티가 nullable=false라 저장 시 명시적으로 채워야 함.
      */
     private static final String DEFAULT_METHOD = "POST";
     private static final Integer DEFAULT_CANCEL_USE = 0;
@@ -78,13 +77,10 @@ public class ApiSendCompanyInfoRestController {
     }
 
     /**
-     * PHP ajax.php와 동일하게, 클라이언트가 보낸 업체명을 신뢰하지 않고 선택된 접속 계정으로
-     * DB에서 다시 조회해 채운다 (api_company_send_detail.ajax.php의 ApiMember::get_company_name).
+     * PHP ajax.php와 동일하게, 클라이언트가 보낸 업체명을 신뢰하지 않고 선택된 접속 계정으로 DB에서 다시 조회해 채운다 (api_company_send_detail.ajax.php의 ApiMember::get_company_name).
      */
     private String resolveCompanyName(String apiAccountId) {
-        return apiMemberService.getByAccountId(apiAccountId)
-            .map(ApiMemberResult::getCompanyName)
-            .orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND, "존재하지 않는 접속 계정입니다."));
+        return apiMemberService.getByAccountId(apiAccountId).map(ApiMemberResult::getCompanyName).orElseThrow(() -> new BusinessException(CommonErrorCode.NOT_FOUND, "존재하지 않는 접속 계정입니다."));
     }
 
 }
